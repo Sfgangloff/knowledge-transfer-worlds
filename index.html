@@ -294,8 +294,7 @@ footer{background:var(--bg);border-top:none}
     <p class="lede">We think of a world as a set of experiences, and consider a very simple formal counterpart of this idea. Here a world is a set of grids defined by forbidding patterns. Change the rules and you get a new world. We train a small reasoning model on such worlds and ask: <b>what does it take to adapt to rules it has never seen?</b></p>
     <div class="row" style="margin-top:26px">
       <a class="btn primary" href="#play">Play with a world ↓</a>
-      <a class="btn" id="arxiv-link" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener"><svg class="ico ax" viewBox="84 -4 82 112" aria-hidden="true"><path d="M127.98,55.61l-32.74,38.85c-1.29,1.37-2.08,3.78-1.36,5.5.75,1.8,2.46,2.91,4.4,2.91,1.09,0,1.99-.38,3.16-1.56l40.19-42.71c1.6-1.69,1.62-4.33.04-6.04l-13.68,3.05Z" style="fill:var(--ax-red)"/><path d="M127.98,55.61l31.19-38.27c1.49-1.99,2.2-3.03,1.49-4.72-.74-1.77-2.59-3.16-4.48-3.16h0c-1.06,0-1.72.09-3.01,1.11l-38.63,41.76c-1.72,1.84-1.71,4.7.02,6.53l47.79,51.07c1.02,1.05,2.05,1.19,3.14,1.19,1.93,0,3.19-1.14,4.03-2.82.72-1.73-.08-3.44-1.4-5.23l-40.12-47.46" style="fill:var(--ax-grey)"/><path d="M141.67,52.56L95,2.13S93.29.04,91.48,0s-3.6,1.02-4.34,2.79c-.7,1.69-.2,2.88,1.35,5.1l40.09,48.42" style="fill:var(--ax-red)"/></svg>Paper (arXiv)</a>
-      <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Code</a>
+      
     </div>
   </div>
   <div class="hero-viz">
@@ -476,7 +475,7 @@ footer{background:var(--bg);border-top:none}
 <script>
 /* ======================= world engine ======================= */
 const ARXIV_ID = '2610.15081';
-if (ARXIV_ID){ for (const id of ['arxiv-link','arxiv-link-2']) document.getElementById(id).href='https://arxiv.org/abs/'+ARXIV_ID;
+if (ARXIV_ID){ for (const id of ['arxiv-link-2']) document.getElementById(id).href='https://arxiv.org/abs/'+ARXIV_ID;
   document.getElementById('bibtex').textContent=document.getElementById('bibtex').textContent.replace('XXXX.XXXXX',ARXIV_ID); }
 
 const N=6, I=(r,c)=>r*6+c, bit=v=>1<<v, ALL=0b1111110;
