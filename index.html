@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knowledge transfer between simple discrete worlds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --bg:#fcfcfb; --surface:#ffffff; --surface-2:#f3f2ef; --line:#e3e1dc; --line-strong:#2b2a28;
+  --text:#0b0b0b; --text-2:#52514e; --muted:#8a8984;
+  --accent:#2a78d6;
+  --s-desc:#2a78d6; --s-ex:#eb6834; --s-none:#8a8984;
+  --f-region:#1baf7a; --f-adj:#6250d6; --f-parity:#eda100; --f-shift:#e87ba4; --f-base:#52514e;
+  --bad:#e34948; --bad-bg:#fde8e8; --good:#008300; --given:#0b0b0b; --typed:#2a78d6;
+  --sel:#dbe9fb;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    color-scheme: dark;
+    --bg:#121211; --surface:#1a1a19; --surface-2:#232321; --line:#33322f; --line-strong:#d8d7d2;
+    --text:#f0efec; --text-2:#c3c2b7; --muted:#8f8e88;
+    --accent:#3987e5;
+    --s-desc:#3987e5; --s-ex:#d95926; --s-none:#8f8e88;
+    --f-region:#199e70; --f-adj:#9085e9; --f-parity:#c98500; --f-shift:#d55181; --f-base:#c3c2b7;
+    --bad:#e66767; --bad-bg:#3a1f1f; --good:#0ca30c; --given:#f0efec; --typed:#6aa8f0;
+    --sel:#1e3350;
+  }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:var(--accent)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+section{padding:72px 0;border-top:1px solid var(--line)}
+h1{font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-.02em;margin:0 0 18px;font-weight:800}
+h2{font-size:clamp(24px,3.2vw,34px);letter-spacing:-.015em;margin:0 0 10px;line-height:1.15}
+h3{font-size:17px;margin:0 0 6px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.lede{font-size:18px;color:var(--text-2);max-width:720px}
+p{max-width:720px}
+.mono{font-family:'JetBrains Mono',monospace}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:600 14px Inter,sans-serif;cursor:pointer;text-decoration:none;transition:transform .12s,border-color .12s}
+.btn:hover{border-color:var(--text-2);transform:translateY(-1px)}
+.btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.small{padding:6px 11px;font-size:13px;border-radius:8px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* hero */
+.hero{padding:64px 0 72px;border-top:none}
+.hero-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:center}
+@media(max-width:820px){.hero-grid{grid-template-columns:1fr}}
+.authors{color:var(--text-2);margin:0 0 22px;font-size:15px}
+.hero-viz{display:flex;flex-direction:column;align-items:center;gap:14px}
+.hero-chips{min-height:64px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:360px}
+
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(6,1fr);width:min(100%,360px);aspect-ratio:1;border:2px solid var(--line-strong);border-radius:6px;overflow:hidden;background:var(--surface);user-select:none}
+.grid.sm{width:180px;border-width:1.5px}
+.grid.xs{width:132px;border-width:1.5px}
+.cell{position:relative;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:clamp(16px,3vw,24px);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transition:background .2s}
+.grid.sm .cell{font-size:15px}.grid.xs .cell{font-size:12px}
+.cell:nth-child(6n){border-right:none}.cell:nth-last-child(-n+6){border-bottom:none}
+.cell.given{color:var(--given)}
+.cell.typed{color:var(--typed)}
+.cell.input{cursor:pointer}
+.cell.input:hover{background:var(--surface-2)}
+.cell.selected{background:var(--sel)!important}
+.cell.bad{background:var(--bad-bg)!important;color:var(--bad)!important}
+.cell .shade{position:absolute;inset:0;pointer-events:none;opacity:.28;transition:opacity .2s}
+.cell span{position:relative}
+.cell.pop span{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.grid.solved{box-shadow:0 0 0 4px color-mix(in srgb,var(--good) 35%,transparent);transition:box-shadow .3s}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:7px;padding:5px 11px 5px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:13px;font-weight:500;cursor:default;white-space:nowrap;transition:all .15s}
+.chip .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.chip.toggle{cursor:pointer}
+.chip.toggle:hover{border-color:var(--text-2)}
+.chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.chip.ghost{opacity:.4}
+.chip.in{animation:chipin .4s ease-out both}
+@keyframes chipin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chip.ok{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.chip.wrong{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.chip.held{border-style:dashed;border-color:var(--text-2)}
+
+/* playground */
+.play{display:grid;grid-template-columns:1fr 380px;gap:40px;margin-top:32px}
+@media(max-width:880px){.play{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+.fam{margin-bottom:14px}
+.fam-title{font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.status{min-height:48px;font-size:14px;color:var(--text-2);margin-top:14px;max-width:360px}
+.status b{color:var(--text)}
+.status .bad{color:var(--bad);font-weight:600}
+.status .good{color:var(--good);font-weight:600}
+.pad{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;width:min(100%,360px);margin-top:12px}
+.pad button{padding:8px 0;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);font:600 16px Inter;cursor:pointer}
+.pad button:hover{border-color:var(--text-2)}
+.tokens{font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.9;color:var(--text-2);word-break:break-word}
+.tok{display:inline-block;padding:1px 6px;margin:1px;border-radius:5px;background:var(--surface-2);color:var(--text)}
+.tok.null{color:var(--muted)}
+
+/* three setups */
+.setups{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+@media(max-width:820px){.setups{grid-template-columns:1fr}}
+.setup{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--surface)}
+.setup .tag{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:15px;margin-bottom:8px}
+.setup .sw{width:12px;height:12px;border-radius:3px}
+.setup .body{min-height:160px;display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0}
+.setup p{font-size:14px;color:var(--text-2);margin:0}
+
+/* guess game */
+.guess{display:grid;grid-template-columns:auto 1fr;gap:36px;margin-top:28px;align-items:start}
+@media(max-width:820px){.guess{grid-template-columns:1fr}}
+.examples{display:flex;gap:14px;flex-wrap:wrap}
+
+/* novelty */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0 18px}
+.tab{padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font:600 14px Inter;color:var(--text-2)}
+.tab.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.nov{display:grid;grid-template-columns:1fr 64px 1fr;gap:16px;align-items:center}
+@media(max-width:820px){.nov{grid-template-columns:1fr}.nov .arrow{transform:rotate(90deg)}}
+.nov-col{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-height:240px}
+.nov-col h4{margin:0 0 12px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.world-row{display:flex;flex-wrap:wrap;gap:5px;padding:8px 10px;border-radius:10px;background:var(--surface-2);margin-bottom:7px;align-items:center}
+.world-row .lbl{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-right:4px}
+.world-row.x{opacity:.45;text-decoration:line-through}
+.arrow{font-size:28px;text-align:center;color:var(--muted)}
+.nov-text{margin-top:16px;color:var(--text-2);max-width:820px}
+.comp{display:inline-flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-family:'JetBrains Mono',monospace;font-size:12px}
+.comp span{padding:3px 7px;border-right:1px solid var(--line);background:var(--surface)}
+.comp span:last-child{border-right:none}
+.comp .new{background:color-mix(in srgb,var(--f-shift) 22%,var(--surface))}
+
+/* results */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0 8px}
+@media(max-width:820px){.stats{grid-template-columns:1fr}}
+.stat{border:1px solid var(--line);border-radius:14px;padding:18px;background:var(--surface)}
+.stat .big{font-size:34px;font-weight:800;letter-spacing:-.02em}
+.stat .cap{font-size:14px;color:var(--text-2)}
+.chart-card{border:1px solid var(--line);border-radius:14px;padding:20px;background:var(--surface);margin-top:22px;position:relative}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text-2)}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.legend i.sq{height:10px;width:10px;border-radius:2px}
+svg text{font-family:Inter,sans-serif}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;box-shadow:0 6px 20px rgba(0,0,0,.12);opacity:0;transition:opacity .1s;white-space:nowrap;z-index:5}
+.tip b{font-weight:600}
+.tip .r{display:flex;align-items:center;gap:6px}
+.tip .r i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:none;background:var(--surface);color:var(--text-2);padding:7px 12px;font:600 13px Inter;cursor:pointer}
+.seg button.on{background:var(--text);color:var(--bg)}
+details{margin-top:12px;font-size:13px;color:var(--text-2)}
+details table{border-collapse:collapse;margin-top:8px}
+details td,details th{padding:4px 10px;border-bottom:1px solid var(--line);text-align:right}
+details td:first-child,details th:first-child{text-align:left}
+footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);font-size:14px}
+.cite{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--surface-2);padding:14px;border-radius:10px;white-space:pre-wrap;color:var(--text);max-width:720px}
+.note{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+<div class="wrap hero-grid">
+  <div>
+    <div class="kicker">Interactive companion to the paper</div>
+    <h1>Knowledge transfer between simple discrete worlds</h1>
+    <p class="authors">Silvère Gangloff &amp; Jan Hůla</p>
+    <p class="lede">A world here is a 6×6 grid plus a few rules that forbid certain patterns. Change the rules and you get a new world. We train one model on many such worlds and ask: <b>what does it take to adapt to rules it has never met?</b></p>
+    <div class="row" style="margin-top:26px">
+      <a class="btn primary" href="#play">Play with a world ↓</a>
+      <a class="btn" id="arxiv-link" href="https://arxiv.org/" target="_blank" rel="noopener">Paper (arXiv)</a>
+      <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener">Code</a>
+    </div>
+  </div>
+  <div class="hero-viz">
+    <div class="hero-chips" id="hero-chips"></div>
+    <div class="grid" id="hero-grid"></div>
+    <div class="note" id="hero-cap">A new world every few seconds, filled by an exact solver</div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 1. PLAYGROUND ============ -->
+<section id="play">
+<div class="wrap">
+  <div class="kicker">1 · What is a world?</div>
+  <h2>Pick some rules. Get a world. Solve a puzzle in it.</h2>
+  <p class="lede">Every world keeps the same base, a Latin square (each row and column holds 1–6 once), and adds 2–4 rules from a pool. Each rule is a set of <i>forbidden patterns</i>. A puzzle is a partial grid with exactly one valid completion.</p>
+  <div class="play">
+    <div>
+      <div class="grid" id="pg-grid" tabindex="0"></div>
+      <div class="pad" id="pg-pad"></div>
+      <div class="status" id="pg-status"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small" id="pg-new">New puzzle</button>
+        <button class="btn small" id="pg-random">Random world</button>
+        <button class="btn small" id="pg-solve">Show solution</button>
+        <button class="btn small" id="pg-clear">Clear my entries</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="fam"><div class="fam-title"><span class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--f-base)"></span>Base (always on)</div>
+        <div class="chips"><span class="chip on" data-hover="Latin"><span class="dot" style="background:var(--f-base)"></span>Latin square</span></div></div>
+      <div id="pg-pool"></div>
+      <p class="note" style="margin:6px 0 0">Hover a rule to see the cells it constrains. Up to 4 extra rules. Some combinations admit no grid at all: those worlds are empty.</p>
+      <div style="margin-top:16px">
+        <div class="fam-title">How the model reads this world as a description</div>
+        <div class="tokens" id="pg-tokens"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 2. THREE SETUPS ============ -->
+<section id="setups">
+<div class="wrap">
+  <div class="kicker">2 · Telling the model which world it is in</div>
+  <h2>Three ways to communicate the rules</h2>
+  <p class="lede">Same model, same puzzles. Only the prefix placed before the 36 puzzle cells changes.</p>
+  <div class="setups">
+    <div class="setup">
+      <div class="tag"><span class="sw" style="background:var(--s-desc)"></span>Description</div>
+      <div class="body"><div class="tokens" id="su-desc" style="max-width:260px"></div></div>
+      <p>Each active rule as 4 symbolic tokens (type, axis, position, parameter). The model has to read the rules and apply them.</p>
+    </div>
+    <div class="setup">
+      <div class="tag"><span class="sw" style="background:var(--s-ex)"></span>Examples</div>
+      <div class="body" id="su-ex"></div>
+      <p>Two solved grids from the same world. The model has to infer the rules, as in ARC-AGI, then apply them.</p>
+    </div>
+    <div class="setup">
+      <div class="tag"><span class="sw" style="background:var(--s-none)"></span>No information</div>
+      <div class="body"><div style="font-size:42px;color:var(--muted)">∅</div></div>
+      <p>Only the puzzle. A baseline: how much the given cells alone reveal about the rules.</p>
+    </div>
+  </div>
+
+  <div class="guess" id="guess">
+    <div>
+      <h3>Your turn to be the “examples” model</h3>
+      <p class="note" style="margin:0 0 12px">Both grids come from the same hidden world (Latin square + 2 rules). Which rules is it?</p>
+      <div class="examples" id="gs-ex"></div>
+    </div>
+    <div>
+      <div class="chips" id="gs-cands" style="margin-top:6px"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn small primary" id="gs-check">Check</button>
+        <button class="btn small" id="gs-next">Another world</button>
+      </div>
+      <div class="status" id="gs-status" style="max-width:none"></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 3. NOVELTY ============ -->
+<section id="novelty">
+<div class="wrap">
+  <div class="kicker">3 · How new is the test world?</div>
+  <h2>Four levels of novelty</h2>
+  <p class="lede">A rule family lets us say precisely <i>what</i> is new at test time, instead of mixing everything into one held-out set.</p>
+  <div class="tabs" id="nv-tabs"></div>
+  <div class="nov">
+    <div class="nov-col"><h4>Training worlds</h4><div id="nv-train"></div></div>
+    <div class="arrow">→</div>
+    <div class="nov-col"><h4>Test world</h4><div id="nv-test"></div></div>
+  </div>
+  <p class="nov-text" id="nv-text"></p>
+</div>
+</section>
+
+<!-- ============ 4. RESULTS ============ -->
+<section id="results">
+<div class="wrap">
+  <div class="kicker">4 · What we found</div>
+  <h2>A description helps, until the rule is truly new</h2>
+  <p class="lede">For the depth-recurrent model we tested (HRM-style, ~1M parameters) on 6×6 grids:</p>
+  <div class="stats">
+    <div class="stat"><div class="big" style="color:var(--s-desc)">98.5%</div><div class="cap">with the description, on new combinations of known rules (L1). Examples: 95.4%.</div></div>
+    <div class="stat"><div class="big" style="color:var(--s-desc)">34.6% <span style="font-size:20px;color:var(--muted)">vs 52.1%</span></div><div class="cap">on a new rule whose parts were never seen together: the description falls <b>below</b> the no-information baseline.</div></div>
+    <div class="stat"><div class="big" style="color:var(--s-ex)">65.0%</div><div class="cap">with examples on the same unseen rule: they stay above the baseline.</div></div>
+  </div>
+
+  <div class="chart-card" id="bars-card">
+    <div class="chart-head">
+      <div><h3>Exact-match accuracy by novelty level</h3><div class="note">Mean ± std over 4 training seeds. Hover a bar for values.</div></div>
+      <div class="legend"><span><i class="sq" style="background:var(--s-desc)"></i>Description</span><span><i class="sq" style="background:var(--s-ex)"></i>Examples</span><span><i class="sq" style="background:var(--s-none)"></i>No information</span></div>
+    </div>
+    <svg id="bars" width="100%" viewBox="0 0 980 360" role="img" aria-label="Grouped bar chart of accuracy by novelty level"></svg>
+    <div class="tip" id="bars-tip"></div>
+    <details><summary>Table view</summary><table id="bars-table"></table></details>
+  </div>
+
+  <div class="chart-card" id="sweep-card">
+    <div class="chart-head">
+      <div><h3>Show the model the parts together, and it recovers</h3><div class="note">Same test worlds at every point; only the training set grows. Hover for values.</div></div>
+      <div class="seg" id="sweep-seg"><button data-k="l3" class="on">L3: new rule instance</button><button data-k="l2">L2: new pairing</button></div>
+    </div>
+    <div class="legend" style="margin:6px 0 4px"><span><i style="background:var(--s-desc)"></i>Description</span><span><i style="background:var(--s-ex)"></i>Examples</span><span><i style="background:var(--s-none)"></i>No information</span><span id="lg-drop"><span style="color:var(--s-desc)">◆</span> Description + dropout</span></div>
+    <svg id="sweep" width="100%" viewBox="0 0 980 380" role="img" aria-label="Line chart of accuracy as exposure grows"></svg>
+    <div class="tip" id="sweep-tip"></div>
+    <p class="note" id="sweep-note" style="max-width:none"></p>
+  </div>
+
+  <div class="panel" style="margin-top:22px">
+    <h3>Why would a description hurt?</h3>
+    <p style="color:var(--text-2);margin:6px 0 0">A model that always receives the correct rules never has to infer them from the grid. When the description names components it never composed, it has nothing to fall back on. Taking the crutch away on half the training samples (<b>description dropout</b>) lifts it from 34.6% to 58.8%, above the 52.1% baseline, for a cost of 1–2 points on known rules.</p>
+  </div>
+  <p class="note" style="margin-top:16px;max-width:none">These are observations on the tested models at 6×6, made possible by the framework, not claims about general phenomena. The paper's appendix covers larger grids, other architectures, and controls.</p>
+</div>
+</section>
+
+<footer>
+<div class="wrap">
+  <h3 style="color:var(--text)">Why this setup</h3>
+  <p>Rules come from the structure of the world itself, not from a human visual vocabulary as in ARC. The space of worlds is explicit, so simplicity (number of rules, size of their supports) is computable. And it gives depth-recurrent reasoning models new ground beyond saturated Sudoku benchmarks.</p>
+  <div class="row" style="margin:20px 0 28px">
+    <a class="btn primary" id="arxiv-link-2" href="https://arxiv.org/" target="_blank" rel="noopener">Read the paper</a>
+    <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener">Code &amp; data</a>
+  </div>
+  <div class="cite" id="bibtex">@article{gangloff2026knowledge,
+  title  = {Knowledge transfer between simple discrete worlds},
+  author = {Gangloff, Silv{\`e}re and H{\r{u}}la, Jan},
+  journal= {arXiv preprint arXiv:XXXX.XXXXX},
+  year   = {2026}
+}</div>
+  <button class="btn small" id="copy-bib" style="margin-top:10px">Copy BibTeX</button>
+</div>
+</footer>
+
+<script>
+/* ======================= world engine ======================= */
+const ARXIV_ID = ''; // fill in, e.g. '2611.01234'
+if (ARXIV_ID){ for (const id of ['arxiv-link','arxiv-link-2']) document.getElementById(id).href='https://arxiv.org/abs/'+ARXIV_ID;
+  document.getElementById('bibtex').textContent=document.getElementById('bibtex').textContent.replace('XXXX.XXXXX',ARXIV_ID); }
+
+const N=6, I=(r,c)=>r*6+c, bit=v=>1<<v, ALL=0b1111110;
+const pc=m=>{let c=0;while(m){m&=m-1;c++}return c};
+const shift=(v,k)=>((v-1+k)%6+6)%6+1;
+const rng=()=>Math.random();
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const range=n=>[...Array(n).keys()];
+
+function boxes(h,w){const g=[];for(let br=0;br<6;br+=h)for(let bc=0;bc<6;bc+=w){const s=[];for(let r=0;r<h;r++)for(let c=0;c<w;c++)s.push(I(br+r,bc+c));g.push(s)}return g}
+function scattered(h,w){const g=[];for(let i=0;i<h;i++)for(let j=0;j<w;j++){const s=[];for(let br=0;br<6;br+=h)for(let bc=0;bc<6;bc+=w)s.push(I(br+i,bc+j));g.push(s)}return g}
+function offsetPairs(ds){const p=[];for(let r=0;r<6;r++)for(let c=0;c<6;c++)for(const[dr,dc]of ds){const r2=r+dr,c2=c+dc;if(r2>=0&&r2<6&&c2>=0&&c2<6&&I(r,c)<I(r2,c2))p.push([I(r,c),I(r2,c2)])}return p}
+const MAIN=range(6).map(i=>I(i,i)), ANTI=range(6).map(i=>I(i,5-i));
+const rowLinks=(a,b,k)=>range(6).map(c=>[I(a,c),I(b,c),k]);
+const colLinks=(a,b,k)=>range(6).map(r=>[I(r,a),I(r,b),k]);
+
+const FAM={region:{name:'Unique-occurrence regions',col:'var(--f-region)'},adj:{name:'Adjacency',col:'var(--f-adj)'},parity:{name:'Value-restricted regions',col:'var(--f-parity)'},shift:{name:'Value-shift relations',col:'var(--f-shift)'},base:{name:'Base',col:'var(--f-base)'}};
+const RULES=[
+ {id:'Latin',label:'Latin square',fam:'base',groups:[...range(6).map(r=>range(6).map(c=>I(r,c))),...range(6).map(c=>range(6).map(r=>I(r,c)))],tip:'Each row and column contains 1–6 exactly once'},
+ {id:'BoxesRect2x3',label:'2×3 boxes',fam:'region',groups:boxes(2,3),desc:['box','∅','2x3','∅'],tip:'Each 2×3 box contains 1–6 exactly once'},
+ {id:'BoxesRect3x2',label:'3×2 boxes',fam:'region',groups:boxes(3,2),desc:['box','∅','3x2','∅'],tip:'Each 3×2 box contains 1–6 exactly once'},
+ {id:'ScatteredRect2x3',label:'Scattered 2×3',fam:'region',groups:scattered(2,3),desc:['scatter','∅','2x3','∅'],tip:'Cells at the same position across the six 2×3 boxes are all different'},
+ {id:'MainDiagonal',label:'Main diagonal',fam:'region',groups:[MAIN],desc:['diag','main','∅','∅'],tip:'The ↘ diagonal contains 1–6 exactly once'},
+ {id:'AntiDiagonal',label:'Anti-diagonal',fam:'region',groups:[ANTI],desc:['diag','anti','∅','∅'],tip:'The ↙ diagonal contains 1–6 exactly once'},
+ {id:'CenterWindow',label:'Center 4 cells',fam:'region',groups:[[I(2,2),I(2,3),I(3,2),I(3,3)]],desc:['window','∅','center','∅'],tip:'The four center cells are all different'},
+ {id:'Corners',label:'Four corners',fam:'region',groups:[[I(0,0),I(0,5),I(5,0),I(5,5)]],desc:['window','∅','corners','∅'],tip:'The four corner cells are all different'},
+ {id:'AntiKing',label:'Anti-king',fam:'adj',pairs:offsetPairs([[1,1],[1,-1]]),desc:['adj','king','∅','∅'],tip:'Diagonally adjacent cells never share a value'},
+ {id:'AntiKnight',label:'Anti-knight',fam:'adj',pairs:offsetPairs([[1,2],[2,1],[1,-2],[2,-1]]),desc:['adj','knight','∅','∅'],tip:'Cells a knight’s move apart never share a value'},
+ {id:'OddMain',label:'Odd main diagonal',fam:'parity',allowed:{cells:MAIN,mask:bit(1)|bit(3)|bit(5)},desc:['parity','main','∅','odd'],tip:'Every cell of the ↘ diagonal is odd'},
+ {id:'EvenAnti',label:'Even anti-diagonal',fam:'parity',allowed:{cells:ANTI,mask:bit(2)|bit(4)|bit(6)},desc:['parity','anti','∅','even'],tip:'Every cell of the ↙ diagonal is even'},
+ {id:'RowLink16k3',label:'Row 6 = row 1 + 3',fam:'shift',links:rowLinks(0,5,3),desc:['link','row','(1,6)','3'],tip:'Row 6 equals row 1 shifted by +3 (mod 6), cell by cell'},
+ {id:'RowLink16k1',label:'Row 6 = row 1 + 1',fam:'shift',links:rowLinks(0,5,1),desc:['link','row','(1,6)','1'],tip:'Row 6 equals row 1 shifted by +1 (mod 6), cell by cell'},
+ {id:'ColLink16k2',label:'Col 6 = col 1 + 2',fam:'shift',links:colLinks(0,5,2),desc:['link','col','(1,6)','2'],tip:'Column 6 equals column 1 shifted by +2 (mod 6), cell by cell'},
+ {id:'RowHalvesK3',label:'Bottom half = top + 3',fam:'shift',links:[0,1,2].flatMap(r=>rowLinks(r,r+3,3)),desc:['link','row','halves','3'],tip:'Rows 4–6 equal rows 1–3 shifted by +3, cell by cell'},
+];
+const R=Object.fromEntries(RULES.map(r=>[r.id,r]));
+function support(rule){const s=new Set();(rule.groups||[]).forEach(g=>g.forEach(c=>s.add(c)));(rule.pairs||[]).forEach(([a,b])=>{s.add(a);s.add(b)});if(rule.allowed)rule.allowed.cells.forEach(c=>s.add(c));(rule.links||[]).forEach(([a,b])=>{s.add(a);s.add(b)});return s}
+
+function compile(ids){
+  const rules=['Latin',...ids].map(id=>R[id]);
+  const nb=range(36).map(()=>new Set()), allow=Array(36).fill(ALL), links=range(36).map(()=>[]);
+  for(const r of rules){
+    (r.groups||[]).forEach(g=>g.forEach(a=>g.forEach(b=>{if(a!==b)nb[a].add(b)})));
+    (r.pairs||[]).forEach(([a,b])=>{nb[a].add(b);nb[b].add(a)});
+    if(r.allowed)r.allowed.cells.forEach(c=>allow[c]&=r.allowed.mask);
+    (r.links||[]).forEach(([a,b,k])=>{links[a].push([b,-k]);links[b].push([a,k])});
+  }
+  return {rules,nb:nb.map(s=>[...s]),allow,links};
+}
+function cand(C,g,i){let m=C.allow[i];for(const n of C.nb[i])if(g[n])m&=~bit(g[n]);for(const[o,k]of C.links[i])if(g[o])m&=bit(shift(g[o],k));return m}
+function solve(C,grid,{randomize=false,maxSol=1,nodeLimit=200000}={}){
+  const g=grid.slice(),sols=[];let nodes=0,aborted=false;
+  (function rec(){
+    if(++nodes>nodeLimit){aborted=true;return true}
+    let best=-1,bm=0,bc=99;
+    for(let i=0;i<36;i++)if(!g[i]){const m=cand(C,g,i),c=pc(m);if(!c)return false;if(c<bc){bc=c;best=i;bm=m;if(c===1)break}}
+    if(best<0){sols.push(g.slice());return sols.length>=maxSol}
+    const vals=[];for(let v=1;v<=6;v++)if(bm&bit(v))vals.push(v);if(randomize)shuffle(vals);
+    for(const v of vals){g[best]=v;if(rec()){g[best]=0;return true}g[best]=0}
+    return false;
+  })();
+  return {sols,aborted};
+}
+function randomSolution(ids){const C=compile(ids);for(let t=0;t<4;t++){const r=solve(C,Array(36).fill(0),{randomize:true,nodeLimit:120000});if(r.sols.length)return r.sols[0];if(!r.aborted)return null}return null}
+function makePuzzle(ids,sol,target=18){
+  const C=compile(ids),p=sol.slice();let blanks=0;
+  for(const i of shuffle(range(36))){if(blanks>=target)break;const t=p[i];p[i]=0;const r=solve(C,p,{maxSol:2,nodeLimit:40000});if(r.sols.length!==1||r.aborted)p[i]=t;else blanks++}
+  return p;
+}
+function violations(ids,g){
+  const out=[];
+  for(const id of ['Latin',...ids]){const r=R[id],bad=new Set();
+    (r.groups||[]).forEach(gr=>{const seen={};gr.forEach(c=>{if(g[c]){(seen[g[c]]??=[]).push(c)}});Object.values(seen).forEach(cs=>{if(cs.length>1)cs.forEach(c=>bad.add(c))})});
+    (r.pairs||[]).forEach(([a,b])=>{if(g[a]&&g[a]===g[b]){bad.add(a);bad.add(b)}});
+    if(r.allowed)r.allowed.cells.forEach(c=>{if(g[c]&&!(r.allowed.mask&bit(g[c])))bad.add(c)});
+    (r.links||[]).forEach(([a,b,k])=>{if(g[a]&&g[b]&&g[b]!==shift(g[a],k)){bad.add(a);bad.add(b)}});
+    if(bad.size)out.push({id,cells:bad});
+  }
+  return out;
+}
+function ruleHolds(id,g){return !violations([id],g).some(v=>v.id===id)}
+
+/* ======================= UI helpers ======================= */
+const $=s=>document.querySelector(s);
+const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e};
+function chip(id,extra=''){const r=R[id];const c=el('span','chip '+extra,`<span class="dot" style="background:${FAM[r.fam].col}"></span>${r.label}`);c.title=r.tip;c.dataset.id=id;return c}
+function freeChip(label,fam,extra=''){return el('span','chip '+extra,`<span class="dot" style="background:${FAM[fam].col}"></span>${label}`)}
+function buildGrid(node,cls){node.innerHTML='';if(cls)node.classList.add(cls);const cells=[];for(let i=0;i<36;i++){const c=el('div','cell','<div class="shade"></div><span></span>');node.appendChild(c);cells.push(c)}
+  // thicker 2x3 guide lines are not drawn: boxes are a rule, not part of the base
+  return cells}
+function paint(cells,g,given){cells.forEach((c,i)=>{c.querySelector('span').textContent=g[i]||'';c.classList.toggle('given',!!(given&&given[i]));c.classList.toggle('typed',!!(given&&!given[i]&&g[i]))})}
+function shadeRule(cells,id){cells.forEach(c=>c.querySelector('.shade').style.background='transparent');if(!id)return;const r=R[id],col=FAM[r.fam].col;support(r).forEach(i=>cells[i].querySelector('.shade').style.background=col)}
+function tokensHTML(ids){const toks=[];for(let s=0;s<4;s++){const id=ids[s];const d=id?R[id].desc:['∅','∅','∅','∅'];toks.push('⟨'+d.map(t=>`<span class="tok ${t==='∅'?'null':''}">${t}</span>`).join('')+'⟩')}return toks.join(' ')}
+const sortIds=ids=>[...ids].sort();
+
+/* ======================= HERO ======================= */
+(function hero(){
+  const cells=buildGrid($('#hero-grid'));const chips=$('#hero-chips');let timers=[];
+  const pool=RULES.filter(r=>r.fam!=='base').map(r=>r.id);
+  function run(){
+    timers.forEach(clearTimeout);timers=[];
+    let ids,sol;for(let t=0;t<20;t++){ids=shuffle(pool.slice()).slice(0,2+Math.floor(rng()*2));sol=randomSolution(ids);if(sol)break}
+    chips.innerHTML='';[ 'Latin',...ids].forEach((id,k)=>{const c=chip(id,'in');c.style.animationDelay=(k*.18)+'s';chips.appendChild(c)});
+    paint(cells,Array(36).fill(0));cells.forEach(c=>c.classList.remove('pop'));
+    const order=shuffle(range(36));
+    timers.push(setTimeout(()=>shadeRule(cells,ids[0]),600));
+    order.forEach((i,k)=>timers.push(setTimeout(()=>{cells[i].querySelector('span').textContent=sol[i];cells[i].classList.add('pop')},900+k*70)));
+    timers.push(setTimeout(()=>shadeRule(cells,ids[1]),900+18*70));
+    timers.push(setTimeout(run,900+36*70+2600));
+  }
+  run();
+})();
+
+/* ======================= PLAYGROUND ======================= */
+const PG={ids:['BoxesRect2x3','RowLink16k3'],sol:null,puzzle:null,cur:null,sel:-1};
+const pgCells=buildGrid($('#pg-grid'));
+function pgRenderPool(){
+  const host=$('#pg-pool');host.innerHTML='';
+  for(const f of ['region','adj','parity','shift']){
+    const box=el('div','fam',`<div class="fam-title"><span style="width:9px;height:9px;border-radius:50%;background:${FAM[f].col};display:inline-block"></span>${FAM[f].name}</div>`);
+    const cs=el('div','chips');
+    RULES.filter(r=>r.fam===f).forEach(r=>{const c=chip(r.id,'toggle'+(PG.ids.includes(r.id)?' on':''));
+      c.onclick=()=>{const on=PG.ids.includes(r.id);if(on)PG.ids=PG.ids.filter(x=>x!==r.id);else{if(PG.ids.length>=4){pgStatus('<span class="bad">At most 4 extra rules per world.</span>');return}PG.ids=[...PG.ids,r.id]}pgRenderPool();pgNewWorld()};
+      c.onmouseenter=()=>shadeRule(pgCells,r.id);c.onmouseleave=()=>shadeRule(pgCells,null);cs.appendChild(c)});
+    box.appendChild(cs);host.appendChild(box);
+  }
+  document.querySelector('[data-hover="Latin"]').onmouseenter=()=>shadeRule(pgCells,'Latin');
+  document.querySelector('[data-hover="Latin"]').onmouseleave=()=>shadeRule(pgCells,null);
+  $('#pg-tokens').innerHTML=tokensHTML(sortIds(PG.ids));
+}
+function pgStatus(h){$('#pg-status').innerHTML=h}
+function pgNewWorld(){
+  $('#pg-grid').classList.remove('solved');
+  PG.sol=randomSolution(PG.ids);
+  if(!PG.sol){PG.puzzle=PG.cur=Array(36).fill(0);paint(pgCells,PG.cur,PG.cur);pgCheck();
+    pgStatus('<span class="bad">Empty world.</span> No 6×6 grid avoids all these forbidden patterns at once, so there is nothing to solve. In the paper, such combinations are discarded.');return}
+  PG.puzzle=makePuzzle(PG.ids,PG.sol,18);PG.cur=PG.puzzle.slice();PG.sel=-1;pgDraw();
+  pgStatus(`Fill the <b>${PG.puzzle.filter(v=>!v).length}</b> blank cells. Click a cell, then type 1–6 (or use the pad). Broken rules light up in red.`);
+}
+function pgDraw(){paint(pgCells,PG.cur,PG.puzzle);pgCells.forEach((c,i)=>{c.classList.toggle('input',!PG.puzzle[i]);c.classList.toggle('selected',i===PG.sel)});pgCheck()}
+function pgCheck(){
+  const v=violations(PG.ids,PG.cur);pgCells.forEach(c=>c.classList.remove('bad'));v.forEach(x=>x.cells.forEach(i=>pgCells[i].classList.add('bad')));
+  if(!PG.sol)return;
+  const full=PG.cur.every(x=>x);
+  if(v.length)pgStatus('<span class="bad">Forbidden pattern:</span> '+v.map(x=>`<b>${R[x.id].label}</b>`).join(', ')+' is violated.');
+  else if(full){$('#pg-grid').classList.add('solved');pgStatus('<span class="good">Solved.</span> Every rule holds. The model is asked to do exactly this, in one forward pass of a recurrent network.')}
+  else if(PG.cur.some((x,i)=>x&&!PG.puzzle[i]))pgStatus('No rule broken so far.');
+}
+pgCells.forEach((c,i)=>c.onclick=()=>{if(!PG.puzzle||PG.puzzle[i]||!PG.sol)return;PG.sel=i;pgDraw();$('#pg-grid').focus({preventScroll:true})});
+function pgInput(v){if(PG.sel<0)return;PG.cur[PG.sel]=v;pgDraw();if(v){pgCells[PG.sel].classList.remove('pop');void pgCells[PG.sel].offsetWidth;pgCells[PG.sel].classList.add('pop')}}
+$('#pg-grid').addEventListener('keydown',e=>{
+  if(PG.sel<0)return;
+  if(/^[1-6]$/.test(e.key))pgInput(+e.key);
+  else if(e.key==='Backspace'||e.key==='Delete'||e.key==='0')pgInput(0);
+  else if(e.key.startsWith('Arrow')){e.preventDefault();let r=Math.floor(PG.sel/6),c=PG.sel%6;const d={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];
+    for(let s=0;s<6;s++){r=(r+d[0]+6)%6;c=(c+d[1]+6)%6;if(!PG.puzzle[I(r,c)])break}if(!PG.puzzle[I(r,c)]){PG.sel=I(r,c);pgDraw()}}
+});
+const pad=$('#pg-pad');[1,2,3,4,5,6].forEach(v=>{const b=el('button',null,v);b.onclick=()=>pgInput(v);pad.appendChild(b)});{const b=el('button',null,'⌫');b.onclick=()=>pgInput(0);pad.appendChild(b)}
+$('#pg-new').onclick=pgNewWorld;
+$('#pg-clear').onclick=()=>{if(!PG.puzzle)return;PG.cur=PG.puzzle.slice();$('#pg-grid').classList.remove('solved');pgDraw()};
+$('#pg-solve').onclick=()=>{if(!PG.sol)return;PG.cur=PG.sol.slice();pgDraw()};
+$('#pg-random').onclick=()=>{const pool=RULES.filter(r=>r.fam!=='base').map(r=>r.id);for(let t=0;t<30;t++){const ids=shuffle(pool.slice()).slice(0,2+Math.floor(rng()*2));if(randomSolution(ids)){PG.ids=ids;break}}pgRenderPool();pgNewWorld()};
+pgRenderPool();pgNewWorld();
+
+/* ======================= SETUPS + GUESS GAME ======================= */
+(function setups(){
+  const ids=['BoxesRect2x3','RowLink16k3'];
+  $('#su-desc').innerHTML=tokensHTML(ids);
+  const host=$('#su-ex');for(let k=0;k<2;k++){const g=el('div','grid xs');host.appendChild(g);paint(buildGrid(g),randomSolution(ids))}
+})();
+const GS={ids:[],ex:[],cands:[],picked:new Set(),done:false};
+function gsNew(){
+  const pool=RULES.filter(r=>r.fam!=='base').map(r=>r.id);
+  let ids,a,b;for(let t=0;t<40;t++){ids=shuffle(pool.slice()).slice(0,2);a=randomSolution(ids);b=a&&randomSolution(ids);if(a&&b)break}
+  GS.ids=ids;GS.ex=[a,b];GS.picked=new Set();GS.done=false;
+  const distract=shuffle(pool.filter(x=>!ids.includes(x))).slice(0,5);
+  GS.cands=shuffle([...ids,...distract]);
+  const ex=$('#gs-ex');ex.innerHTML='';GS.exCells=[a,b].map(s=>{const g=el('div','grid sm');ex.appendChild(g);const cs=buildGrid(g);paint(cs,s);return cs});
+  gsRender();$('#gs-status').innerHTML='Pick 2 rules, then Check. Hover a rule to see its cells on both grids.';
+}
+function gsRender(){
+  const host=$('#gs-cands');host.innerHTML='';
+  GS.cands.forEach(id=>{let cls='toggle'+(GS.picked.has(id)?' on':'');
+    if(GS.done){const consistent=GS.ex.every(g=>ruleHolds(id,g));if(GS.ids.includes(id))cls+=' ok';else if(GS.picked.has(id)&&!consistent)cls+=' wrong'}
+    const c=chip(id,cls);
+    c.onclick=()=>{if(GS.done)return;if(GS.picked.has(id))GS.picked.delete(id);else if(GS.picked.size<2)GS.picked.add(id);gsRender()};
+    c.onmouseenter=()=>GS.exCells.forEach(cs=>shadeRule(cs,id));c.onmouseleave=()=>GS.exCells.forEach(cs=>shadeRule(cs,null));
+    host.appendChild(c)});
+}
+$('#gs-check').onclick=()=>{
+  if(GS.picked.size<2){$('#gs-status').innerHTML='Pick two rules first.';return}
+  GS.done=true;gsRender();
+  const right=[...GS.picked].filter(x=>GS.ids.includes(x)).length;
+  const alsoOk=GS.cands.filter(id=>!GS.ids.includes(id)&&GS.ex.every(g=>ruleHolds(id,g)));
+  const wrongPicks=[...GS.picked].filter(x=>!GS.ids.includes(x));
+  let msg=right===2?'<span class="good">Both right.</span> ':`<b>${right}/2.</b> The hidden rules are ${GS.ids.map(x=>'<b>'+R[x].label+'</b>').join(' and ')} (green). `;
+  const excusable=wrongPicks.filter(x=>alsoOk.includes(x));
+  if(excusable.length)msg+=`Your pick ${excusable.map(x=>'<b>'+R[x].label+'</b>').join(', ')} also holds on both examples, so two examples cannot rule it out. `;
+  else if(alsoOk.length)msg+=`Note: ${alsoOk.map(x=>'<b>'+R[x].label+'</b>').join(', ')} also hold${alsoOk.length>1?'':'s'} on both examples by chance. `;
+  msg+='Two examples do not always pin down a world; the paper measures how often (Appendix C.7).';
+  $('#gs-status').innerHTML=msg;
+};
+$('#gs-next').onclick=gsNew;gsNew();
+
+/* ======================= NOVELTY LEVELS ======================= */
+const LV=[
+ {k:'L0',name:'L0 · New puzzle',train:[['BoxesRect2x3','AntiKing'],['MainDiagonal','RowLink16k1'],['AntiKnight','Corners','EvenAnti']],
+  test:{world:['BoxesRect2x3','AntiKing'],note:'Same world as in training, new puzzle.'},
+  text:'The standard test of puzzle benchmarks: a new configuration in a world the model already trained on. Our in-distribution reference.'},
+ {k:'L1',name:'L1 · New combination',train:[['BoxesRect2x3','AntiKing'],['AntiKing','MainDiagonal'],['BoxesRect2x3','MainDiagonal','AntiKnight']],
+  test:{world:['BoxesRect2x3','AntiKing','MainDiagonal'],note:'Every rule was seen in training, never this exact set.'},
+  text:'Combination generalization: each rule is familiar, the combination is not. Both the description and the examples handle this well (98.5% and 95.4%).'},
+ {k:'L2',name:'L2 · New pairing',groups:true,train:[['BoxesRect2x3','MainDiagonal'],['AntiKing','BoxesRect2x3'],['RowLink16k1','OddMain'],['ColLink16k2','EvenAnti']],
+  crossed:[['BoxesRect2x3','RowLink16k1']],
+  test:{world:['BoxesRect2x3','RowLink16k1'],note:'These two rules were never active together in training.'},
+  text:'We split the pool into two groups and remove every training world that mixes them. Each rule is still seen, but no cross-group pair ever co-occurs. Both setups drop, the description more (67.6% vs 82.3%).'},
+ {k:'L3',name:'L3 · New rule instance',l3:true,
+  text:'A whole rule is held out, while its components (type, axis, position, offset) appear elsewhere. If every pair of its components was seen together in some trained rule, it is <b>supported</b>; otherwise <b>unsupported</b>. On unsupported instances the description falls below the no-information baseline (34.6% vs 52.1%), while examples stay above it (65.0%).'},
+];
+function nvShow(k){
+  document.querySelectorAll('#nv-tabs .tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
+  const L=LV.find(x=>x.k===k),tr=$('#nv-train'),te=$('#nv-test');tr.innerHTML='';te.innerHTML='';
+  const row=(ids,lbl,extra='')=>{const r=el('div','world-row '+extra);if(lbl)r.appendChild(el('span','lbl',lbl));ids.forEach((id,j)=>{const c=chip(id,'in');c.style.animationDelay=(j*.08)+'s';r.appendChild(c)});return r};
+  if(L.l3){
+    const comp=(parts,newIdx=[])=>'<span class="comp">'+parts.map((p,i)=>`<span class="${newIdx.includes(i)?'new':''}">${p}</span>`).join('')+'</span>';
+    tr.innerHTML=`<div class="world-row"><span class="lbl">seen</span>${comp(['link','row','(1,6)','+1'])}</div>
+      <div class="world-row"><span class="lbl">seen</span>${comp(['link','row','(1,6)','+2'])}</div>
+      <div class="world-row"><span class="lbl">seen</span>${comp(['link','row','(2,5)','+3'])}</div>
+      <div class="world-row"><span class="lbl">seen</span>${comp(['box','∅','2x3','∅'])} ${comp(['diag','main','∅','∅'])}</div>
+      <p class="note" style="margin:10px 0 0">Unsupported variant: no column link at all in training, so <span class="mono">link</span> and <span class="mono">col</span> were never seen together.</p>`;
+    te.innerHTML=`<div class="world-row"><span class="lbl">supported</span>${comp(['link','row','(1,6)','+3'],[3])}</div>
+      <p class="note" style="margin:4px 0 14px">Never seen as a whole, but every pair of its parts was.</p>
+      <div class="world-row"><span class="lbl">unsupported</span>${comp(['link','col','(1,6)','+2'],[0,1])}</div>
+      <p class="note" style="margin:4px 0 0">The pair <span class="mono">link × col</span> never occurred in training.</p>`;
+  } else {
+    if(L.groups){
+      tr.appendChild(el('p','note','<b style="color:var(--text-2)">Group A</b> rules only with group A, <b style="color:var(--text-2)">group B</b> only with B'));
+      L.train.forEach((w,i)=>tr.appendChild(row(w,i<2?'A':'B')));
+      L.crossed.forEach(w=>tr.appendChild(row(w,'A×B','x')));
+    } else L.train.forEach((w,i)=>tr.appendChild(row(w,'w'+(i+1))));
+    te.appendChild(row(L.test.world,'test'));
+    te.appendChild(el('p','note',L.test.note));
+    if(k==='L0'){const g=el('div','grid xs');g.style.marginTop='10px';te.appendChild(g);const cs=buildGrid(g);const s=randomSolution(L.test.world);paint(cs,makePuzzle(L.test.world,s,18))}
+  }
+  $('#nv-text').innerHTML=L.text;
+}
+LV.forEach(L=>{const t=el('button','tab',L.name);t.dataset.k=L.k;t.onclick=()=>nvShow(L.k);$('#nv-tabs').appendChild(t)});nvShow('L0');
+
+/* ======================= CHARTS ======================= */
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const SER=[{k:'desc',name:'Description',col:'--s-desc'},{k:'ex',name:'Examples',col:'--s-ex'},{k:'none',name:'No information',col:'--s-none'}];
+const NS='http://www.w3.org/2000/svg';
+const sv=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e};
+function tipAt(tip,card,evt,html){tip.innerHTML=html;tip.style.opacity=1;const b=card.getBoundingClientRect();let x=evt.clientX-b.left+14,y=evt.clientY-b.top+14;if(x+tip.offsetWidth>b.width-8)x=evt.clientX-b.left-tip.offsetWidth-14;tip.style.left=x+'px';tip.style.top=y+'px'}
+
+const BARS=[
+ {cat:'L0',sub:'new puzzle',desc:[99.2,.1],ex:[95.2,1.2],none:[60.5,.8]},
+ {cat:'L1',sub:'new combination',desc:[98.5,.2],ex:[95.4,1.1],none:[65.4,1.6]},
+ {cat:'L2',sub:'new pairing',desc:[67.6,5.5],ex:[82.3,1.6],none:[63.1,1.8]},
+ {cat:'L3 supported',sub:'parts seen together',desc:[79.0,5.4],ex:[90.8,2.3],none:[56.7,null]},
+ {cat:'L3 unsupported',sub:'parts never together',desc:[34.6,6.4],ex:[65.0,.8],none:[52.1,2.3]},
+];
+function drawBars(){
+  const svg=$('#bars');svg.innerHTML='';const W=980,H=360,m={l:48,r:12,t:16,b:56},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const y=v=>m.t+ih-(v/100)*ih;const gw=iw/BARS.length,bw=Math.min(40,(gw-40)/3);
+  [0,25,50,75,100].forEach(t=>{sv('line',{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),stroke:css('--line'),'stroke-width':1},svg);sv('text',{x:m.l-10,y:y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},svg).textContent=t+'%'});
+  const tip=$('#bars-tip'),card=$('#bars-card');
+  BARS.forEach((d,gi)=>{
+    const gx=m.l+gi*gw+(gw-3*bw-4)/2;
+    if(d.cat==='L3 unsupported'){sv('rect',{x:m.l+gi*gw+6,y:m.t,width:gw-12,height:ih,fill:css('--surface-2'),rx:8},svg)}
+    SER.forEach((s,si)=>{const [v,sd]=d[s.k];const x=gx+si*(bw+2),h=(v/100)*ih;
+      const p=sv('path',{d:`M${x},${y(0)} V${y(v)+4} q0,-4 4,-4 h${bw-8} q4,0 4,4 V${y(0)} Z`,fill:css(s.col)},svg);
+      p.style.transformOrigin=`0 ${y(0)}px`;p.animate([{transform:'scaleY(0)'},{transform:'scaleY(1)'}],{duration:700,delay:gi*90+si*40,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});
+      if(sd){const e=sv('g',{stroke:css('--text-2'),'stroke-width':1.2},svg);sv('line',{x1:x+bw/2,x2:x+bw/2,y1:y(v-sd),y2:y(v+sd)},e);sv('line',{x1:x+bw/2-4,x2:x+bw/2+4,y1:y(v+sd),y2:y(v+sd)},e);sv('line',{x1:x+bw/2-4,x2:x+bw/2+4,y1:y(v-sd),y2:y(v-sd)},e)}
+    });
+    if(d.cat==='L3 unsupported'){const yb=y(d.none[0]);sv('line',{x1:m.l+gi*gw+10,x2:m.l+(gi+1)*gw-10,y1:yb,y2:yb,stroke:css('--s-none'),'stroke-dasharray':'4 3','stroke-width':1.5},svg);
+      sv('text',{x:m.l+gi*gw+gw/2,y:y(100)+14,'text-anchor':'middle','font-size':12,'font-weight':600,fill:css('--text')},svg).textContent='description < baseline'}
+    sv('text',{x:m.l+gi*gw+gw/2,y:H-m.b+22,'text-anchor':'middle','font-size':13,'font-weight':600,fill:css('--text')},svg).textContent=d.cat;
+    sv('text',{x:m.l+gi*gw+gw/2,y:H-m.b+39,'text-anchor':'middle','font-size':12,fill:css('--muted')},svg).textContent=d.sub;
+    const hit=sv('rect',{x:m.l+gi*gw,y:m.t,width:gw,height:ih,fill:'transparent'},svg);
+    hit.onmousemove=e=>tipAt(tip,card,e,`<b>${d.cat}</b> <span style="color:var(--muted)">${d.sub}</span>`+SER.map(s=>`<div class="r"><i style="background:var(${s.col})"></i>${s.name}: <b>${d[s.k][0].toFixed(1)}%</b>${d[s.k][1]?' ± '+d[s.k][1]:''}</div>`).join(''));
+    hit.onmouseleave=()=>tip.style.opacity=0;
+  });
+  $('#bars-table').innerHTML='<tr><th>Level</th>'+SER.map(s=>`<th>${s.name}</th>`).join('')+'</tr>'+BARS.map(d=>`<tr><td>${d.cat}</td>`+SER.map(s=>`<td>${d[s.k][0].toFixed(1)}${d[s.k][1]?' ± '+d[s.k][1]:''}</td>`).join('')+'</tr>').join('');
+}
+
+const SWEEP={
+ l3:{x:['0','5','25','100','228'],xl:'training worlds containing a supporting column link (of 500)',ymin:25,ymax:100,
+   desc:[[34.6,6.4],[48.5,2.9],[48.0,7.4],[79.0,7.1],[79.0,5.4]],ex:[[65.0,.8],[70.0,.6],[77.0,1.1],[86.6,1.6],[90.8,2.3]],none:[[52.1],[52.5],[53.2],[57.7],[56.7]],drop:[58.8,1.6],
+   note:'Held-out column links, identical at every point. With no supporting world the description sits 17.5 points below the baseline; with the natural amount it ends 22 points above. Examples gain 26 points, the description 44.'},
+ l2:{x:['0','5','25','100','373'],xl:'training worlds mixing the two rule groups (of 500)',ymin:50,ymax:100,
+   desc:[[67.6,5.5],[70.0,3.2],[89.2,.6],[96.6,1.4],[98.5,1.0]],ex:[[82.3,1.6],[88.6,.8],[92.6,.5],[95.8,.3],[97.0,.3]],none:[[62.1],[63.8],[64.0],[67.7],[70.4]],
+   note:'Cross-group test worlds, identical at every point. The description starts 15 points behind examples and catches up once about a fifth of the training worlds mix the groups.'},
+};
+let sweepKey='l3';
+function drawSweep(){
+  const D=SWEEP[sweepKey],svg=$('#sweep');svg.innerHTML='';const W=980,H=380,m={l:48,r:130,t:16,b:56},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const x=i=>m.l+30+i*(iw-60)/(D.x.length-1),y=v=>m.t+ih-((v-D.ymin)/(D.ymax-D.ymin))*ih;
+  for(let t=D.ymin;t<=D.ymax;t+=(D.ymax-D.ymin>60?25:10)){sv('line',{x1:m.l,x2:m.l+iw,y1:y(t),y2:y(t),stroke:css('--line')},svg);sv('text',{x:m.l-10,y:y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},svg).textContent=t+'%'}
+  D.x.forEach((v,i)=>sv('text',{x:x(i),y:H-m.b+22,'text-anchor':'middle','font-size':13,fill:css('--text-2')},svg).textContent=v);
+  sv('text',{x:m.l+iw/2,y:H-m.b+44,'text-anchor':'middle','font-size':12.5,fill:css('--muted')},svg).textContent=D.xl+' · not to scale';
+  const lbls=[];
+  SER.forEach(s=>{const pts=D[s.k];const d=pts.map((p,i)=>(i?'L':'M')+x(i)+','+y(p[0])).join(' ');
+    const path=sv('path',{d,fill:'none',stroke:css(s.col),'stroke-width':2.2,'stroke-linejoin':'round','stroke-dasharray':s.k==='none'?'6 4':''},svg);
+    if(s.k!=='none'){const L=path.getTotalLength();path.style.strokeDasharray=L;path.animate([{strokeDashoffset:L},{strokeDashoffset:0}],{duration:1100,easing:'ease-out',fill:'both'})}
+    pts.forEach((p,i)=>{if(p[1]){sv('line',{x1:x(i),x2:x(i),y1:y(p[0]-p[1]),y2:y(p[0]+p[1]),stroke:css(s.col),'stroke-width':1.2,opacity:.6},svg)}
+      sv('circle',{cx:x(i),cy:y(p[0]),r:4.5,fill:css(s.col),stroke:css('--surface'),'stroke-width':2},svg)});
+    lbls.push({y:y(pts.at(-1)[0]),t:s.name,c:s.col});
+  });
+  lbls.sort((a,b)=>a.y-b.y);for(let i=1;i<lbls.length;i++)if(lbls[i].y-lbls[i-1].y<16)lbls[i].y=lbls[i-1].y+16;
+  lbls.forEach(l=>sv('text',{x:x(D.x.length-1)+12,y:l.y+4,'font-size':12.5,'font-weight':600,fill:css('--text')},svg).textContent=l.t);
+  if(D.drop){const cx=x(0),cy=y(D.drop[0]);sv('path',{d:`M${cx},${cy-8} L${cx+8},${cy} L${cx},${cy+8} L${cx-8},${cy} Z`,fill:css('--s-desc'),stroke:css('--surface'),'stroke-width':2},svg);
+    sv('text',{x:cx+14,y:cy+4,'font-size':12,fill:css('--text-2')},svg).textContent='+ dropout: 58.8%'}
+  $('#lg-drop').style.display=D.drop?'':'none';
+  const cross=sv('line',{y1:m.t,y2:m.t+ih,stroke:css('--text-2'),'stroke-width':1,opacity:0},svg);
+  const hit=sv('rect',{x:m.l,y:m.t,width:iw,height:ih,fill:'transparent'},svg);const tip=$('#sweep-tip'),card=$('#sweep-card');
+  hit.onmousemove=e=>{const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+    let i=Math.round((p.x-m.l-30)/((iw-60)/(D.x.length-1)));i=Math.max(0,Math.min(D.x.length-1,i));cross.setAttribute('x1',x(i));cross.setAttribute('x2',x(i));cross.setAttribute('opacity',.4);
+    tipAt(tip,card,e,`<b>${D.x[i]} worlds</b>`+SER.map(s=>`<div class="r"><i style="background:var(${s.col})"></i>${s.name}: <b>${D[s.k][i][0].toFixed(1)}%</b>${D[s.k][i][1]?' ± '+D[s.k][i][1]:''}</div>`).join('')+(i===0&&D.drop?`<div class="r"><i style="background:var(--s-desc)"></i>+ dropout: <b>58.8%</b> ± 1.6</div>`:''))};
+  hit.onmouseleave=()=>{tip.style.opacity=0;cross.setAttribute('opacity',0)};
+  $('#sweep-note').textContent=D.note;
+}
+document.querySelectorAll('#sweep-seg button').forEach(b=>b.onclick=()=>{sweepKey=b.dataset.k;document.querySelectorAll('#sweep-seg button').forEach(x=>x.classList.toggle('on',x===b));drawSweep()});
+
+// draw charts when they scroll into view, so the animation is seen
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){if(e.target.id==='bars-card')drawBars();else drawSweep();io.unobserve(e.target)}}),{threshold:.3});
+io.observe($('#bars-card'));io.observe($('#sweep-card'));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{drawBars();drawSweep()});
+
+$('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
+</script>
+</body>
+</html>
