@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Knowledge transfer between simple discrete worlds</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500&family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme: light;
@@ -30,7 +30,7 @@
   }
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:72px}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:var(--accent)}
 .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
@@ -189,7 +189,7 @@ body{background:var(--side)}
 .page{max-width:1240px;margin:0 auto;background:var(--bg);border-left:1px solid var(--side-line);border-right:1px solid var(--side-line);box-shadow:0 0 60px -20px rgba(30,50,80,.18)}
 :root{--bg-alt:#f5f4f0;--shadow:0 1px 2px rgba(20,20,15,.05),0 10px 30px -12px rgba(20,20,15,.12);--dot:rgba(20,20,15,.09)}
 @media (prefers-color-scheme: dark){:root{--bg-alt:#171716;--shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.6);--dot:rgba(255,255,255,.07)}}
-body{padding-top:64px}
+body{padding-top:72px}
 h1,h2{font-family:'Instrument Serif',Georgia,serif;font-weight:400;letter-spacing:-.01em}
 h1{font-size:clamp(44px,6.2vw,72px);line-height:1.0}
 h2{font-size:clamp(34px,4.4vw,50px);line-height:1.05;margin-bottom:14px}
@@ -211,18 +211,29 @@ section{background:var(--bg)}
 .seg{border-radius:999px}
 .pad button{border-radius:10px}
 /* top bar */
-.topbar{position:fixed;top:0;left:0;right:0;height:64px;z-index:20;display:flex;align-items:center;
-  background:color-mix(in srgb,var(--side) 80%,transparent);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);
+:root{--brand:#6f8197}
+@media (prefers-color-scheme: dark){:root{--brand:#9aabbf}}
+.topbar{position:fixed;top:0;left:0;right:0;height:72px;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb,var(--side) 82%,transparent);backdrop-filter:saturate(1.4) blur(14px);-webkit-backdrop-filter:saturate(1.4) blur(14px);
   border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
-.tb{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:20px;width:100%;padding:0 24px}
-.topbar .brand{font-family:'Instrument Serif',serif;font-size:23px;color:var(--text);text-decoration:none;white-space:nowrap;text-align:center}
-.topbar nav{display:flex;gap:8px;justify-content:flex-end}
-.nb{display:inline-flex;align-items:center;padding:8px 16px;border-radius:999px;font:500 15px Inter,sans-serif;color:var(--text);text-decoration:none;
-  border:1px solid color-mix(in srgb,var(--line) 80%,transparent);background:color-mix(in srgb,var(--surface) 70%,transparent);transition:border-color .15s,background .15s}
-.nb:hover{border-color:var(--text-2);background:var(--surface)}
+.topbar .brand{font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(20px,2.7vw,42px);letter-spacing:.015em;
+  color:var(--brand);text-decoration:none;white-space:nowrap;line-height:1}
+.topbar .brand:hover{color:var(--text-2)}
+/* vertical side menu, centred in the left band */
+.sidenav{position:fixed;z-index:19;top:50%;left:calc((100vw - 1240px) / 4);transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:9px}
+.sidenav .sn-gap{height:10px}
+.nb{display:flex;align-items:center;justify-content:center;gap:8px;min-width:132px;padding:10px 18px;border-radius:999px;font:500 15px Inter,sans-serif;color:var(--text-2);text-decoration:none;
+  border:1px solid var(--side-line);background:color-mix(in srgb,var(--surface) 75%,transparent);transition:all .18s}
+.nb:hover{color:var(--text);border-color:var(--text-2);background:var(--surface)}
+.nb.active{color:var(--text);background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
 .nb.primary{background:var(--text);color:var(--bg);border-color:var(--text);font-weight:600}
-@media(max-width:1180px){.tb{grid-template-columns:auto 1fr}.tb>span{display:none}.topbar .brand{text-align:left}}
-@media(max-width:900px){.topbar nav .nb:not(.primary){display:none}}
+@media(max-width:1560px){
+  .sidenav{top:auto;bottom:16px;left:50%;transform:translateX(-50%);flex-direction:row;gap:5px;padding:6px;border-radius:999px;
+    background:color-mix(in srgb,var(--surface) 82%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);box-shadow:var(--shadow)}
+  .sidenav .sn-gap{width:1px;height:auto;background:var(--line);margin:4px 3px}
+  .nb{min-width:0;padding:8px 14px;font-size:14px;border-color:transparent;background:transparent}
+}
+@media(max-width:700px){.sidenav .nb:not(.primary):not(.active){display:none}.sidenav .sn-gap{display:none}}
 .progress{position:absolute;left:0;bottom:-1px;height:2px;background:var(--accent);width:0;transition:width .1s linear}
 /* hero */
 .hero{position:relative;overflow:hidden;padding:88px 0 104px}
@@ -236,15 +247,24 @@ footer{background:var(--bg);border-top:none}
 </style>
 </head>
 <body>
-<header class="topbar"><div class="tb">
-  <span></span>
+<header class="topbar">
   <a class="brand" href="#">Knowledge transfer between simple discrete worlds</a>
-  <nav><a class="nb" href="#play">Worlds</a><a class="nb" href="#setups">Prompts</a><a class="nb" href="#novelty">Novelty</a><a class="nb" href="#results">Results</a><a class="nb primary" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener">Paper</a></nav>
-</div><div class="progress" id="progress"></div></header>
+  <div class="progress" id="progress"></div>
+</header>
+<nav class="sidenav" id="sidenav" aria-label="Sections">
+  <a class="nb" href="#top" data-sec="top">Intro</a>
+  <a class="nb" href="#play" data-sec="play">Worlds</a>
+  <a class="nb" href="#setups" data-sec="setups">Prompts</a>
+  <a class="nb" href="#novelty" data-sec="novelty">Novelty</a>
+  <a class="nb" href="#results" data-sec="results">Results</a>
+  <span class="sn-gap"></span>
+  <a class="nb primary" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener">Paper</a>
+  <a class="nb" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener">Code</a>
+</nav>
 <div class="page">
 
 <!-- ============ HERO ============ -->
-<section class="hero">
+<section class="hero" id="top">
 <div class="wrap hero-grid">
   <div>
     <div class="kicker">Interactive companion to the paper</div>
@@ -830,6 +850,11 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
       ${dia(193)}${dia(247)}<circle cx="183" cy="14" r="1.2" fill="var(--sep)"/><circle cx="257" cy="14" r="1.2" fill="var(--sep)"/>${cells}</svg>`;
     const d=document.createElement('div');d.className='sep';d.innerHTML=svg;t.parentNode.insertBefore(d,t)});
 })();
+// highlight the side-menu entry of the section in view
+(function spy(){const links=[...document.querySelectorAll('#sidenav [data-sec]')];
+  const set=id=>links.forEach(a=>a.classList.toggle('active',a.dataset.sec===id));
+  const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
+  ['top','play','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
 $('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
 </script>
 </body>
