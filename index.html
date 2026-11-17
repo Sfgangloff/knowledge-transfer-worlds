@@ -187,7 +187,7 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
     <p class="lede">A world here is a 6×6 grid plus a few rules that forbid certain patterns. Change the rules and you get a new world. We train one model on many such worlds and ask: <b>what does it take to adapt to rules it has never met?</b></p>
     <div class="row" style="margin-top:26px">
       <a class="btn primary" href="#play">Play with a world ↓</a>
-      <a class="btn" id="arxiv-link" href="https://arxiv.org/" target="_blank" rel="noopener">Paper (arXiv)</a>
+      <a class="btn" id="arxiv-link" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener">Paper (arXiv)</a>
       <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener">Code</a>
     </div>
   </div>
@@ -337,13 +337,13 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
   <h3 style="color:var(--text)">Why this setup</h3>
   <p>Rules come from the structure of the world itself, not from a human visual vocabulary as in ARC. The space of worlds is explicit, so simplicity (number of rules, size of their supports) is computable. And it gives depth-recurrent reasoning models new ground beyond saturated Sudoku benchmarks.</p>
   <div class="row" style="margin:20px 0 28px">
-    <a class="btn primary" id="arxiv-link-2" href="https://arxiv.org/" target="_blank" rel="noopener">Read the paper</a>
+    <a class="btn primary" id="arxiv-link-2" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener">Read the paper</a>
     <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener">Code &amp; data</a>
   </div>
   <div class="cite" id="bibtex">@article{gangloff2026knowledge,
   title  = {Knowledge transfer between simple discrete worlds},
   author = {Gangloff, Silv{\`e}re and H{\r{u}}la, Jan},
-  journal= {arXiv preprint arXiv:XXXX.XXXXX},
+  journal= {arXiv preprint arXiv:2610.15081},
   year   = {2026}
 }</div>
   <button class="btn small" id="copy-bib" style="margin-top:10px">Copy BibTeX</button>
@@ -352,7 +352,7 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 
 <script>
 /* ======================= world engine ======================= */
-const ARXIV_ID = ''; // fill in, e.g. '2611.01234'
+const ARXIV_ID = '2610.15081';
 if (ARXIV_ID){ for (const id of ['arxiv-link','arxiv-link-2']) document.getElementById(id).href='https://arxiv.org/abs/'+ARXIV_ID;
   document.getElementById('bibtex').textContent=document.getElementById('bibtex').textContent.replace('XXXX.XXXXX',ARXIV_ID); }
 

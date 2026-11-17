@@ -8,4 +8,4 @@ An interactive page for the paper *Knowledge transfer between simple discrete wo
 
 Everything runs in the browser: puzzles are generated and checked live by a small exact solver (`index.html`, no build step, no dependencies).
 
-Paper: arXiv (link to add) · Code and data: https://github.com/Sfgangloff/GridWorldHyperNetworks
+Paper: https://arxiv.org/abs/2610.15081 · Code and data: https://github.com/Sfgangloff/GridWorldHyperNetworks
