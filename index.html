@@ -104,6 +104,11 @@ p{max-width:720px}
 .rulesbox .ri span.t{color:var(--text-2)}
 .rulesbox .ri.broken b{color:var(--bad)}
 .ruleinfo{font-size:13px;color:var(--text);background:var(--surface-2);border-radius:8px;padding:8px 10px;min-height:54px;margin-top:4px}
+.sd-rules .ri.hl{background:var(--surface-2)}
+.sd-rules .ri.hl b{color:var(--accent)}
+.sd-gallery{display:grid;grid-template-columns:repeat(3,132px);gap:18px 16px;margin-top:4px}
+.sd-gallery figure{margin:0}
+.sd-gallery figcaption{font-size:11.5px;color:var(--text-2);margin-top:6px;line-height:1.35}
 .big-p{font-size:19px;line-height:1.5;margin:0 0 12px}
 .stepbody>div{animation:chipin .35s ease-out both}
 .fade{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
@@ -280,6 +285,8 @@ footer{background:var(--bg);border-top:none}
 <nav class="sidenav" id="sidenav" aria-label="Sections">
   <a class="nb" href="#top" data-sec="top">Intro</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <a class="nb" href="#sudoku" data-sec="sudoku">Sudoku</a>
+  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#play" data-sec="play">Worlds</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#setups" data-sec="setups">Prompts</a>
@@ -316,10 +323,46 @@ footer{background:var(--bg);border-top:none}
 </div>
 </section>
 
-<!-- ============ 1. PLAYGROUND ============ -->
+<!-- ============ 1. FROM SUDOKU TO A FAMILY OF WORLDS ============ -->
+<section id="sudoku">
+<div class="wrap">
+  <div class="kicker">1 · From Sudoku to a family of worlds</div>
+  <h2>Sudoku is a small world <em>with simple rules</em></h2>
+  <div class="tabs" id="sd-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Change a rule</button><button class="tab" data-s="3">3 · A family of worlds</button></div>
+  <div class="play">
+    <div><div class="grid" id="sd-grid"></div><div class="sd-gallery" id="sd-gallery" hidden></div></div>
+    <div class="stepbody">
+      <div id="sd-step1">
+        <p class="big-p">A 6×6 Sudoku is a world whose grids follow three rules:</p>
+        <div class="rulesbox sd-rules" id="sd-rules">
+          <div class="ri" data-k="row"><span class="dot" style="background:var(--f-base)"></span><div><b>Rows</b> <span class="t">each row holds 1–6 exactly once</span></div></div>
+          <div class="ri" data-k="col"><span class="dot" style="background:var(--f-base)"></span><div><b>Columns</b> <span class="t">each column holds 1–6 exactly once</span></div></div>
+          <div class="ri" data-k="box"><span class="dot" style="background:var(--f-region)"></span><div><b>Boxes</b> <span class="t">each 2×3 box holds 1–6 exactly once</span></div></div>
+        </div>
+        <p class="note">Each rule forbids some patterns, for instance the same number twice in a row. The grid on the left breaks none of them.</p>
+        <button class="btn primary" data-sgo="2">Next: change a rule →</button>
+      </div>
+      <div id="sd-step2" hidden>
+        <p class="big-p">Keep rows and columns, <b>swap the box rule</b> for another one, and you get a different world:</p>
+        <div class="chips" id="sd-pick"></div>
+        <div class="ruleinfo" id="sd-info" style="margin-top:12px"></div>
+        <p class="note">The grid on the left now follows the new rule (shaded) instead of the boxes.</p>
+        <button class="btn primary" data-sgo="3">Next: a family of worlds →</button>
+      </div>
+      <div id="sd-step3" hidden>
+        <p class="big-p">Mixing rules from a common pool gives a whole <b>family of small worlds</b> that share the same base.</p>
+        <p class="note">In the paper, every world keeps the rows-and-columns rule and adds 2–4 rules from a pool of 49. That makes thousands of related worlds, on which a model can be trained and then tested on worlds it has never seen.</p>
+        <a class="btn primary" href="#play">Try one yourself ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 2. PLAYGROUND ============ -->
 <section id="play">
 <div class="wrap">
-  <div class="kicker">1 · What is a world?</div>
+  <div class="kicker">2 · Your own world</div>
   <h2>A world is a grid <em>plus a few rules</em></h2>
   <div class="tabs" id="pg-steps"><button class="tab" data-s="1">1 · The base rule</button><button class="tab" data-s="2">2 · Add a rule</button><button class="tab" data-s="3">3 · Solve a puzzle</button></div>
   <div class="play">
@@ -368,7 +411,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 2. THREE SETUPS ============ -->
 <section id="setups">
 <div class="wrap">
-  <div class="kicker">2 · How does the model know which world it is in?</div>
+  <div class="kicker">3 · How does the model know which world it is in?</div>
   <h2>Three ways to tell the model the rules</h2>
   <p class="lede">The model gets a puzzle, with something placed before it in its input, a bit like a prompt. We compare three kinds of prompt.</p>
   <div class="setups">
@@ -410,7 +453,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 3. NOVELTY ============ -->
 <section id="novelty">
 <div class="wrap">
-  <div class="kicker">3 · How new is the test?</div>
+  <div class="kicker">4 · How new is the test?</div>
   <h2>Four levels of novelty</h2>
   <p class="lede">Since every world is built from known pieces, we can control exactly what is new at test time: from a fresh puzzle to a rule the model has never met.</p>
   <div class="tabs" id="nv-tabs"></div>
@@ -426,7 +469,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 4. RESULTS ============ -->
 <section id="results">
 <div class="wrap">
-  <div class="kicker">4 · What we found</div>
+  <div class="kicker">5 · What we found</div>
   <h2>Being told the rules helps, <em>until a rule is truly new</em></h2>
   <p class="lede">We trained one small reasoning model (about 1M parameters, a recurrent design similar to HRM) on puzzles from 500 worlds, then tested it level by level. Step through:</p>
 
@@ -777,6 +820,39 @@ document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>pgStep(+b.datase
 $('#pg-build-toggle').onclick=()=>{const p=$('#pg-build');p.hidden=!p.hidden;$('#pg-build-toggle').textContent=p.hidden?'Build your own world ▾':'Hide the rule pool ▴'};
 pgStep(1);
 
+/* ======================= SUDOKU -> FAMILY OF WORLDS ======================= */
+(function sudoku(){
+  const cells=buildGrid($('#sd-grid'));let timer=null,step=1;
+  function boxLines(cs,ids){const h=ids.includes('BoxesRect2x3')?2:ids.includes('BoxesRect3x2')?3:0,w=h===2?3:2;
+    cs.forEach((c,i)=>{const r=Math.floor(i/6),k=i%6;const v=h&&k<5&&(k+1)%w===0,hz=h&&r<5&&(r+1)%h===0;
+      c.style.borderRightColor=v?'var(--line-strong)':'';c.style.borderRightWidth=v?'2px':'';c.style.borderBottomColor=hz?'var(--line-strong)':'';c.style.borderBottomWidth=hz?'2px':''})}
+  function show(ids){const sol=randomSolution(ids);paint(cells,sol);boxLines(cells,ids);cells.forEach(c=>{c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')})}
+  const shadeSet=(set,col)=>cells.forEach((c,i)=>{const sh=c.querySelector('.shade');sh.style.opacity='';sh.style.background=set.has(i)?col:'transparent'});
+  const HL={row:[new Set(range(6).map(c=>I(2,c))),'var(--f-region)'],col:[new Set(range(6).map(r=>I(r,4))),'var(--f-region)'],box:[new Set([I(0,3),I(0,4),I(0,5),I(1,3),I(1,4),I(1,5)]),'var(--f-region)']};
+  function highlight(k){shadeSet(...HL[k]);document.querySelectorAll('#sd-rules .ri').forEach(r=>r.classList.toggle('hl',r.dataset.k===k))}
+  document.querySelectorAll('#sd-rules .ri').forEach(r=>{r.onmouseenter=()=>{clearInterval(timer);highlight(r.dataset.k)};r.onmouseleave=()=>{if(step===1)cycle()}});
+  function cycle(){clearInterval(timer);const ks=['row','col','box'];let k=0;highlight(ks[0]);timer=setInterval(()=>{k=(k+1)%3;highlight(ks[k])},1500)}
+  const SWAPS=['BoxesRect2x3','MainDiagonal','AntiDiagonal','RowLink16k3','OddMain','Corners'];
+  SWAPS.forEach(id=>{const c=chip(id,'toggle');c.onclick=()=>pick(id);$('#sd-pick').appendChild(c)});
+  function pick(id){show([id]);shadeRule(cells,id);$('#sd-pick').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.id===id));
+    $('#sd-info').innerHTML=`<b>${R[id].label}${id==='BoxesRect2x3'?' (Sudoku)':''}.</b> ${R[id].tip}`}
+  const FAMILY=[['BoxesRect2x3','AntiKing'],['MainDiagonal','AntiDiagonal'],['AntiKnight','Corners'],['BoxesRect3x2','RowLink16k3'],['OddMain','EvenAnti','CenterWindow'],['ScatteredRect2x3','ColLink16k2']];
+  function gallery(){const g=$('#sd-gallery');if(g.childElementCount)return;FAMILY.forEach(ids=>{const sol=randomSolution(ids);if(!sol)return;
+    const f=el('figure');const gr=el('div','grid xs');f.appendChild(gr);const cs=buildGrid(gr);paint(cs,sol);boxLines(cs,ids);
+    f.appendChild(el('figcaption',null,ids.map(id=>R[id].label).join(' + ')));g.appendChild(f)})}
+  function go(n){step=n;clearInterval(timer);
+    document.querySelectorAll('#sd-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));
+    [1,2,3].forEach(k=>$('#sd-step'+k).hidden=k!==n);
+    $('#sd-grid').hidden=n===3;$('#sd-gallery').hidden=n!==3;
+    if(n===1){show(['BoxesRect2x3']);cycle()}
+    if(n===2)pick('MainDiagonal');
+    if(n===3)gallery();
+  }
+  document.querySelectorAll('#sd-steps .tab').forEach(t=>t.onclick=()=>go(+t.dataset.s));
+  document.querySelectorAll('[data-sgo]').forEach(b=>b.onclick=()=>go(+b.dataset.sgo));
+  go(1);
+})();
+
 /* ======================= SETUPS + GUESS GAME ======================= */
 (function setups(){
   const ids=['BoxesRect2x3','RowLink16k3'];
@@ -981,7 +1057,7 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
 (function spy(){const links=[...document.querySelectorAll('#sidenav [data-sec]')];
   const set=id=>links.forEach(a=>a.classList.toggle('active',a.dataset.sec===id));
   const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
-  ['top','play','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
+  ['top','sudoku','play','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
 $('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
 </script>
 </body>
