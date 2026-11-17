@@ -104,6 +104,12 @@ p{max-width:720px}
 .rulesbox .ri span.t{color:var(--text-2)}
 .rulesbox .ri.broken b{color:var(--bad)}
 .ruleinfo{font-size:13px;color:var(--text);background:var(--surface-2);border-radius:8px;padding:8px 10px;min-height:54px;margin-top:4px}
+.big-p{font-size:19px;line-height:1.5;margin:0 0 12px}
+.stepbody>div{animation:chipin .35s ease-out both}
+.fade{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.fade.in{opacity:1;transform:none}
+.barstep{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:14px;border-top:1px solid var(--line)}
+.btn:disabled{opacity:.35;cursor:default;transform:none}
 .status{min-height:48px;font-size:14px;color:var(--text-2);margin-top:14px;max-width:360px}
 .status b{color:var(--text)}
 .status .bad{color:var(--bad);font-weight:600}
@@ -184,7 +190,7 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
     <div class="kicker">Interactive companion to the paper</div>
     <h1>Knowledge transfer between simple discrete worlds</h1>
     <p class="authors">Silvère Gangloff &amp; Jan Hůla</p>
-    <p class="lede">A world here is a 6×6 grid plus a few rules that forbid certain patterns. Change the rules and you get a new world. We train one model on many such worlds and ask: <b>what does it take to adapt to rules it has never met?</b></p>
+    <p class="lede">Picture small puzzle worlds: a 6×6 grid and a few rules, like Sudoku variants. Change the rules and you get a new world. We train one AI model on many such worlds and ask: <b>what does it take to adapt to rules it has never met?</b></p>
     <div class="row" style="margin-top:26px">
       <a class="btn primary" href="#play">Play with a world ↓</a>
       <a class="btn" id="arxiv-link" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener">Paper (arXiv)</a>
@@ -202,30 +208,45 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 <section id="play">
 <div class="wrap">
   <div class="kicker">1 · What is a world?</div>
-  <h2>Pick some rules. Get a world. Solve a puzzle in it.</h2>
-  <p class="lede">Every world keeps the same base, a Latin square (each row and column holds 1–6 once), and adds 2–4 rules from a pool. Each rule is a set of <i>forbidden patterns</i>. A puzzle is a partial grid with exactly one valid completion.</p>
+  <h2>A world is a grid plus a few rules</h2>
+  <div class="tabs" id="pg-steps"><button class="tab" data-s="1">1 · The base rule</button><button class="tab" data-s="2">2 · Add a rule</button><button class="tab" data-s="3">3 · Solve a puzzle</button></div>
   <div class="play">
     <div>
-      <div class="rulesbox" id="pg-rules"></div>
       <div class="grid" id="pg-grid" tabindex="0"></div>
-      <div class="pad" id="pg-pad"></div>
-      <div class="status" id="pg-status"></div>
-      <div class="row" style="margin-top:10px">
-        <button class="btn small" id="pg-new">New puzzle</button>
-        <button class="btn small" id="pg-random">Random world</button>
-        <button class="btn small" id="pg-solve">Show solution</button>
-        <button class="btn small" id="pg-clear">Clear my entries</button>
+      <div id="pg-solvebar" hidden>
+        <div class="pad" id="pg-pad"></div>
+        <div class="status" id="pg-status"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn small" id="pg-new">New puzzle</button>
+          <button class="btn small" id="pg-solve">Show solution</button>
+          <button class="btn small" id="pg-clear">Clear my entries</button>
+        </div>
       </div>
     </div>
-    <div class="panel">
-      <div class="fam"><div class="fam-title"><span class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--f-base)"></span>Base (always on)</div>
-        <div class="chips"><span class="chip on" data-hover="Latin"><span class="dot" style="background:var(--f-base)"></span>Latin square</span></div></div>
-      <div id="pg-pool"></div>
-      <div class="ruleinfo" id="pg-info">Hover a rule to read what it forbids.</div>
-      <p class="note" style="margin:6px 0 0">Click to add or remove a rule. Hover a rule to see the cells it constrains. Up to 4 extra rules. Some combinations admit no grid at all: those worlds are empty.</p>
-      <div style="margin-top:16px">
-        <div class="fam-title">How the model reads this world as a description</div>
-        <div class="tokens" id="pg-tokens"></div>
+    <div class="stepbody">
+      <div id="pg-step1">
+        <p class="big-p">Every world starts from the same base rule: <b>each row and each column holds 1–6 exactly once.</b></p>
+        <p class="note">On the left, one grid of this world. The highlight walks through its rows and columns.</p>
+        <button class="btn primary" data-go="2">Next: add a rule →</button>
+      </div>
+      <div id="pg-step2" hidden>
+        <p class="big-p">Now add one rule on top. Pick one:</p>
+        <div class="chips" id="pg-pick"></div>
+        <div class="ruleinfo" id="pg-pickinfo" style="margin-top:12px"></div>
+        <p class="note">The coloured cells show where the rule acts. The grid on the left obeys both rules. Change the rules, and you get a different world.</p>
+        <button class="btn primary" data-go="3">Next: make a puzzle →</button>
+      </div>
+      <div id="pg-step3" hidden>
+        <p class="big-p">Blank out cells until only <b>one</b> completion remains: that is a puzzle. Can you solve it?</p>
+        <div class="rulesbox" id="pg-rules"></div>
+        <p class="note">This is exactly the task given to the model. In the paper, worlds have 2–4 extra rules drawn from a pool of 49.</p>
+        <button class="btn small" id="pg-build-toggle">Build your own world ▾</button>
+        <div class="panel" id="pg-build" hidden style="margin-top:12px">
+          <div id="pg-pool"></div>
+          <div class="ruleinfo" id="pg-info">Hover a rule to read what it forbids.</div>
+          <p class="note" style="margin:6px 0 10px">Click to add or remove a rule (up to 4). Some combinations admit no grid at all: those worlds are empty.</p>
+          <button class="btn small" id="pg-random">Random world</button>
+        </div>
       </div>
     </div>
   </div>
@@ -235,31 +256,31 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 <!-- ============ 2. THREE SETUPS ============ -->
 <section id="setups">
 <div class="wrap">
-  <div class="kicker">2 · Telling the model which world it is in</div>
-  <h2>Three ways to communicate the rules</h2>
-  <p class="lede">Same model, same puzzles. Only the prefix placed before the 36 puzzle cells changes.</p>
+  <div class="kicker">2 · How does the model know which world it is in?</div>
+  <h2>Three ways to tell the model the rules</h2>
+  <p class="lede">The model gets a puzzle, with something placed before it in its input, a bit like a prompt. We compare three kinds of prompt.</p>
   <div class="setups">
     <div class="setup">
-      <div class="tag"><span class="sw" style="background:var(--s-desc)"></span>Description</div>
+      <div class="tag"><span class="sw" style="background:var(--s-desc)"></span>Rule description</div>
       <div class="body"><div class="tokens" id="su-desc" style="max-width:260px"></div></div>
-      <p>Each active rule as 4 symbolic tokens (type, axis, position, parameter). The model has to read the rules and apply them.</p>
+      <p>The rules written in a tiny symbolic language, 4 tokens per rule. The model has to read them and apply them.</p>
     </div>
     <div class="setup">
-      <div class="tag"><span class="sw" style="background:var(--s-ex)"></span>Examples</div>
+      <div class="tag"><span class="sw" style="background:var(--s-ex)"></span>Two examples</div>
       <div class="body" id="su-ex"></div>
-      <p>Two solved grids from the same world. The model has to infer the rules, as in ARC-AGI, then apply them.</p>
+      <p>Two solved grids from the same world, like few-shot examples (or an ARC-AGI task). The model has to work out the rules by itself.</p>
     </div>
     <div class="setup">
-      <div class="tag"><span class="sw" style="background:var(--s-none)"></span>No information</div>
+      <div class="tag"><span class="sw" style="background:var(--s-none)"></span>No hint</div>
       <div class="body"><div style="font-size:42px;color:var(--muted)">∅</div></div>
-      <p>Only the puzzle. A baseline: how much the given cells alone reveal about the rules.</p>
+      <p>Just the puzzle. This baseline shows how much the puzzle gives away on its own.</p>
     </div>
   </div>
-
-  <div class="guess" id="guess">
+  <button class="btn" id="gs-open" style="margin-top:26px">Try it: guess the rules from two examples ▸</button>
+  <div class="guess" id="guess" hidden>
     <div>
-      <h3>Your turn to be the “examples” model</h3>
-      <p class="note" style="margin:0 0 12px">Both grids come from the same hidden world (Latin square + 2 rules). Which rules is it?</p>
+      <p class="big-p" style="margin-bottom:6px">Both grids follow the same hidden rules: the base rule plus 2 more. Which 2?</p>
+      <p class="note" style="margin:0 0 12px">Hover a rule to see where it acts on both grids.</p>
       <div class="examples" id="gs-ex"></div>
     </div>
     <div>
@@ -277,14 +298,14 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 <!-- ============ 3. NOVELTY ============ -->
 <section id="novelty">
 <div class="wrap">
-  <div class="kicker">3 · How new is the test world?</div>
-  <h2>Four levels of novelty</h2>
-  <p class="lede">A rule family lets us say precisely <i>what</i> is new at test time, instead of mixing everything into one held-out set.</p>
+  <div class="kicker">3 · How new is the test?</div>
+  <h2>Four levels of “never seen before”</h2>
+  <p class="lede">Since every world is built from known pieces, we can control exactly what is new at test time: from a fresh puzzle to a rule the model has never met.</p>
   <div class="tabs" id="nv-tabs"></div>
   <div class="nov">
-    <div class="nov-col"><h4>Training worlds</h4><div id="nv-train"></div></div>
+    <div class="nov-col"><h4>Seen in training</h4><div id="nv-train"></div></div>
     <div class="arrow">→</div>
-    <div class="nov-col"><h4>Test world</h4><div id="nv-test"></div></div>
+    <div class="nov-col"><h4>Test</h4><div id="nv-test"></div></div>
   </div>
   <p class="nov-text" id="nv-text"></p>
 </div>
@@ -294,47 +315,48 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 <section id="results">
 <div class="wrap">
   <div class="kicker">4 · What we found</div>
-  <h2>A description helps, until the rule is truly new</h2>
-  <p class="lede">For the depth-recurrent model we tested (HRM-style, ~1M parameters) on 6×6 grids:</p>
-  <div class="stats">
-    <div class="stat"><div class="big" style="color:var(--s-desc)">98.5%</div><div class="cap">with the description, on new combinations of known rules (L1). Examples: 95.4%.</div></div>
-    <div class="stat"><div class="big" style="color:var(--s-desc)">34.6% <span style="font-size:20px;color:var(--muted)">vs 52.1%</span></div><div class="cap">on a new rule whose parts were never seen together: the description falls <b>below</b> the no-information baseline.</div></div>
-    <div class="stat"><div class="big" style="color:var(--s-ex)">65.0%</div><div class="cap">with examples on the same unseen rule: they stay above the baseline.</div></div>
-  </div>
+  <h2>Being told the rules helps, until a rule is truly new</h2>
+  <p class="lede">We trained one small reasoning model (about 1M parameters, a recurrent design similar to HRM) on puzzles from 500 worlds, then tested it level by level. Step through:</p>
 
   <div class="chart-card" id="bars-card">
     <div class="chart-head">
-      <div><h3>Exact-match accuracy by novelty level</h3><div class="note">Mean ± std over 4 training seeds. Hover a bar for values.</div></div>
-      <div class="legend"><span><i class="sq" style="background:var(--s-desc)"></i>Description</span><span><i class="sq" style="background:var(--s-ex)"></i>Examples</span><span><i class="sq" style="background:var(--s-none)"></i>No information</span></div>
+      <div><h3>Share of test puzzles solved completely</h3><div class="note">Average over 4 training runs; bars show the spread. Hover for values.</div></div>
+      <div class="legend"><span><i class="sq" style="background:var(--s-desc)"></i>Rule description</span><span><i class="sq" style="background:var(--s-ex)"></i>Two examples</span><span><i class="sq" style="background:var(--s-none)"></i>No hint</span></div>
     </div>
-    <svg id="bars" width="100%" viewBox="0 0 980 360" role="img" aria-label="Grouped bar chart of accuracy by novelty level"></svg>
+    <svg id="bars" width="100%" viewBox="0 0 980 360" role="img" aria-label="Bar chart of puzzles solved at each level"></svg>
     <div class="tip" id="bars-tip"></div>
+    <div class="barstep">
+      <p id="bar-text" class="big-p" style="margin:0;flex:1"></p>
+      <div class="row" style="flex:none"><button class="btn small" id="bar-prev">← Back</button><button class="btn small primary" id="bar-next">Next level →</button></div>
+    </div>
     <details><summary>Table view</summary><table id="bars-table"></table></details>
   </div>
 
-  <div class="chart-card" id="sweep-card">
-    <div class="chart-head">
-      <div><h3>Show the model the parts together, and it recovers</h3><div class="note">Same test worlds at every point; only the training set grows. Hover for values.</div></div>
-      <div class="seg" id="sweep-seg"><button data-k="l3" class="on">L3: new rule instance</button><button data-k="l2">L2: new pairing</button></div>
+  <button class="btn" id="why-open" style="margin-top:22px">Why does this happen? ▸</button>
+  <div id="why" hidden>
+    <div class="chart-card" id="sweep-card">
+      <div class="chart-head">
+        <div><h3>Show the model the building blocks together, and it recovers</h3><div class="note">The test stays the same at every point; only the training data changes. Hover for values.</div></div>
+        <div class="seg" id="sweep-seg"><button data-k="l3" class="on">New rule (L3)</button><button data-k="l2">Never together (L2)</button></div>
+      </div>
+      <div class="legend" style="margin:6px 0 4px"><span><i style="background:var(--s-desc)"></i>Rule description</span><span><i style="background:var(--s-ex)"></i>Two examples</span><span><i style="background:var(--s-none)"></i>No hint</span><span id="lg-drop"><span style="color:var(--s-desc)">◆</span> Description, hidden half the time in training</span></div>
+      <svg id="sweep" width="100%" viewBox="0 0 980 380" role="img" aria-label="Line chart of puzzles solved as the training data changes"></svg>
+      <div class="tip" id="sweep-tip"></div>
+      <p class="note" id="sweep-note" style="max-width:none"></p>
     </div>
-    <div class="legend" style="margin:6px 0 4px"><span><i style="background:var(--s-desc)"></i>Description</span><span><i style="background:var(--s-ex)"></i>Examples</span><span><i style="background:var(--s-none)"></i>No information</span><span id="lg-drop"><span style="color:var(--s-desc)">◆</span> Description + dropout</span></div>
-    <svg id="sweep" width="100%" viewBox="0 0 980 380" role="img" aria-label="Line chart of accuracy as exposure grows"></svg>
-    <div class="tip" id="sweep-tip"></div>
-    <p class="note" id="sweep-note" style="max-width:none"></p>
+    <div class="panel" style="margin-top:22px">
+      <h3>Why would being told the rules hurt?</h3>
+      <p style="color:var(--text-2);margin:6px 0 0">A model that always gets the rules handed to it never has to work them out from the grid. When the description combines building blocks it has never seen together, it has nothing to fall back on. A simple fix: hide the description on half of the training puzzles (“description dropout”). The model then lands above the baseline (58.8% vs 52.1%), losing only 1–2 points on known rules.</p>
+    </div>
   </div>
-
-  <div class="panel" style="margin-top:22px">
-    <h3>Why would a description hurt?</h3>
-    <p style="color:var(--text-2);margin:6px 0 0">A model that always receives the correct rules never has to infer them from the grid. When the description names components it never composed, it has nothing to fall back on. Taking the crutch away on half the training samples (<b>description dropout</b>) lifts it from 34.6% to 58.8%, above the 52.1% baseline, for a cost of 1–2 points on known rules.</p>
-  </div>
-  <p class="note" style="margin-top:16px;max-width:none">These are observations on the tested models at 6×6, made possible by the framework, not claims about general phenomena. The paper's appendix covers larger grids, other architectures, and controls.</p>
+  <p class="note" style="margin-top:16px;max-width:none">These results are for the model we tested, on 6×6 grids. They show what this setup can measure, not general laws. The paper also covers larger grids and other models.</p>
 </div>
 </section>
 
 <footer>
 <div class="wrap">
   <h3 style="color:var(--text)">Why this setup</h3>
-  <p>Rules come from the structure of the world itself, not from a human visual vocabulary as in ARC. The space of worlds is explicit, so simplicity (number of rules, size of their supports) is computable. And it gives depth-recurrent reasoning models new ground beyond saturated Sudoku benchmarks.</p>
+  <p>Unlike benchmarks such as ARC-AGI, the rules do not rely on human visual conventions. Every world is built from explicit pieces, so we control exactly what is new at test time and how simple a world is. And it gives reasoning models a harder test than standard Sudoku, which they now solve almost perfectly.</p>
   <div class="row" style="margin:20px 0 28px">
     <a class="btn primary" id="arxiv-link-2" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener">Read the paper</a>
     <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener">Code &amp; data</a>
@@ -371,7 +393,7 @@ const colLinks=(a,b,k)=>range(6).map(r=>[I(r,a),I(r,b),k]);
 
 const FAM={region:{name:'Unique-occurrence regions',col:'var(--f-region)'},adj:{name:'Adjacency',col:'var(--f-adj)'},parity:{name:'Value-restricted regions',col:'var(--f-parity)'},shift:{name:'Value-shift relations',col:'var(--f-shift)'},base:{name:'Base',col:'var(--f-base)'}};
 const RULES=[
- {id:'Latin',label:'Latin square',fam:'base',groups:[...range(6).map(r=>range(6).map(c=>I(r,c))),...range(6).map(c=>range(6).map(r=>I(r,c)))],tip:'Each row and each column contains 1–6 exactly once.'},
+ {id:'Latin',label:'Rows & columns',fam:'base',groups:[...range(6).map(r=>range(6).map(c=>I(r,c))),...range(6).map(c=>range(6).map(r=>I(r,c)))],tip:'Each row and each column contains 1–6 exactly once.'},
  {id:'BoxesRect2x3',label:'2×3 boxes',fam:'region',groups:boxes(2,3),desc:['box','∅','2x3','∅'],tip:'The grid splits into six boxes of 2 rows × 3 columns. Each box contains 1–6 exactly once.'},
  {id:'BoxesRect3x2',label:'3×2 boxes',fam:'region',groups:boxes(3,2),desc:['box','∅','3x2','∅'],tip:'The grid splits into six boxes of 3 rows × 2 columns. Each box contains 1–6 exactly once.'},
  {id:'ScatteredRect2x3',label:'Scattered 2×3',fam:'region',groups:scattered(2,3),desc:['scatter','∅','2x3','∅'],tip:'Picture the six 2×3 boxes. Cells at the same spot inside their box (e.g. every box’s top-left cell) must all be different.'},
@@ -470,7 +492,7 @@ const sortIds=ids=>[...ids].sort();
 })();
 
 /* ======================= PLAYGROUND ======================= */
-const PG={ids:['BoxesRect2x3','RowLink16k3'],sol:null,puzzle:null,cur:null,sel:-1};
+const PG={ids:[],sol:null,puzzle:null,cur:null,sel:-1,step:1,pick:'BoxesRect2x3'};
 const pgCells=buildGrid($('#pg-grid'));
 function pgRenderPool(){
   const host=$('#pg-pool');host.innerHTML='';
@@ -482,13 +504,10 @@ function pgRenderPool(){
       c.onmouseenter=()=>{shadeRule(pgCells,r.id);$('#pg-info').innerHTML=`<b>${r.label}.</b> ${r.tip}`};c.onmouseleave=()=>shadeRule(pgCells,null);cs.appendChild(c)});
     box.appendChild(cs);host.appendChild(box);
   }
-  document.querySelector('[data-hover="Latin"]').onmouseenter=()=>shadeRule(pgCells,'Latin');
-  document.querySelector('[data-hover="Latin"]').onmouseleave=()=>shadeRule(pgCells,null);
-  $('#pg-tokens').innerHTML=tokensHTML(sortIds(PG.ids));
   pgRenderRules();
 }
 function pgRenderRules(broken=[]){
-  const box=$('#pg-rules');box.innerHTML='<div class="rt">Rules of this world (hover one to see its cells)</div>';
+  const box=$('#pg-rules');box.innerHTML='<div class="rt">The rules of this world (hover one to see where it acts)</div>';
   ['Latin',...PG.ids].forEach(id=>{const r=R[id];const it=el('div','ri'+(broken.includes(id)?' broken':''),`<span class="dot" style="background:${FAM[r.fam].col}"></span><div><b>${r.label}</b> <span class="t">${r.tip}</span></div>`);
     it.onmouseenter=()=>shadeRule(pgCells,id);it.onmouseleave=()=>shadeRule(pgCells,null);box.appendChild(it)});
 }
@@ -497,9 +516,9 @@ function pgNewWorld(){
   $('#pg-grid').classList.remove('solved');
   PG.sol=randomSolution(PG.ids);
   if(!PG.sol){PG.puzzle=PG.cur=Array(36).fill(0);paint(pgCells,PG.cur,PG.cur);pgCheck();
-    pgStatus('<span class="bad">Empty world.</span> No 6×6 grid avoids all these forbidden patterns at once, so there is nothing to solve. In the paper, such combinations are discarded.');return}
+    pgStatus('<span class="bad">Empty world.</span> No 6×6 grid can follow all these rules at once, so there is nothing to solve. Such combinations are left out of the paper’s worlds.');return}
   PG.puzzle=makePuzzle(PG.ids,PG.sol,18);PG.cur=PG.puzzle.slice();PG.sel=-1;pgDraw();
-  pgStatus(`Fill the <b>${PG.puzzle.filter(v=>!v).length}</b> blank cells. Click a cell, then type 1–6 (or use the pad). Broken rules light up in red.`);
+  pgStatus(`Fill the <b>${PG.puzzle.filter(v=>!v).length}</b> blank cells: click a cell, then type 1–6 or use the buttons. Broken rules show in red.`);
 }
 function pgBoxLines(){const h=PG.ids.includes('BoxesRect2x3')?2:PG.ids.includes('BoxesRect3x2')?3:0,w=h===2?3:2;
   pgCells.forEach((c,i)=>{const r=Math.floor(i/6),k=i%6;c.style.borderRightColor=h&&k<5&&(k+1)%w===0?'var(--line-strong)':'';c.style.borderRightWidth=h&&k<5&&(k+1)%w===0?'2px':'';
@@ -507,10 +526,10 @@ function pgBoxLines(){const h=PG.ids.includes('BoxesRect2x3')?2:PG.ids.includes(
 function pgDraw(){paint(pgCells,PG.cur,PG.puzzle);pgBoxLines();pgCells.forEach((c,i)=>{c.classList.toggle('input',!PG.puzzle[i]);c.classList.toggle('selected',i===PG.sel)});pgCheck()}
 function pgCheck(){
   const v=violations(PG.ids,PG.cur);pgCells.forEach(c=>c.classList.remove('bad'));pgRenderRules(v.map(x=>x.id));v.forEach(x=>x.cells.forEach(i=>pgCells[i].classList.add('bad')));
-  if(!PG.sol)return;
+  if(!PG.sol||PG.step!==3)return;
   const full=PG.cur.every(x=>x);
-  if(v.length)pgStatus('<span class="bad">Forbidden pattern:</span> '+v.map(x=>`<b>${R[x.id].label}</b>`).join(', ')+' is violated.');
-  else if(full){$('#pg-grid').classList.add('solved');pgStatus('<span class="good">Solved.</span> Every rule holds. The model is asked to do exactly this, in one forward pass of a recurrent network.')}
+  if(v.length)pgStatus('<span class="bad">Rule broken:</span> '+v.map(x=>`<b>${R[x.id].label}</b>`).join(', ')+'. The red cells show where.');
+  else if(full){$('#pg-grid').classList.add('solved');pgStatus('<span class="good">Solved.</span> Every rule holds. This is exactly what the model is trained to do.')}
   else if(PG.cur.some((x,i)=>x&&!PG.puzzle[i]))pgStatus('No rule broken so far.');
 }
 pgCells.forEach((c,i)=>c.onclick=()=>{if(!PG.puzzle||PG.puzzle[i]||!PG.sol)return;PG.sel=i;pgDraw();$('#pg-grid').focus({preventScroll:true})});
@@ -527,7 +546,28 @@ $('#pg-new').onclick=pgNewWorld;
 $('#pg-clear').onclick=()=>{if(!PG.puzzle)return;PG.cur=PG.puzzle.slice();$('#pg-grid').classList.remove('solved');pgDraw()};
 $('#pg-solve').onclick=()=>{if(!PG.sol)return;PG.cur=PG.sol.slice();pgDraw()};
 $('#pg-random').onclick=()=>{const pool=RULES.filter(r=>r.fam!=='base').map(r=>r.id);for(let t=0;t<30;t++){const ids=shuffle(pool.slice()).slice(0,2+Math.floor(rng()*2));if(randomSolution(ids)){PG.ids=ids;break}}pgRenderPool();pgNewWorld()};
-pgRenderPool();pgNewWorld();
+// ---- guided steps ----
+let latinTimer=null;
+function shadeCells(cells,set,col){cells.forEach((c,i)=>{const sh=c.querySelector('.shade');sh.style.opacity='';sh.style.background=set.has(i)?col:'transparent'})}
+function showFull(ids){PG.ids=ids;PG.sol=randomSolution(ids);PG.puzzle=PG.sol.slice();PG.cur=PG.sol.slice();PG.sel=-1;$('#pg-grid').classList.remove('solved');pgDraw();
+  pgCells.forEach(c=>{c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')})}
+const PICKS=['BoxesRect2x3','MainDiagonal','OddMain','RowLink16k3'];
+function pgPick(id){PG.pick=id;showFull([id]);shadeRule(pgCells,id);
+  $('#pg-pick').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.id===id));
+  $('#pg-pickinfo').innerHTML=`<b>${R[id].label}.</b> ${R[id].tip}`}
+PICKS.forEach(id=>{const c=chip(id,'toggle');c.onclick=()=>pgPick(id);$('#pg-pick').appendChild(c)});
+function pgStep(n){
+  PG.step=n;clearInterval(latinTimer);
+  document.querySelectorAll('#pg-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));
+  [1,2,3].forEach(k=>$('#pg-step'+k).hidden=k!==n);$('#pg-solvebar').hidden=n!==3;
+  if(n===1){showFull([]);let k=0;const tick=()=>{const set=new Set(range(6).map(j=>k<6?I(k,j):I(j,k-6)));shadeCells(pgCells,set,'var(--f-region)');k=(k+1)%12};tick();latinTimer=setInterval(tick,900)}
+  if(n===2)pgPick(PG.pick);
+  if(n===3){PG.ids=[PG.pick];pgRenderPool();pgNewWorld();shadeRule(pgCells,null)}
+}
+document.querySelectorAll('#pg-steps .tab').forEach(t=>t.onclick=()=>pgStep(+t.dataset.s));
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>pgStep(+b.dataset.go));
+$('#pg-build-toggle').onclick=()=>{const p=$('#pg-build');p.hidden=!p.hidden;$('#pg-build-toggle').textContent=p.hidden?'Build your own world ▾':'Hide the rule pool ▴'};
+pgStep(1);
 
 /* ======================= SETUPS + GUESS GAME ======================= */
 (function setups(){
@@ -543,7 +583,7 @@ function gsNew(){
   const distract=shuffle(pool.filter(x=>!ids.includes(x))).slice(0,5);
   GS.cands=shuffle([...ids,...distract]);
   const ex=$('#gs-ex');ex.innerHTML='';GS.exCells=[a,b].map(s=>{const g=el('div','grid sm');ex.appendChild(g);const cs=buildGrid(g);paint(cs,s);return cs});
-  gsRender();$('#gs-status').innerHTML='Pick 2 rules, then Check. Hover a rule to see its cells on both grids.';
+  gsRender();$('#gs-status').innerHTML='Pick 2 rules, then press Check.';
 }
 function gsRender(){
   const host=$('#gs-cands');host.innerHTML='';
@@ -564,7 +604,7 @@ $('#gs-check').onclick=()=>{
   const excusable=wrongPicks.filter(x=>alsoOk.includes(x));
   if(excusable.length)msg+=`Your pick ${excusable.map(x=>'<b>'+R[x].label+'</b>').join(', ')} also holds on both examples, so two examples cannot rule it out. `;
   else if(alsoOk.length)msg+=`Note: ${alsoOk.map(x=>'<b>'+R[x].label+'</b>').join(', ')} also hold${alsoOk.length>1?'':'s'} on both examples by chance. `;
-  msg+='Two examples do not always pin down a world; the paper measures how often (Appendix C.7).';
+  msg+='Two examples do not always pin down the rules; the paper measures how often this happens.';
   $('#gs-status').innerHTML=msg;
 };
 $('#gs-next').onclick=gsNew;gsNew();
@@ -572,17 +612,17 @@ $('#gs-next').onclick=gsNew;gsNew();
 /* ======================= NOVELTY LEVELS ======================= */
 const LV=[
  {k:'L0',name:'L0 · New puzzle',train:[['BoxesRect2x3','AntiKing'],['MainDiagonal','RowLink16k1'],['AntiKnight','Corners','EvenAnti']],
-  test:{world:['BoxesRect2x3','AntiKing'],note:'Same world as in training, new puzzle.'},
-  text:'The standard test of puzzle benchmarks: a new configuration in a world the model already trained on. Our in-distribution reference.'},
- {k:'L1',name:'L1 · New combination',train:[['BoxesRect2x3','AntiKing'],['AntiKing','MainDiagonal'],['BoxesRect2x3','MainDiagonal','AntiKnight']],
-  test:{world:['BoxesRect2x3','AntiKing','MainDiagonal'],note:'Every rule was seen in training, never this exact set.'},
-  text:'Combination generalization: each rule is familiar, the combination is not. Both the description and the examples handle this well (98.5% and 95.4%).'},
- {k:'L2',name:'L2 · New pairing',groups:true,train:[['BoxesRect2x3','MainDiagonal'],['AntiKing','BoxesRect2x3'],['RowLink16k1','OddMain'],['ColLink16k2','EvenAnti']],
+  test:{world:['BoxesRect2x3','AntiKing'],note:'Same world as in training, just a new puzzle.'},
+  text:'The usual test for puzzle-solving models: a new puzzle from a world seen in training. Our reference point.'},
+ {k:'L1',name:'L1 · New mix of known rules',train:[['BoxesRect2x3','AntiKing'],['AntiKing','MainDiagonal'],['BoxesRect2x3','MainDiagonal','AntiKnight']],
+  test:{world:['BoxesRect2x3','AntiKing','MainDiagonal'],note:'Every rule was seen in training, but never this exact combination.'},
+  text:'Each rule is familiar, the combination is not: a test of compositional generalization.'},
+ {k:'L2',name:'L2 · Rules never seen together',groups:true,train:[['BoxesRect2x3','MainDiagonal'],['AntiKing','BoxesRect2x3'],['RowLink16k1','OddMain'],['ColLink16k2','EvenAnti']],
   crossed:[['BoxesRect2x3','RowLink16k1']],
-  test:{world:['BoxesRect2x3','RowLink16k1'],note:'These two rules were never active together in training.'},
-  text:'We split the pool into two groups and remove every training world that mixes them. Each rule is still seen, but no cross-group pair ever co-occurs. Both setups drop, the description more (67.6% vs 82.3%).'},
- {k:'L3',name:'L3 · New rule instance',l3:true,
-  text:'A whole rule is held out, while its components (type, axis, position, offset) appear elsewhere. If every pair of its components was seen together in some trained rule, it is <b>supported</b>; otherwise <b>unsupported</b>. On unsupported instances the description falls below the no-information baseline (34.6% vs 52.1%), while examples stay above it (65.0%).'},
+  test:{world:['BoxesRect2x3','RowLink16k1'],note:'These two rules never appeared together in training.'},
+  text:'We split the rules into two groups and drop every training world that mixes them. Each rule is still seen, but never alongside a rule from the other group. At test time, they are mixed.'},
+ {k:'L3',name:'L3 · A brand-new rule',l3:true,
+  text:'A rule is left out of training entirely, but its building blocks (kind of rule, rows or columns, which ones, shift amount) appear in other rules. Two cases: the blocks were seen <b>together</b> in some training rule, or some of them <b>never</b> were. Section 4 shows this difference matters a lot.'},
 ];
 function nvShow(k){
   document.querySelectorAll('#nv-tabs .tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
@@ -594,14 +634,14 @@ function nvShow(k){
       <div class="world-row"><span class="lbl">seen</span>${comp(['link','row','(1,6)','+2'])}</div>
       <div class="world-row"><span class="lbl">seen</span>${comp(['link','row','(2,5)','+3'])}</div>
       <div class="world-row"><span class="lbl">seen</span>${comp(['box','∅','2x3','∅'])} ${comp(['diag','main','∅','∅'])}</div>
-      <p class="note" style="margin:10px 0 0">Unsupported variant: no column link at all in training, so <span class="mono">link</span> and <span class="mono">col</span> were never seen together.</p>`;
-    te.innerHTML=`<div class="world-row"><span class="lbl">supported</span>${comp(['link','row','(1,6)','+3'],[3])}</div>
-      <p class="note" style="margin:4px 0 14px">Never seen as a whole, but every pair of its parts was.</p>
-      <div class="world-row"><span class="lbl">unsupported</span>${comp(['link','col','(1,6)','+2'],[0,1])}</div>
-      <p class="note" style="margin:4px 0 0">The pair <span class="mono">link × col</span> never occurred in training.</p>`;
+      <p class="note" style="margin:10px 0 0">In the harder case, no column link at all appears in training, so the blocks <span class="mono">link</span> and <span class="mono">col</span> were never seen together.</p>`;
+    te.innerHTML=`<div class="world-row"><span class="lbl">blocks seen together</span>${comp(['link','row','(1,6)','+3'],[3])}</div>
+      <p class="note" style="margin:4px 0 14px">Never seen as a whole, but each pair of its blocks appeared together in some training rule.</p>
+      <div class="world-row"><span class="lbl">blocks never together</span>${comp(['link','col','(1,6)','+2'],[0,1])}</div>
+      <p class="note" style="margin:4px 0 0">The blocks <span class="mono">link</span> and <span class="mono">col</span> never appeared together in training.</p>`;
   } else {
     if(L.groups){
-      tr.appendChild(el('p','note','<b style="color:var(--text-2)">Group A</b> rules only with group A, <b style="color:var(--text-2)">group B</b> only with B'));
+      tr.appendChild(el('p','note','Rules of <b style="color:var(--text-2)">group A</b> only appear with group A, rules of <b style="color:var(--text-2)">group B</b> only with group B.'));
       L.train.forEach((w,i)=>tr.appendChild(row(w,i<2?'A':'B')));
       L.crossed.forEach(w=>tr.appendChild(row(w,'A×B','x')));
     } else L.train.forEach((w,i)=>tr.appendChild(row(w,'w'+(i+1))));
@@ -615,49 +655,61 @@ LV.forEach(L=>{const t=el('button','tab',L.name);t.dataset.k=L.k;t.onclick=()=>n
 
 /* ======================= CHARTS ======================= */
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const SER=[{k:'desc',name:'Description',col:'--s-desc'},{k:'ex',name:'Examples',col:'--s-ex'},{k:'none',name:'No information',col:'--s-none'}];
+const SER=[{k:'desc',name:'Rule description',col:'--s-desc'},{k:'ex',name:'Two examples',col:'--s-ex'},{k:'none',name:'No hint',col:'--s-none'}];
 const NS='http://www.w3.org/2000/svg';
 const sv=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e};
 function tipAt(tip,card,evt,html){tip.innerHTML=html;tip.style.opacity=1;const b=card.getBoundingClientRect();let x=evt.clientX-b.left+14,y=evt.clientY-b.top+14;if(x+tip.offsetWidth>b.width-8)x=evt.clientX-b.left-tip.offsetWidth-14;tip.style.left=x+'px';tip.style.top=y+'px'}
 
 const BARS=[
- {cat:'L0',sub:'new puzzle',desc:[99.2,.1],ex:[95.2,1.2],none:[60.5,.8]},
- {cat:'L1',sub:'new combination',desc:[98.5,.2],ex:[95.4,1.1],none:[65.4,1.6]},
- {cat:'L2',sub:'new pairing',desc:[67.6,5.5],ex:[82.3,1.6],none:[63.1,1.8]},
- {cat:'L3 supported',sub:'parts seen together',desc:[79.0,5.4],ex:[90.8,2.3],none:[56.7,null]},
- {cat:'L3 unsupported',sub:'parts never together',desc:[34.6,6.4],ex:[65.0,.8],none:[52.1,2.3]},
+ {cat:'New puzzle',sub:'L0',desc:[99.2,.1],ex:[95.2,1.2],none:[60.5,.8]},
+ {cat:'New mix',sub:'L1',desc:[98.5,.2],ex:[95.4,1.1],none:[65.4,1.6]},
+ {cat:'Never together',sub:'L2',desc:[67.6,5.5],ex:[82.3,1.6],none:[63.1,1.8]},
+ {cat:'New rule',sub:'L3 · blocks seen together',desc:[79.0,5.4],ex:[90.8,2.3],none:[56.7,null]},
+ {cat:'New rule',sub:'L3 · blocks never together',desc:[34.6,6.4],ex:[65.0,.8],none:[52.1,2.3]},
 ];
-function drawBars(){
+const BARTEXT=[
+ '<b>New puzzle, familiar world.</b> With the rule description or two examples, the model solves almost every puzzle. With no hint, only 60%: the puzzle alone does not give the rules away.',
+ '<b>New mix of known rules.</b> Still easy: 98.5% with the description, 95.4% with examples. The model generalizes to new combinations.',
+ '<b>Two rules never seen together in training.</b> Both drop. The description suffers more: 67.6%, against 82.3% with examples.',
+ '<b>A brand-new rule, whose building blocks were seen together in other rules.</b> Both stay well above the baseline.',
+ '<b>A brand-new rule, whose building blocks were never seen together.</b> The surprise: with the description, the model does <i>worse than with no hint at all</i> (34.6% vs 52.1%). With examples it stays above (65.0%).',
+];
+let BARSTEP=1;
+function barStep(n){BARSTEP=Math.max(1,Math.min(BARS.length,n));drawBars(BARSTEP);$('#bar-text').innerHTML=BARTEXT[BARSTEP-1];
+  $('#bar-prev').disabled=BARSTEP===1;$('#bar-next').disabled=BARSTEP===BARS.length}
+function drawBars(n=BARS.length){
   const svg=$('#bars');svg.innerHTML='';const W=980,H=360,m={l:48,r:12,t:16,b:56},iw=W-m.l-m.r,ih=H-m.t-m.b;
   const y=v=>m.t+ih-(v/100)*ih;const gw=iw/BARS.length,bw=Math.min(40,(gw-40)/3);
   [0,25,50,75,100].forEach(t=>{sv('line',{x1:m.l,x2:W-m.r,y1:y(t),y2:y(t),stroke:css('--line'),'stroke-width':1},svg);sv('text',{x:m.l-10,y:y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},svg).textContent=t+'%'});
   const tip=$('#bars-tip'),card=$('#bars-card');
   BARS.forEach((d,gi)=>{
+    if(gi>=n){sv('text',{x:m.l+gi*gw+gw/2,y:y(0)-ih/2,'text-anchor':'middle','font-size':28,fill:css('--line')},svg).textContent='?';
+      sv('text',{x:m.l+gi*gw+gw/2,y:H-m.b+22,'text-anchor':'middle','font-size':13,fill:css('--muted')},svg).textContent=d.cat;return}
     const gx=m.l+gi*gw+(gw-3*bw-4)/2;
-    if(d.cat==='L3 unsupported'){sv('rect',{x:m.l+gi*gw+6,y:m.t,width:gw-12,height:ih,fill:css('--surface-2'),rx:8},svg)}
+    if(gi===4){sv('rect',{x:m.l+gi*gw+6,y:m.t,width:gw-12,height:ih,fill:css('--surface-2'),rx:8},svg)}
     SER.forEach((s,si)=>{const [v,sd]=d[s.k];const x=gx+si*(bw+2),h=(v/100)*ih;
       const p=sv('path',{d:`M${x},${y(0)} V${y(v)+4} q0,-4 4,-4 h${bw-8} q4,0 4,4 V${y(0)} Z`,fill:css(s.col)},svg);
-      p.style.transformOrigin=`0 ${y(0)}px`;p.animate([{transform:'scaleY(0)'},{transform:'scaleY(1)'}],{duration:700,delay:gi*90+si*40,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});
+      p.style.transformOrigin=`0 ${y(0)}px`;if(gi===n-1)p.animate([{transform:'scaleY(0)'},{transform:'scaleY(1)'}],{duration:700,delay:si*70,easing:'cubic-bezier(.2,.7,.2,1)',fill:'both'});
       if(sd){const e=sv('g',{stroke:css('--text-2'),'stroke-width':1.2},svg);sv('line',{x1:x+bw/2,x2:x+bw/2,y1:y(v-sd),y2:y(v+sd)},e);sv('line',{x1:x+bw/2-4,x2:x+bw/2+4,y1:y(v+sd),y2:y(v+sd)},e);sv('line',{x1:x+bw/2-4,x2:x+bw/2+4,y1:y(v-sd),y2:y(v-sd)},e)}
     });
-    if(d.cat==='L3 unsupported'){const yb=y(d.none[0]);sv('line',{x1:m.l+gi*gw+10,x2:m.l+(gi+1)*gw-10,y1:yb,y2:yb,stroke:css('--s-none'),'stroke-dasharray':'4 3','stroke-width':1.5},svg);
-      sv('text',{x:m.l+gi*gw+gw/2,y:y(100)+14,'text-anchor':'middle','font-size':12,'font-weight':600,fill:css('--text')},svg).textContent='description < baseline'}
+    if(gi===4){const yb=y(d.none[0]);sv('line',{x1:m.l+gi*gw+10,x2:m.l+(gi+1)*gw-10,y1:yb,y2:yb,stroke:css('--s-none'),'stroke-dasharray':'4 3','stroke-width':1.5},svg);
+      sv('text',{x:m.l+gi*gw+gw/2,y:y(100)+14,'text-anchor':'middle','font-size':12,'font-weight':600,fill:css('--text')},svg).textContent='description < no hint'}
     sv('text',{x:m.l+gi*gw+gw/2,y:H-m.b+22,'text-anchor':'middle','font-size':13,'font-weight':600,fill:css('--text')},svg).textContent=d.cat;
     sv('text',{x:m.l+gi*gw+gw/2,y:H-m.b+39,'text-anchor':'middle','font-size':12,fill:css('--muted')},svg).textContent=d.sub;
     const hit=sv('rect',{x:m.l+gi*gw,y:m.t,width:gw,height:ih,fill:'transparent'},svg);
     hit.onmousemove=e=>tipAt(tip,card,e,`<b>${d.cat}</b> <span style="color:var(--muted)">${d.sub}</span>`+SER.map(s=>`<div class="r"><i style="background:var(${s.col})"></i>${s.name}: <b>${d[s.k][0].toFixed(1)}%</b>${d[s.k][1]?' ± '+d[s.k][1]:''}</div>`).join(''));
     hit.onmouseleave=()=>tip.style.opacity=0;
   });
-  $('#bars-table').innerHTML='<tr><th>Level</th>'+SER.map(s=>`<th>${s.name}</th>`).join('')+'</tr>'+BARS.map(d=>`<tr><td>${d.cat}</td>`+SER.map(s=>`<td>${d[s.k][0].toFixed(1)}${d[s.k][1]?' ± '+d[s.k][1]:''}</td>`).join('')+'</tr>').join('');
+  $('#bars-table').innerHTML='<tr><th>Test</th>'+SER.map(s=>`<th>${s.name}</th>`).join('')+'</tr>'+BARS.map(d=>`<tr><td>${d.cat} (${d.sub})</td>`+SER.map(s=>`<td>${d[s.k][0].toFixed(1)}${d[s.k][1]?' ± '+d[s.k][1]:''}</td>`).join('')+'</tr>').join('');
 }
 
 const SWEEP={
- l3:{x:['0','5','25','100','228'],xl:'training worlds containing a supporting column link (of 500)',ymin:25,ymax:100,
+ l3:{x:['0','5','25','100','228'],xl:'training worlds where the new rule’s building blocks appear together (out of 500)',ymin:25,ymax:100,
    desc:[[34.6,6.4],[48.5,2.9],[48.0,7.4],[79.0,7.1],[79.0,5.4]],ex:[[65.0,.8],[70.0,.6],[77.0,1.1],[86.6,1.6],[90.8,2.3]],none:[[52.1],[52.5],[53.2],[57.7],[56.7]],drop:[58.8,1.6],
-   note:'Held-out column links, identical at every point. With no supporting world the description sits 17.5 points below the baseline; with the natural amount it ends 22 points above. Examples gain 26 points, the description 44.'},
- l2:{x:['0','5','25','100','373'],xl:'training worlds mixing the two rule groups (of 500)',ymin:50,ymax:100,
+   note:'With no training world showing the building blocks together, the description is 17.5 points below the no-hint baseline. With enough of them, it ends 22 points above. Hiding the description on half of the training puzzles (◆) lifts it from 34.6% to 58.8%, above the baseline.'},
+ l2:{x:['0','5','25','100','373'],xl:'training worlds that mix the two rule groups (out of 500)',ymin:50,ymax:100,
    desc:[[67.6,5.5],[70.0,3.2],[89.2,.6],[96.6,1.4],[98.5,1.0]],ex:[[82.3,1.6],[88.6,.8],[92.6,.5],[95.8,.3],[97.0,.3]],none:[[62.1],[63.8],[64.0],[67.7],[70.4]],
-   note:'Cross-group test worlds, identical at every point. The description starts 15 points behind examples and catches up once about a fifth of the training worlds mix the groups.'},
+   note:'The description starts 15 points behind examples and catches up once about a fifth of the training worlds mix the two groups.'},
 };
 let sweepKey='l3';
 function drawSweep(){
@@ -665,7 +717,7 @@ function drawSweep(){
   const x=i=>m.l+30+i*(iw-60)/(D.x.length-1),y=v=>m.t+ih-((v-D.ymin)/(D.ymax-D.ymin))*ih;
   for(let t=D.ymin;t<=D.ymax;t+=(D.ymax-D.ymin>60?25:10)){sv('line',{x1:m.l,x2:m.l+iw,y1:y(t),y2:y(t),stroke:css('--line')},svg);sv('text',{x:m.l-10,y:y(t)+4,'text-anchor':'end','font-size':12,fill:css('--muted')},svg).textContent=t+'%'}
   D.x.forEach((v,i)=>sv('text',{x:x(i),y:H-m.b+22,'text-anchor':'middle','font-size':13,fill:css('--text-2')},svg).textContent=v);
-  sv('text',{x:m.l+iw/2,y:H-m.b+44,'text-anchor':'middle','font-size':12.5,fill:css('--muted')},svg).textContent=D.xl+' · not to scale';
+  sv('text',{x:m.l+iw/2,y:H-m.b+44,'text-anchor':'middle','font-size':12.5,fill:css('--muted')},svg).textContent=D.xl+' · spacing not to scale';
   const lbls=[];
   SER.forEach(s=>{const pts=D[s.k];const d=pts.map((p,i)=>(i?'L':'M')+x(i)+','+y(p[0])).join(' ');
     const path=sv('path',{d,fill:'none',stroke:css(s.col),'stroke-width':2.2,'stroke-linejoin':'round','stroke-dasharray':s.k==='none'?'6 4':''},svg);
@@ -677,22 +729,28 @@ function drawSweep(){
   lbls.sort((a,b)=>a.y-b.y);for(let i=1;i<lbls.length;i++)if(lbls[i].y-lbls[i-1].y<16)lbls[i].y=lbls[i-1].y+16;
   lbls.forEach(l=>sv('text',{x:x(D.x.length-1)+12,y:l.y+4,'font-size':12.5,'font-weight':600,fill:css('--text')},svg).textContent=l.t);
   if(D.drop){const cx=x(0),cy=y(D.drop[0]);sv('path',{d:`M${cx},${cy-8} L${cx+8},${cy} L${cx},${cy+8} L${cx-8},${cy} Z`,fill:css('--s-desc'),stroke:css('--surface'),'stroke-width':2},svg);
-    sv('text',{x:cx+14,y:cy+4,'font-size':12,fill:css('--text-2')},svg).textContent='+ dropout: 58.8%'}
+    sv('text',{x:cx+14,y:cy+4,'font-size':12,fill:css('--text-2')},svg).textContent='dropout: 58.8%'}
   $('#lg-drop').style.display=D.drop?'':'none';
   const cross=sv('line',{y1:m.t,y2:m.t+ih,stroke:css('--text-2'),'stroke-width':1,opacity:0},svg);
   const hit=sv('rect',{x:m.l,y:m.t,width:iw,height:ih,fill:'transparent'},svg);const tip=$('#sweep-tip'),card=$('#sweep-card');
   hit.onmousemove=e=>{const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
     let i=Math.round((p.x-m.l-30)/((iw-60)/(D.x.length-1)));i=Math.max(0,Math.min(D.x.length-1,i));cross.setAttribute('x1',x(i));cross.setAttribute('x2',x(i));cross.setAttribute('opacity',.4);
-    tipAt(tip,card,e,`<b>${D.x[i]} worlds</b>`+SER.map(s=>`<div class="r"><i style="background:var(${s.col})"></i>${s.name}: <b>${D[s.k][i][0].toFixed(1)}%</b>${D[s.k][i][1]?' ± '+D[s.k][i][1]:''}</div>`).join('')+(i===0&&D.drop?`<div class="r"><i style="background:var(--s-desc)"></i>+ dropout: <b>58.8%</b> ± 1.6</div>`:''))};
+    tipAt(tip,card,e,`<b>${D.x[i]} training worlds</b>`+SER.map(s=>`<div class="r"><i style="background:var(${s.col})"></i>${s.name}: <b>${D[s.k][i][0].toFixed(1)}%</b>${D[s.k][i][1]?' ± '+D[s.k][i][1]:''}</div>`).join('')+(i===0&&D.drop?`<div class="r"><i style="background:var(--s-desc)"></i>description dropout: <b>58.8%</b> ± 1.6</div>`:''))};
   hit.onmouseleave=()=>{tip.style.opacity=0;cross.setAttribute('opacity',0)};
   $('#sweep-note').textContent=D.note;
 }
 document.querySelectorAll('#sweep-seg button').forEach(b=>b.onclick=()=>{sweepKey=b.dataset.k;document.querySelectorAll('#sweep-seg button').forEach(x=>x.classList.toggle('on',x===b));drawSweep()});
 
 // draw charts when they scroll into view, so the animation is seen
-const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){if(e.target.id==='bars-card')drawBars();else drawSweep();io.unobserve(e.target)}}),{threshold:.3});
-io.observe($('#bars-card'));io.observe($('#sweep-card'));
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{drawBars();drawSweep()});
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){if(e.target.id==='bars-card')barStep(1);else drawSweep();io.unobserve(e.target)}}),{threshold:.3});
+io.observe($('#bars-card'));
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{drawBars(BARSTEP);if(!$('#why').hidden)drawSweep()});
+$('#bar-next').onclick=()=>barStep(BARSTEP+1);$('#bar-prev').onclick=()=>barStep(BARSTEP-1);
+$('#why-open').onclick=()=>{const w=$('#why');w.hidden=!w.hidden;$('#why-open').textContent=w.hidden?'Why does this happen? ▸':'Why does this happen? ▾';if(!w.hidden)drawSweep()};
+$('#gs-open').onclick=()=>{const g=$('#guess');g.hidden=!g.hidden;$('#gs-open').textContent=g.hidden?'Try it: guess the rules from two examples ▸':'Hide the game ▾'};
+// sections fade in as they scroll into view
+const fio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');fio.unobserve(e.target)}}),{threshold:.08});
+document.querySelectorAll('section:not(.hero) .wrap, footer .wrap').forEach(w=>{w.classList.add('fade');fio.observe(w)});
 
 $('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
 </script>
