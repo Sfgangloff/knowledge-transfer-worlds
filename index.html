@@ -195,7 +195,11 @@ h1{font-size:clamp(44px,6.2vw,72px);line-height:1.0}
 h2{font-size:clamp(34px,4.4vw,50px);line-height:1.05;margin-bottom:14px}
 h1 em,h2 em{font-style:italic}
 section{border-top:none;padding:96px 0}
-section:nth-of-type(odd):not(.hero){background:var(--bg-alt)}
+section{background:var(--bg)}
+:root{--sep:#a9bbd0}
+@media (prefers-color-scheme: dark){:root{--sep:#465263}}
+.sep{display:flex;justify-content:center;background:var(--bg);margin:-18px 0;position:relative;z-index:1}
+.sep svg{width:min(640px,86%);height:auto;overflow:visible}
 .kicker{display:flex;align-items:center;gap:10px;color:var(--text-2)}
 .kicker::before{content:'';width:22px;height:1.5px;background:var(--accent);border-radius:2px}
 .lede{font-size:19px}
@@ -225,7 +229,7 @@ section:nth-of-type(odd):not(.hero){background:var(--bg-alt)}
   -webkit-mask-image:radial-gradient(ellipse 55% 75% at 75% 50%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 55% 75% at 75% 50%,#000 20%,transparent 75%)}
 .hero .wrap{position:relative}
 .hero .kicker{margin-bottom:18px}
-footer{background:var(--bg-alt);border-top:none}
+footer{background:var(--bg);border-top:none}
 .cite{border-radius:14px}
 </style>
 </head>
@@ -808,6 +812,22 @@ const fio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.tar
 document.querySelectorAll('section:not(.hero) .wrap, footer .wrap').forEach(w=>{w.classList.add('fade');fio.observe(w)});
 
 addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').style.width=(100*h.scrollTop/(h.scrollHeight-h.clientHeight))+'%'},{passive:true});
+// ornamental separators: hairline + diamonds + a tiny 3x3 grid shading one rule-like pattern
+(function seps(){
+  const PATS=[[0,4,8],[0,2,6,8],[0,1,2,6,7,8],[2,4,6],[1,3,4,5,7]];
+  const targets=[...document.querySelectorAll('section:not(.hero)'),document.querySelector('footer')];
+  targets.forEach((t,k)=>{
+    const pat=PATS[k%PATS.length],cs=5,gap=1.6,g0=220-(3*cs+2*gap)/2;
+    let cells='';for(let i=0;i<9;i++){const x=g0+(i%3)*(cs+gap),y=14-(3*cs+2*gap)/2+Math.floor(i/3)*(cs+gap);
+      cells+=pat.includes(i)?`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" rx="1" fill="var(--sep)"/>`:`<rect x="${x+.4}" y="${y+.4}" width="${cs-.8}" height="${cs-.8}" rx="1" fill="none" stroke="var(--sep)" stroke-width=".8"/>`}
+    const dia=x=>`<path d="M${x} 10.5 L${x+3.5} 14 L${x} 17.5 L${x-3.5} 14 Z" fill="var(--sep)"/>`;
+    const svg=`<svg viewBox="0 0 440 28" aria-hidden="true"><defs>
+      <linearGradient id="sgl${k}" gradientUnits="userSpaceOnUse" x1="10" x2="186" y1="0" y2="0"><stop offset="0" style="stop-color:var(--sep);stop-opacity:0"/><stop offset="1" style="stop-color:var(--sep)"/></linearGradient>
+      <linearGradient id="sgr${k}" gradientUnits="userSpaceOnUse" x1="430" x2="254" y1="0" y2="0"><stop offset="0" style="stop-color:var(--sep);stop-opacity:0"/><stop offset="1" style="stop-color:var(--sep)"/></linearGradient></defs>
+      <line x1="10" x2="186" y1="14" y2="14" stroke="url(#sgl${k})" stroke-width="1"/><line x1="254" x2="430" y1="14" y2="14" stroke="url(#sgr${k})" stroke-width="1"/>
+      ${dia(193)}${dia(247)}<circle cx="183" cy="14" r="1.2" fill="var(--sep)"/><circle cx="257" cy="14" r="1.2" fill="var(--sep)"/>${cells}</svg>`;
+    const d=document.createElement('div');d.className='sep';d.innerHTML=svg;t.parentNode.insertBefore(d,t)});
+})();
 $('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
 </script>
 </body>
