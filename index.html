@@ -285,9 +285,9 @@ footer{background:var(--bg);border-top:none}
 <nav class="sidenav" id="sidenav" aria-label="Sections">
   <a class="nb" href="#top" data-sec="top">Intro</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-  <a class="nb" href="#sudoku" data-sec="sudoku">Sudoku</a>
+  <a class="nb" href="#sudoku" data-sec="sudoku">Small worlds</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-  <a class="nb" href="#play" data-sec="play">Worlds</a>
+  <a class="nb" href="#play" data-sec="play">Your world</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#setups" data-sec="setups">Prompts</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -364,46 +364,28 @@ footer{background:var(--bg);border-top:none}
 <section id="play">
 <div class="wrap">
   <div class="kicker">2 · Your own world</div>
-  <h2>A world is a grid <em>plus a few rules</em></h2>
-  <div class="tabs" id="pg-steps"><button class="tab" data-s="1">1 · The base rule</button><button class="tab" data-s="2">2 · Add a rule</button><button class="tab" data-s="3">3 · Solve a puzzle</button></div>
+  <h2>Build your own world, <em>then solve a puzzle in it</em></h2>
+  <p class="lede">Start from Sudoku, then swap or add rules. Each change gives a new world and a new puzzle with exactly one solution.</p>
   <div class="play">
     <div>
       <div class="grid" id="pg-grid" tabindex="0"></div>
-      <div id="pg-solvebar" hidden>
-        <div class="pad" id="pg-pad"></div>
-        <div class="status" id="pg-status"></div>
-        <div class="row" style="margin-top:10px">
-          <button class="btn small" id="pg-new">New puzzle</button>
-          <button class="btn small" id="pg-solve">Show solution</button>
-          <button class="btn small" id="pg-clear">Clear my entries</button>
-        </div>
+      <div class="pad" id="pg-pad"></div>
+      <div class="status" id="pg-status"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small" id="pg-new">New puzzle</button>
+        <button class="btn small" id="pg-solve">Show solution</button>
+        <button class="btn small" id="pg-clear">Clear my entries</button>
       </div>
     </div>
     <div class="stepbody">
-      <div id="pg-step1">
-        <p class="big-p">Every world starts from the same base rule: <b>each row and each column holds 1–6 exactly once.</b></p>
-        <p class="note">On the left, one grid of this world. The highlight walks through its rows and columns.</p>
-        <button class="btn primary" data-go="2">Next: add a rule →</button>
+      <div class="panel">
+        <div class="fam-title" style="margin-bottom:10px">Rows &amp; columns are always on. Add 1 to 4 rules:</div>
+        <div id="pg-pool"></div>
+        <div class="ruleinfo" id="pg-info">Hover a rule to read what it forbids.</div>
+        <p class="note" style="margin:8px 0 10px">Some combinations allow no grid at all: those worlds are empty.</p>
+        <button class="btn small" id="pg-random">Random world</button>
       </div>
-      <div id="pg-step2" hidden>
-        <p class="big-p">Now add one rule on top. Pick one:</p>
-        <div class="chips" id="pg-pick"></div>
-        <div class="ruleinfo" id="pg-pickinfo" style="margin-top:12px"></div>
-        <p class="note">The coloured cells show where the rule acts. The grid on the left obeys both rules. Change the rules, and you get a different world.</p>
-        <button class="btn primary" data-go="3">Next: make a puzzle →</button>
-      </div>
-      <div id="pg-step3" hidden>
-        <p class="big-p">Blank out cells until only <b>one</b> completion remains: that is a puzzle. Can you solve it?</p>
-        <div class="rulesbox" id="pg-rules"></div>
-        <p class="note">This is exactly the task given to the model. In the paper, worlds have 2–4 extra rules drawn from a pool of 49.</p>
-        <button class="btn small" id="pg-build-toggle">Build your own world ▾</button>
-        <div class="panel" id="pg-build" hidden style="margin-top:12px">
-          <div id="pg-pool"></div>
-          <div class="ruleinfo" id="pg-info">Hover a rule to read what it forbids.</div>
-          <p class="note" style="margin:6px 0 10px">Click to add or remove a rule (up to 4). Some combinations admit no grid at all: those worlds are empty.</p>
-          <button class="btn small" id="pg-random">Random world</button>
-        </div>
-      </div>
+      <div class="rulesbox" id="pg-rules" style="margin-top:16px"></div>
     </div>
   </div>
 </div>
@@ -744,7 +726,7 @@ window.heroRenderAt=renderAt;window.heroDuration=DURATION;
 })();
 
 /* ======================= PLAYGROUND ======================= */
-const PG={ids:[],sol:null,puzzle:null,cur:null,sel:-1,step:1,pick:'BoxesRect2x3'};
+const PG={ids:[],sol:null,puzzle:null,cur:null,sel:-1,step:3};
 const pgCells=buildGrid($('#pg-grid'));
 function pgRenderPool(){
   const host=$('#pg-pool');host.innerHTML='';
@@ -798,28 +780,7 @@ $('#pg-new').onclick=pgNewWorld;
 $('#pg-clear').onclick=()=>{if(!PG.puzzle)return;PG.cur=PG.puzzle.slice();$('#pg-grid').classList.remove('solved');pgDraw()};
 $('#pg-solve').onclick=()=>{if(!PG.sol)return;PG.cur=PG.sol.slice();pgDraw()};
 $('#pg-random').onclick=()=>{const pool=RULES.filter(r=>r.fam!=='base').map(r=>r.id);for(let t=0;t<30;t++){const ids=shuffle(pool.slice()).slice(0,2+Math.floor(rng()*2));if(randomSolution(ids)){PG.ids=ids;break}}pgRenderPool();pgNewWorld()};
-// ---- guided steps ----
-let latinTimer=null;
-function shadeCells(cells,set,col){cells.forEach((c,i)=>{const sh=c.querySelector('.shade');sh.style.opacity='';sh.style.background=set.has(i)?col:'transparent'})}
-function showFull(ids){PG.ids=ids;PG.sol=randomSolution(ids);PG.puzzle=PG.sol.slice();PG.cur=PG.sol.slice();PG.sel=-1;$('#pg-grid').classList.remove('solved');pgDraw();
-  pgCells.forEach(c=>{c.classList.remove('pop');void c.offsetWidth;c.classList.add('pop')})}
-const PICKS=['BoxesRect2x3','MainDiagonal','OddMain','RowLink16k3'];
-function pgPick(id){PG.pick=id;showFull([id]);shadeRule(pgCells,id);
-  $('#pg-pick').querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c.dataset.id===id));
-  $('#pg-pickinfo').innerHTML=`<b>${R[id].label}.</b> ${R[id].tip}`}
-PICKS.forEach(id=>{const c=chip(id,'toggle');c.onclick=()=>pgPick(id);$('#pg-pick').appendChild(c)});
-function pgStep(n){
-  PG.step=n;clearInterval(latinTimer);
-  document.querySelectorAll('#pg-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));
-  [1,2,3].forEach(k=>$('#pg-step'+k).hidden=k!==n);$('#pg-solvebar').hidden=n!==3;
-  if(n===1){showFull([]);let k=0;const tick=()=>{const set=new Set(range(6).map(j=>k<6?I(k,j):I(j,k-6)));shadeCells(pgCells,set,'var(--f-region)');k=(k+1)%12};tick();latinTimer=setInterval(tick,900)}
-  if(n===2)pgPick(PG.pick);
-  if(n===3){PG.ids=[PG.pick];pgRenderPool();pgNewWorld();shadeRule(pgCells,null)}
-}
-document.querySelectorAll('#pg-steps .tab').forEach(t=>t.onclick=()=>pgStep(+t.dataset.s));
-document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>pgStep(+b.dataset.go));
-$('#pg-build-toggle').onclick=()=>{const p=$('#pg-build');p.hidden=!p.hidden;$('#pg-build-toggle').textContent=p.hidden?'Build your own world ▾':'Hide the rule pool ▴'};
-pgStep(1);
+PG.step=3;PG.ids=['BoxesRect2x3'];pgRenderPool();pgNewWorld();
 
 /* ======================= SUDOKU -> FAMILY OF WORLDS ======================= */
 (function sudoku(){
