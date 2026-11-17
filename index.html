@@ -95,6 +95,15 @@ p{max-width:720px}
 .fam{margin-bottom:14px}
 .fam-title{font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
+.rulesbox{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 14px;margin-bottom:14px;max-width:520px}
+.rulesbox .rt{font-size:12px;font-weight:600;color:var(--text-2);margin-bottom:6px}
+.rulesbox .ri{display:flex;gap:9px;align-items:flex-start;padding:5px 6px;border-radius:8px;font-size:14px;cursor:default}
+.rulesbox .ri:hover{background:var(--surface-2)}
+.rulesbox .ri .dot{width:9px;height:9px;border-radius:50%;flex:none;margin-top:6px}
+.rulesbox .ri b{white-space:nowrap}
+.rulesbox .ri span.t{color:var(--text-2)}
+.rulesbox .ri.broken b{color:var(--bad)}
+.ruleinfo{font-size:13px;color:var(--text);background:var(--surface-2);border-radius:8px;padding:8px 10px;min-height:54px;margin-top:4px}
 .status{min-height:48px;font-size:14px;color:var(--text-2);margin-top:14px;max-width:360px}
 .status b{color:var(--text)}
 .status .bad{color:var(--bad);font-weight:600}
@@ -198,6 +207,7 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
   <p class="lede">Every world keeps the same base, a Latin square (each row and column holds 1–6 once), and adds 2–4 rules from a pool. Each rule is a set of <i>forbidden patterns</i>. A puzzle is a partial grid with exactly one valid completion.</p>
   <div class="play">
     <div>
+      <div class="rulesbox" id="pg-rules"></div>
       <div class="grid" id="pg-grid" tabindex="0"></div>
       <div class="pad" id="pg-pad"></div>
       <div class="status" id="pg-status"></div>
@@ -212,7 +222,8 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
       <div class="fam"><div class="fam-title"><span class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--f-base)"></span>Base (always on)</div>
         <div class="chips"><span class="chip on" data-hover="Latin"><span class="dot" style="background:var(--f-base)"></span>Latin square</span></div></div>
       <div id="pg-pool"></div>
-      <p class="note" style="margin:6px 0 0">Hover a rule to see the cells it constrains. Up to 4 extra rules. Some combinations admit no grid at all: those worlds are empty.</p>
+      <div class="ruleinfo" id="pg-info">Hover a rule to read what it forbids.</div>
+      <p class="note" style="margin:6px 0 0">Click to add or remove a rule. Hover a rule to see the cells it constrains. Up to 4 extra rules. Some combinations admit no grid at all: those worlds are empty.</p>
       <div style="margin-top:16px">
         <div class="fam-title">How the model reads this world as a description</div>
         <div class="tokens" id="pg-tokens"></div>
@@ -361,22 +372,22 @@ const colLinks=(a,b,k)=>range(6).map(r=>[I(r,a),I(r,b),k]);
 
 const FAM={region:{name:'Unique-occurrence regions',col:'var(--f-region)'},adj:{name:'Adjacency',col:'var(--f-adj)'},parity:{name:'Value-restricted regions',col:'var(--f-parity)'},shift:{name:'Value-shift relations',col:'var(--f-shift)'},base:{name:'Base',col:'var(--f-base)'}};
 const RULES=[
- {id:'Latin',label:'Latin square',fam:'base',groups:[...range(6).map(r=>range(6).map(c=>I(r,c))),...range(6).map(c=>range(6).map(r=>I(r,c)))],tip:'Each row and column contains 1–6 exactly once'},
- {id:'BoxesRect2x3',label:'2×3 boxes',fam:'region',groups:boxes(2,3),desc:['box','∅','2x3','∅'],tip:'Each 2×3 box contains 1–6 exactly once'},
- {id:'BoxesRect3x2',label:'3×2 boxes',fam:'region',groups:boxes(3,2),desc:['box','∅','3x2','∅'],tip:'Each 3×2 box contains 1–6 exactly once'},
- {id:'ScatteredRect2x3',label:'Scattered 2×3',fam:'region',groups:scattered(2,3),desc:['scatter','∅','2x3','∅'],tip:'Cells at the same position across the six 2×3 boxes are all different'},
- {id:'MainDiagonal',label:'Main diagonal',fam:'region',groups:[MAIN],desc:['diag','main','∅','∅'],tip:'The ↘ diagonal contains 1–6 exactly once'},
- {id:'AntiDiagonal',label:'Anti-diagonal',fam:'region',groups:[ANTI],desc:['diag','anti','∅','∅'],tip:'The ↙ diagonal contains 1–6 exactly once'},
- {id:'CenterWindow',label:'Center 4 cells',fam:'region',groups:[[I(2,2),I(2,3),I(3,2),I(3,3)]],desc:['window','∅','center','∅'],tip:'The four center cells are all different'},
- {id:'Corners',label:'Four corners',fam:'region',groups:[[I(0,0),I(0,5),I(5,0),I(5,5)]],desc:['window','∅','corners','∅'],tip:'The four corner cells are all different'},
- {id:'AntiKing',label:'Anti-king',fam:'adj',pairs:offsetPairs([[1,1],[1,-1]]),desc:['adj','king','∅','∅'],tip:'Diagonally adjacent cells never share a value'},
- {id:'AntiKnight',label:'Anti-knight',fam:'adj',pairs:offsetPairs([[1,2],[2,1],[1,-2],[2,-1]]),desc:['adj','knight','∅','∅'],tip:'Cells a knight’s move apart never share a value'},
- {id:'OddMain',label:'Odd main diagonal',fam:'parity',allowed:{cells:MAIN,mask:bit(1)|bit(3)|bit(5)},desc:['parity','main','∅','odd'],tip:'Every cell of the ↘ diagonal is odd'},
- {id:'EvenAnti',label:'Even anti-diagonal',fam:'parity',allowed:{cells:ANTI,mask:bit(2)|bit(4)|bit(6)},desc:['parity','anti','∅','even'],tip:'Every cell of the ↙ diagonal is even'},
- {id:'RowLink16k3',label:'Row 6 = row 1 + 3',fam:'shift',links:rowLinks(0,5,3),desc:['link','row','(1,6)','3'],tip:'Row 6 equals row 1 shifted by +3 (mod 6), cell by cell'},
- {id:'RowLink16k1',label:'Row 6 = row 1 + 1',fam:'shift',links:rowLinks(0,5,1),desc:['link','row','(1,6)','1'],tip:'Row 6 equals row 1 shifted by +1 (mod 6), cell by cell'},
- {id:'ColLink16k2',label:'Col 6 = col 1 + 2',fam:'shift',links:colLinks(0,5,2),desc:['link','col','(1,6)','2'],tip:'Column 6 equals column 1 shifted by +2 (mod 6), cell by cell'},
- {id:'RowHalvesK3',label:'Bottom half = top + 3',fam:'shift',links:[0,1,2].flatMap(r=>rowLinks(r,r+3,3)),desc:['link','row','halves','3'],tip:'Rows 4–6 equal rows 1–3 shifted by +3, cell by cell'},
+ {id:'Latin',label:'Latin square',fam:'base',groups:[...range(6).map(r=>range(6).map(c=>I(r,c))),...range(6).map(c=>range(6).map(r=>I(r,c)))],tip:'Each row and each column contains 1–6 exactly once.'},
+ {id:'BoxesRect2x3',label:'2×3 boxes',fam:'region',groups:boxes(2,3),desc:['box','∅','2x3','∅'],tip:'The grid splits into six boxes of 2 rows × 3 columns. Each box contains 1–6 exactly once.'},
+ {id:'BoxesRect3x2',label:'3×2 boxes',fam:'region',groups:boxes(3,2),desc:['box','∅','3x2','∅'],tip:'The grid splits into six boxes of 3 rows × 2 columns. Each box contains 1–6 exactly once.'},
+ {id:'ScatteredRect2x3',label:'Scattered 2×3',fam:'region',groups:scattered(2,3),desc:['scatter','∅','2x3','∅'],tip:'Picture the six 2×3 boxes. Cells at the same spot inside their box (e.g. every box’s top-left cell) must all be different.'},
+ {id:'MainDiagonal',label:'Main diagonal',fam:'region',groups:[MAIN],desc:['diag','main','∅','∅'],tip:'The 6 cells on the ↘ diagonal (top-left to bottom-right) contain 1–6 exactly once.'},
+ {id:'AntiDiagonal',label:'Anti-diagonal',fam:'region',groups:[ANTI],desc:['diag','anti','∅','∅'],tip:'The 6 cells on the ↙ diagonal (top-right to bottom-left) contain 1–6 exactly once.'},
+ {id:'CenterWindow',label:'Center 4 cells',fam:'region',groups:[[I(2,2),I(2,3),I(3,2),I(3,3)]],desc:['window','∅','center','∅'],tip:'The 4 cells in the middle of the grid are all different.'},
+ {id:'Corners',label:'Four corners',fam:'region',groups:[[I(0,0),I(0,5),I(5,0),I(5,5)]],desc:['window','∅','corners','∅'],tip:'The 4 corner cells are all different.'},
+ {id:'AntiKing',label:'Anti-king',fam:'adj',pairs:offsetPairs([[1,1],[1,-1]]),desc:['adj','king','∅','∅'],tip:'Two cells touching at a corner (diagonal neighbours) never hold the same number.'},
+ {id:'AntiKnight',label:'Anti-knight',fam:'adj',pairs:offsetPairs([[1,2],[2,1],[1,-2],[2,-1]]),desc:['adj','knight','∅','∅'],tip:'Two cells a chess knight’s move apart (2 steps one way, 1 step the other) never hold the same number.'},
+ {id:'OddMain',label:'Odd main diagonal',fam:'parity',allowed:{cells:MAIN,mask:bit(1)|bit(3)|bit(5)},desc:['parity','main','∅','odd'],tip:'Every cell on the ↘ diagonal holds an odd number: 1, 3 or 5.'},
+ {id:'EvenAnti',label:'Even anti-diagonal',fam:'parity',allowed:{cells:ANTI,mask:bit(2)|bit(4)|bit(6)},desc:['parity','anti','∅','even'],tip:'Every cell on the ↙ diagonal holds an even number: 2, 4 or 6.'},
+ {id:'RowLink16k3',label:'Row 6 = row 1 + 3',fam:'shift',links:rowLinks(0,5,3),desc:['link','row','(1,6)','3'],tip:'Each cell of row 6 is the cell at the top of its column (row 1) plus 3, wrapping after 6: 1→4, 2→5, 3→6, 4→1, 5→2, 6→3.'},
+ {id:'RowLink16k1',label:'Row 6 = row 1 + 1',fam:'shift',links:rowLinks(0,5,1),desc:['link','row','(1,6)','1'],tip:'Each cell of row 6 is the cell at the top of its column (row 1) plus 1, wrapping after 6: 1→2, …, 5→6, 6→1.'},
+ {id:'ColLink16k2',label:'Col 6 = col 1 + 2',fam:'shift',links:colLinks(0,5,2),desc:['link','col','(1,6)','2'],tip:'Each cell of column 6 is the cell at the start of its row (column 1) plus 2, wrapping after 6: 1→3, …, 4→6, 5→1, 6→2.'},
+ {id:'RowHalvesK3',label:'Bottom half = top + 3',fam:'shift',links:[0,1,2].flatMap(r=>rowLinks(r,r+3,3)),desc:['link','row','halves','3'],tip:'Rows 4, 5, 6 are rows 1, 2, 3 plus 3, cell by cell, wrapping after 6 (1→4, 4→1, …).'},
 ];
 const R=Object.fromEntries(RULES.map(r=>[r.id,r]));
 function support(rule){const s=new Set();(rule.groups||[]).forEach(g=>g.forEach(c=>s.add(c)));(rule.pairs||[]).forEach(([a,b])=>{s.add(a);s.add(b)});if(rule.allowed)rule.allowed.cells.forEach(c=>s.add(c));(rule.links||[]).forEach(([a,b])=>{s.add(a);s.add(b)});return s}
@@ -466,12 +477,18 @@ function pgRenderPool(){
     const cs=el('div','chips');
     RULES.filter(r=>r.fam===f).forEach(r=>{const c=chip(r.id,'toggle'+(PG.ids.includes(r.id)?' on':''));
       c.onclick=()=>{const on=PG.ids.includes(r.id);if(on)PG.ids=PG.ids.filter(x=>x!==r.id);else{if(PG.ids.length>=4){pgStatus('<span class="bad">At most 4 extra rules per world.</span>');return}PG.ids=[...PG.ids,r.id]}pgRenderPool();pgNewWorld()};
-      c.onmouseenter=()=>shadeRule(pgCells,r.id);c.onmouseleave=()=>shadeRule(pgCells,null);cs.appendChild(c)});
+      c.onmouseenter=()=>{shadeRule(pgCells,r.id);$('#pg-info').innerHTML=`<b>${r.label}.</b> ${r.tip}`};c.onmouseleave=()=>shadeRule(pgCells,null);cs.appendChild(c)});
     box.appendChild(cs);host.appendChild(box);
   }
   document.querySelector('[data-hover="Latin"]').onmouseenter=()=>shadeRule(pgCells,'Latin');
   document.querySelector('[data-hover="Latin"]').onmouseleave=()=>shadeRule(pgCells,null);
   $('#pg-tokens').innerHTML=tokensHTML(sortIds(PG.ids));
+  pgRenderRules();
+}
+function pgRenderRules(broken=[]){
+  const box=$('#pg-rules');box.innerHTML='<div class="rt">Rules of this world (hover one to see its cells)</div>';
+  ['Latin',...PG.ids].forEach(id=>{const r=R[id];const it=el('div','ri'+(broken.includes(id)?' broken':''),`<span class="dot" style="background:${FAM[r.fam].col}"></span><div><b>${r.label}</b> <span class="t">${r.tip}</span></div>`);
+    it.onmouseenter=()=>shadeRule(pgCells,id);it.onmouseleave=()=>shadeRule(pgCells,null);box.appendChild(it)});
 }
 function pgStatus(h){$('#pg-status').innerHTML=h}
 function pgNewWorld(){
@@ -482,9 +499,12 @@ function pgNewWorld(){
   PG.puzzle=makePuzzle(PG.ids,PG.sol,18);PG.cur=PG.puzzle.slice();PG.sel=-1;pgDraw();
   pgStatus(`Fill the <b>${PG.puzzle.filter(v=>!v).length}</b> blank cells. Click a cell, then type 1–6 (or use the pad). Broken rules light up in red.`);
 }
-function pgDraw(){paint(pgCells,PG.cur,PG.puzzle);pgCells.forEach((c,i)=>{c.classList.toggle('input',!PG.puzzle[i]);c.classList.toggle('selected',i===PG.sel)});pgCheck()}
+function pgBoxLines(){const h=PG.ids.includes('BoxesRect2x3')?2:PG.ids.includes('BoxesRect3x2')?3:0,w=h===2?3:2;
+  pgCells.forEach((c,i)=>{const r=Math.floor(i/6),k=i%6;c.style.borderRightColor=h&&k<5&&(k+1)%w===0?'var(--line-strong)':'';c.style.borderRightWidth=h&&k<5&&(k+1)%w===0?'2px':'';
+    c.style.borderBottomColor=h&&r<5&&(r+1)%h===0?'var(--line-strong)':'';c.style.borderBottomWidth=h&&r<5&&(r+1)%h===0?'2px':''})}
+function pgDraw(){paint(pgCells,PG.cur,PG.puzzle);pgBoxLines();pgCells.forEach((c,i)=>{c.classList.toggle('input',!PG.puzzle[i]);c.classList.toggle('selected',i===PG.sel)});pgCheck()}
 function pgCheck(){
-  const v=violations(PG.ids,PG.cur);pgCells.forEach(c=>c.classList.remove('bad'));v.forEach(x=>x.cells.forEach(i=>pgCells[i].classList.add('bad')));
+  const v=violations(PG.ids,PG.cur);pgCells.forEach(c=>c.classList.remove('bad'));pgRenderRules(v.map(x=>x.id));v.forEach(x=>x.cells.forEach(i=>pgCells[i].classList.add('bad')));
   if(!PG.sol)return;
   const full=PG.cur.every(x=>x);
   if(v.length)pgStatus('<span class="bad">Forbidden pattern:</span> '+v.map(x=>`<b>${R[x.id].label}</b>`).join(', ')+' is violated.');
