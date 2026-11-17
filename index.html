@@ -182,6 +182,16 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 
 /* ===== design layer ===== */
 [hidden]{display:none!important}
+.hero-viz canvas{width:440px;height:440px;max-width:100%;aspect-ratio:1;display:block}
+.hs-cap{min-height:56px;font-size:16.5px;line-height:1.45;text-align:center;max-width:440px;color:var(--text)}
+.hs-cap .pat{display:inline-flex;flex-direction:column;vertical-align:middle;margin:0 3px;border:1px solid var(--line-strong);border-radius:3px;overflow:hidden}
+.hs-cap .pat b{display:block;width:20px;height:18px;font:600 11px Inter;line-height:18px;text-align:center;color:#16161a}
+.hs-cap .bad{color:var(--bad);font-weight:600}
+.hs-dots{display:flex;gap:7px}
+.hs-dots i{width:7px;height:7px;border-radius:50%;background:var(--side-line);transition:background .3s}
+.hs-dots i.on{background:var(--accent)}
+.hs-ctrl{font:500 12px Inter;color:var(--muted);background:none;border:none;cursor:pointer;padding:2px 8px}
+.hs-ctrl:hover{color:var(--text)}
 .ico{width:16px;height:16px;flex:none;display:inline-block;vertical-align:-3px}
 .nb .ico{width:17px;height:17px}
 .ico.ax{width:19px;height:19px;margin:-2px 0;color:#b31b1b}
@@ -291,15 +301,17 @@ footer{background:var(--bg);border-top:none}
     <div class="kicker">Interactive companion to the paper</div>
     <h1>Knowledge transfer between simple discrete worlds</h1>
     <p class="authors">Silvère Gangloff &amp; Jan Hůla</p>
-    <p class="lede">We think of a world as a set of experiences, and consider a very simple formal counterpart of this idea. Here a world is a set of grids defined by forbidding patterns. Change the rules and you get a new world. We train a small reasoning model on such worlds and ask: <b>what does it take to adapt to rules it has never seen?</b></p>
+    <p class="lede">We think of a world as a set of experiences, and consider a very simple formal counterpart of this idea. Here a world is a set of symbolic grids defined by forbidding patterns. Change the rules and you get a new world. We train a small reasoning model on such worlds and ask: <b>what does it take to adapt to rules it has never seen?</b></p>
     <div class="row" style="margin-top:26px">
       <a class="btn primary" href="#play">Play with a world ↓</a>
       
     </div>
   </div>
   <div class="hero-viz">
-    <div class="grid" id="hero-grid"></div>
-    <div class="note" style="text-align:center;max-width:380px">Each colour marks the cells one rule constrains. A new world every few seconds.</div>
+    <canvas id="hs-cv" width="880" height="880" aria-label="Animation: landscape photos are cut into grids, averaged into colours, then turned into symbols; a rule says the sky is always on top"></canvas>
+    <div class="hs-cap" id="hs-cap"></div>
+    <div class="hs-dots" id="hs-dots"></div>
+    <button class="hs-ctrl" id="hs-pause">Pause</button>
   </div>
 </div>
 </section>
@@ -461,6 +473,7 @@ footer{background:var(--bg);border-top:none}
     <a class="btn" id="arxiv-link-2" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener"><svg class="ico ax" viewBox="84 -4 82 112" aria-hidden="true"><path d="M127.98,55.61l-32.74,38.85c-1.29,1.37-2.08,3.78-1.36,5.5.75,1.8,2.46,2.91,4.4,2.91,1.09,0,1.99-.38,3.16-1.56l40.19-42.71c1.6-1.69,1.62-4.33.04-6.04l-13.68,3.05Z" style="fill:var(--ax-red)"/><path d="M127.98,55.61l31.19-38.27c1.49-1.99,2.2-3.03,1.49-4.72-.74-1.77-2.59-3.16-4.48-3.16h0c-1.06,0-1.72.09-3.01,1.11l-38.63,41.76c-1.72,1.84-1.71,4.7.02,6.53l47.79,51.07c1.02,1.05,2.05,1.19,3.14,1.19,1.93,0,3.19-1.14,4.03-2.82.72-1.73-.08-3.44-1.4-5.23l-40.12-47.46" style="fill:var(--ax-grey)"/><path d="M141.67,52.56L95,2.13S93.29.04,91.48,0s-3.6,1.02-4.34,2.79c-.7,1.69-.2,2.88,1.35,5.1l40.09,48.42" style="fill:var(--ax-red)"/></svg>Read the paper</a>
     <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Code &amp; data</a>
   </div>
+  <p class="note" style="max-width:none;margin:0 0 18px">Landscape photos (Wikimedia Commons): <a href="https://commons.wikimedia.org/wiki/File:Landscape-mountains-nature-meadow_(24300479706).jpg" target="_blank" rel="noopener">Pixel.la</a> (CC0), <a href="https://commons.wikimedia.org/wiki/File:Fall_colors_in_Paradise_meadow._Clouds_around_Mt_Rainier._(c61e11b8a0fb48abb16d88bf0c7c52ec).JPG" target="_blank" rel="noopener">Steve Redman, NPS</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Meadow_trees_mountains_and_clouds_in_Alsaka.jpg" target="_blank" rel="noopener">unknown author</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Rocky_hill_with_greenery_and_blue_sky.jpg" target="_blank" rel="noopener">Salma A. L. Suhuyini</a> (CC0).</p>
   <div class="cite" id="bibtex">@article{gangloff2026knowledge,
   title  = {Knowledge transfer between simple discrete worlds},
   author = {Gangloff, Silv{\`e}re and H{\r{u}}la, Jan},
@@ -573,23 +586,117 @@ function shadeRule(cells,id){cells.forEach(c=>{const sh=c.querySelector('.shade'
 function tokensHTML(ids){const toks=[];for(let s=0;s<4;s++){const id=ids[s];const d=id?R[id].desc:['∅','∅','∅','∅'];toks.push('⟨'+d.map(t=>`<span class="tok ${t==='∅'?'null':''}">${t}</span>`).join('')+'⟩')}return toks.join(' ')}
 const sortIds=ids=>[...ids].sort();
 
-/* ======================= HERO ======================= */
-(function hero(){
-  const cells=buildGrid($('#hero-grid'));let timers=[];
-  const pool=RULES.filter(r=>r.fam!=='base'&&r.fam!=='adj').map(r=>r.id); // adjacency rules cover every cell: no visible shape
-  function run(){
-    timers.forEach(clearTimeout);timers=[];
-    let ids,sol;for(let t=0;t<20;t++){ids=shuffle(pool.slice()).slice(0,2+Math.floor(rng()*2));sol=randomSolution(ids);if(sol)break}
-    paint(cells,Array(36).fill(0));cells.forEach(c=>c.classList.remove('pop'));
-    const order=shuffle(range(36));
-    const show=id=>shadeRule(cells,id);
-    timers.push(setTimeout(()=>show(ids[0]),700));
-    order.forEach((i,k)=>timers.push(setTimeout(()=>{cells[i].querySelector('span').textContent=sol[i];cells[i].classList.add('pop')},900+k*70)));
-    timers.push(setTimeout(()=>show(ids[1]),900+18*70));
-    if(ids[2])timers.push(setTimeout(()=>show(ids[2]),900+36*70+300));
-    timers.push(setTimeout(run,900+36*70+(ids[2]?3400:2600)));
+/* ======================= HERO STORY: from experiences to grids ======================= */
+(function heroStory(){
+
+/* ---------- scenes: little "experiences" whose objects sit on a 6x6 lattice ---------- */
+const N=6, CS=60, SZ=CS*N;               // offscreen picture: 360 px, 60 px cells
+let seed=11;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+// Real landscape photos (public domain / CC0, Wikimedia Commons). Each cell's average colour is classified:
+// 1 = sky (bluish or bright grey), 3 = vegetation (green dominant), 2 = everything else (rock, soil, shadow).
+const PHOTOS=['img/landscape1.jpg','img/landscape2.jpg','img/landscape3.jpg','img/landscape4.jpg'];
+function label([r,g,b]){if(b>=g-4&&b>=r&&(r+g+b)/3>105)return 1;if(g>r+4&&g>=b)return 3;return 2}
+function cardFrom(img,flip){
+  const cv=document.createElement('canvas');cv.width=cv.height=SZ;const g=cv.getContext('2d');
+  const sz=Math.min(img.naturalWidth,img.naturalHeight);
+  if(flip){g.translate(0,SZ);g.scale(1,-1)}
+  g.drawImage(img,(img.naturalWidth-sz)/2,(img.naturalHeight-sz)/2,sz,sz,0,0,SZ,SZ);
+  const d=g.getImageData(0,0,SZ,SZ).data,avg=[],sym=[];
+  for(let r=0;r<N;r++){avg.push([]);sym.push([]);for(let c=0;c<N;c++){let R=0,G=0,B=0,n=0;
+    for(let y=r*CS;y<(r+1)*CS;y+=2)for(let x=c*CS;x<(c+1)*CS;x+=2){const i=(y*SZ+x)*4;R+=d[i];G+=d[i+1];B+=d[i+2];n++}
+    const a=[R/n,G/n,B/n];avg[r].push(a);sym[r].push(label(a))}}
+  // first place where something other than sky sits right above sky (the forbidden pattern)
+  let bad=null;for(let r=1;r<N&&!bad;r++)for(let c=0;c<N;c++)if(sym[r][c]===1&&sym[r-1][c]!==1){bad=[r-1,c];break}
+  return {img:cv,avg,sym,bad};
+}
+let CARDS=[],BADCARD=null;
+const loadImg=src=>new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src=src});
+const READY=Promise.all(PHOTOS.map(loadImg)).then(ims=>{CARDS=ims.map(im=>cardFrom(im,false));BADCARD=cardFrom(ims[0],true)});
+
+
+/* ---------- drawing helpers ---------- */
+const cv=document.getElementById('hs-cv'),ctx=cv.getContext('2d');ctx.scale(2,2);const W=440;
+const clamp=x=>x<0?0:x>1?1:x, ease=x=>{x=clamp(x);return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}, ramp=(t,a,b)=>ease((t-a)/(b-a));
+const lerp=(a,b,u)=>a+(b-a)*u;
+
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function drawCard(card,o){ // o: cx,cy,size,rot,alpha,grid,pix,sym,check,bad
+  if(o.alpha<=0)return;const s=o.size,pad=Math.max(4,s*0.028),cell=s/N;
+  ctx.save();ctx.globalAlpha=o.alpha;ctx.translate(o.cx,o.cy);ctx.rotate(o.rot||0);ctx.translate(-s/2,-s/2);
+  ctx.shadowColor='rgba(20,30,50,.18)';ctx.shadowBlur=18;ctx.shadowOffsetY=6;ctx.fillStyle='#fff';rr(ctx,-pad,-pad,s+2*pad,s+2*pad,6);ctx.fill();ctx.shadowColor='transparent';
+  ctx.save();rr(ctx,0,0,s,s,2);ctx.clip();
+  ctx.drawImage(card.img,0,0,s,s);
+  if(o.pix>0){ctx.globalAlpha=o.alpha*o.pix;for(let r=0;r<N;r++)for(let c=0;c<N;c++){const[a,b,d]=card.avg[r][c];ctx.fillStyle=`rgb(${a|0},${b|0},${d|0})`;ctx.fillRect(c*cell,r*cell,cell+.5,cell+.5)}}
+  if(o.sym>0){const FAMC={1:'#d9e8f8',2:'#eadfcd',3:'#d3eac8'};ctx.globalAlpha=o.alpha*o.sym*0.92;for(let r=0;r<N;r++)for(let c=0;c<N;c++){ctx.fillStyle=FAMC[card.sym[r][c]];ctx.fillRect(c*cell,r*cell,cell+.5,cell+.5)}
+    ctx.globalAlpha=o.alpha*o.sym;ctx.fillStyle='#16161a';ctx.font=`600 ${cell*0.5}px Inter`;ctx.textAlign='center';ctx.textBaseline='middle';
+    for(let r=0;r<N;r++)for(let c=0;c<N;c++)ctx.fillText(card.sym[r][c],c*cell+cell/2,r*cell+cell/2+1)}
+  ctx.globalAlpha=o.alpha;
+  if(o.grid>0){ctx.strokeStyle='rgba(25,25,30,.6)';ctx.lineWidth=Math.max(.8,s/280);
+    for(let k=1;k<N;k++){const p=clamp(o.grid*1.6-(k-1)*0.12);if(p<=0)continue;ctx.beginPath();ctx.moveTo(k*cell,0);ctx.lineTo(k*cell,s*p);ctx.moveTo(0,k*cell);ctx.lineTo(s*p,k*cell);ctx.stroke()}}
+  if(o.bad>0){ctx.strokeStyle=`rgba(209,52,58,${o.bad})`;ctx.lineWidth=3;const[r,c]=o.badAt;rr(ctx,c*cell+2,r*cell+2,cell-4,2*cell-4,4);ctx.stroke()}
+  ctx.restore();
+  if(o.check>0){ctx.globalAlpha=o.alpha*o.check;const bx=s+pad-2,by=-pad+2,R=Math.max(9,s*0.06);ctx.fillStyle='#1f9d55';ctx.beginPath();ctx.arc(bx,by,R,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2.2;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(bx-R*.45,by);ctx.lineTo(bx-R*.1,by+R*.38);ctx.lineTo(bx+R*.5,by-R*.4);ctx.stroke()}
+  if(o.cross>0){ctx.globalAlpha=o.alpha*o.cross;const bx=s+pad-2,by=-pad+2,R=Math.max(11,s*0.06);ctx.fillStyle='#d1343a';ctx.beginPath();ctx.arc(bx,by,R,0,7);ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=2.4;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(bx-R*.4,by-R*.4);ctx.lineTo(bx+R*.4,by+R*.4);ctx.moveTo(bx+R*.4,by-R*.4);ctx.lineTo(bx-R*.4,by+R*.4);ctx.stroke()}
+  ctx.restore();
+}
+/* ---------- timeline ---------- */
+const STAGES=[
+ [0.0, 'We think of a world as a set of <b>experiences</b>.'],
+ [2.8, 'Cut each experience into a grid…'],
+ [4.4, '…keep the average colour of each cell…'],
+ [6.0, '…and give each family of colours a symbol: sky <b>1</b>, rock &amp; soil <b>2</b>, plants <b>3</b>.'],
+ [7.8, 'A world becomes a <b>set of grids</b>.'],
+ [10.0,'Its rules are patterns that never appear. Here, the sky is always on top: land above sky, like <span class="pat"><b style="background:#d3eac8">3</b><b style="background:#d9e8f8">1</b></span>, never occurs.'],
+ [14.0,'Upside down, a picture breaks the rule: it is <span class="bad">not part of this world</span>.'],
+ [17.0,'A set of grids and its rules: <b>a simple world</b> we can experiment with.'],
+];
+const DURATION=21.5;
+const STACK=i=>({cx:212+i*13,cy:236-i*13,size:270,rot:[-0.012,0.04,-0.05,0.03][i]});
+const TILE=i=>({cx:[116,324,116,324][i],cy:[120,120,328,328][i],size:178,rot:0});
+const dots=document.getElementById('hs-dots');STAGES.forEach(()=>dots.appendChild(document.createElement('i')));
+const cap=document.getElementById('hs-cap');let lastStage=-1;
+
+function renderAt(t){
+  ctx.clearRect(0,0,W,W);
+  const fadeAll=1-ramp(t,DURATION-0.6,DURATION);
+  const toTile=ramp(t,7.8,9.0), out=ramp(t,13.4,14.0);
+  // cards (back to front)
+  if(t<14.2)for(let i=CARDS.length-1;i>=0;i--){
+    const a=STACK(i),b=TILE(i),inT=0.25+(CARDS.length-1-i)*0.35;
+    const appear=ramp(t,inT,inT+0.7);
+    const front=i===0;
+    const grid=front?ramp(t,2.8,3.9):ramp(t,8.0+i*.12,8.8+i*.12);
+    const pix=front?ramp(t,4.4,5.5):ramp(t,8.3+i*.12,9.1+i*.12);
+    const sym=front?ramp(t,6.0,7.1):ramp(t,8.6+i*.12,9.4+i*.12);
+    drawCard(CARDS[i],{cx:lerp(a.cx,b.cx,toTile),cy:lerp(a.cy,b.cy,toTile)+(1-appear)*40,size:lerp(a.size,b.size,toTile),rot:lerp(a.rot,0,toTile),
+      alpha:appear*(1-out)*fadeAll,grid,pix,sym,check:ramp(t,10.8+i*0.45,11.2+i*0.45)});
   }
-  run();
+  // counterexample
+  const bIn=ramp(t,14.0,14.7),bOut=ramp(t,16.6,17.2);
+  if(bIn>0&&bOut<1)drawCard(BADCARD,{cx:220,cy:226+(1-bIn)*30,size:280,rot:0,alpha:bIn*(1-bOut),grid:1,pix:1,sym:1,bad:BADCARD.bad?ramp(t,14.8,15.3)*(0.75+0.25*Math.sin((t-14.8)*6)):0,badAt:BADCARD.bad||[0,0],cross:ramp(t,15.3,15.7)});
+  // the paper's world
+  // back to the world: its grids, all obeying the rule
+  if(t>=16.9)for(let i=CARDS.length-1;i>=0;i--){const b=TILE(i);drawCard(CARDS[i],{cx:b.cx,cy:b.cy+(1-ramp(t,16.9+i*.12,17.6+i*.12))*24,size:b.size,rot:0,
+    alpha:ramp(t,16.9+i*.12,17.6+i*.12)*fadeAll,grid:1,pix:1,sym:1,check:ramp(t,17.8+i*.15,18.2+i*.15)})}
+  // caption + dots
+  let st=0;STAGES.forEach(([s],k)=>{if(t>=s)st=k});
+  if(st!==lastStage){cap.innerHTML=STAGES[st][1];lastStage=st;[...dots.children].forEach((d,k)=>d.classList.toggle('on',k===st))}
+  const sEnd=st+1<STAGES.length?STAGES[st+1][0]:DURATION;cap.style.opacity=Math.min(1,(t-STAGES[st][0])/0.35,(sEnd-t)/0.35+0.15)*fadeAll+0.0;
+}
+
+
+/* ---------- playback ---------- */
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let playing=!reduce&&!location.hash.includes('capture'),visible=true,t0=performance.now(),tPaused=0,userPaused=false;
+function loop(now){if(playing&&visible)renderAt(((now-t0)/1000)%DURATION);requestAnimationFrame(loop)}
+Promise.all([document.fonts.ready,READY]).then(()=>{window.READY_DONE=true;renderAt(reduce?19.5:0);requestAnimationFrame(loop)});
+const pb=document.getElementById('hs-pause');if(reduce)pb.textContent='Play';
+pb.onclick=()=>{if(playing){tPaused=performance.now();playing=false;userPaused=true;pb.textContent='Play'}else{t0+=performance.now()-tPaused;playing=true;userPaused=false;pb.textContent='Pause'}};
+new IntersectionObserver(es=>es.forEach(e=>{const was=visible;visible=e.isIntersecting;if(visible&&!was&&playing){t0+=performance.now()-(tPaused||performance.now())}if(!visible)tPaused=performance.now()}),{threshold:0}).observe(cv);
+window.heroRenderAt=renderAt;window.heroDuration=DURATION;
+
 })();
 
 /* ======================= PLAYGROUND ======================= */
