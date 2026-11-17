@@ -445,7 +445,9 @@ function buildGrid(node,cls){node.innerHTML='';if(cls)node.classList.add(cls);co
   // thicker 2x3 guide lines are not drawn: boxes are a rule, not part of the base
   return cells}
 function paint(cells,g,given){cells.forEach((c,i)=>{c.querySelector('span').textContent=g[i]||'';c.classList.toggle('given',!!(given&&given[i]));c.classList.toggle('typed',!!(given&&!given[i]&&g[i]))})}
-function shadeRule(cells,id){cells.forEach(c=>c.querySelector('.shade').style.background='transparent');if(!id)return;const r=R[id],col=FAM[r.fam].col;support(r).forEach(i=>cells[i].querySelector('.shade').style.background=col)}
+function groupShade(r){const m=new Map();if(r.id!=='Latin'&&r.groups&&r.groups.length>1)r.groups.forEach((g,k)=>g.forEach(c=>m.set(c,k)));return m}
+function shadeRule(cells,id){cells.forEach(c=>{const sh=c.querySelector('.shade');sh.style.background='transparent';sh.style.opacity=''});if(!id)return;const r=R[id],col=FAM[r.fam].col,gm=groupShade(r);
+  support(r).forEach(i=>{const sh=cells[i].querySelector('.shade');sh.style.background=col;if(gm.size){const k=gm.get(i);sh.style.opacity=((k+(r.id==='BoxesRect2x3'?Math.floor(k/2):r.id==='BoxesRect3x2'?Math.floor(k/3):0))%2)?.12:.38}})}
 function tokensHTML(ids){const toks=[];for(let s=0;s<4;s++){const id=ids[s];const d=id?R[id].desc:['∅','∅','∅','∅'];toks.push('⟨'+d.map(t=>`<span class="tok ${t==='∅'?'null':''}">${t}</span>`).join('')+'⟩')}return toks.join(' ')}
 const sortIds=ids=>[...ids].sort();
 
