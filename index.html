@@ -315,9 +315,9 @@ footer{background:var(--bg);border-top:none}
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#transfer" data-sec="transfer">Transfer</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-  <a class="nb" href="#approach" data-sec="approach">Approach</a>
-  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#sudoku" data-sec="sudoku">Small worlds</a>
+  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <a class="nb" href="#approach" data-sec="approach">Approach</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#play" data-sec="play">Your world</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -378,46 +378,17 @@ footer{background:var(--bg);border-top:none}
       <div id="kt-step3" hidden>
         <p class="big-p">We study this question in a <b>simplified setting</b>: worlds are sets of grids defined by rules. A model learns to solve puzzles in some worlds, and we test it on puzzles of worlds it has never seen.</p>
         <p class="note">Because worlds are built from explicit rules, we control exactly what the new worlds share with the training ones.</p>
-        <a class="btn primary" href="#approach">How we explore it ↓</a>
+        <a class="btn primary" href="#sudoku">Read on ↓</a>
       </div>
     </div>
   </div>
 </div>
 </section>
 
-<!-- ============ 2. APPROACH ============ -->
-<section id="approach">
-<div class="wrap">
-  <div class="kicker">2 · How we study it</div>
-  <h2>Start from Sudoku, <em>then widen the circle</em></h2>
-  <p class="lede">Sudoku is a natural starting point: it is a standard test for small reasoning models. From there, we explore the worlds around it, observe how knowledge transfers, and progressively cover more families of worlds.</p>
-  <div class="tabs" id="ap-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Its neighbours</button><button class="tab" data-s="3">3 · Further out</button></div>
-  <div class="play">
-    <div><svg id="ap-svg" viewBox="0 0 520 360" width="100%" role="img" aria-label="A map of worlds, explored outward from Sudoku"></svg></div>
-    <div class="stepbody">
-      <div id="ap-step1">
-        <p class="big-p">Each dot is a world. <b>Sudoku</b> is one of them.</p>
-        <p class="note">Small reasoning models are trained and tested on Sudoku, so it is a well-understood place to start.</p>
-        <button class="btn primary" data-ago="2">Next: its neighbours →</button>
-      </div>
-      <div id="ap-step2" hidden>
-        <p class="big-p">This work explores the worlds <b>around Sudoku</b>: 6×6 grids whose extra rules come from a pool of 49, plus larger grids. We look for phenomena, such as when describing the rules helps or hurts.</p>
-        <p class="note">The rest of this page is about this region.</p>
-        <button class="btn primary" data-ago="3">Next: further out →</button>
-      </div>
-      <div id="ap-step3" hidden>
-        <p class="big-p">Next come wider regions: other kinds of rules, other geometries. The aim is to study <b>more and more families of worlds</b>, systematically.</p>
-        <a class="btn primary" href="#sudoku">Start around Sudoku ↓</a>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- ============ 3. FROM SUDOKU TO A FAMILY OF WORLDS ============ -->
+<!-- ============ 2. FROM SUDOKU TO A FAMILY OF WORLDS ============ -->
 <section id="sudoku">
 <div class="wrap">
-  <div class="kicker">3 · From Sudoku to a family of worlds</div>
+  <div class="kicker">2 · From Sudoku to a family of worlds</div>
   <h2>Reasoning benchmarks are small worlds <em>with simple rules</em></h2>
   <p class="lede">Sudoku grids, for instance.</p>
   <div class="tabs" id="sd-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Other rules</button><button class="tab" data-s="3">3 · A family of worlds</button></div>
@@ -445,6 +416,35 @@ footer{background:var(--bg);border-top:none}
         <p class="big-p">Mixing rules from a common pool gives a whole <b>family of small worlds</b> that share the same base.</p>
         <p class="note">Each stack on the left is one world: all the grids that obey its rules. Only one of them is shown.</p>
         <p class="note">In the paper, every world keeps the rows-and-columns rule and adds 2–4 rules from a pool of 49. That makes thousands of related worlds, on which a model can be trained and then tested on worlds it has never seen.</p>
+        <a class="btn primary" href="#approach">How we explore from here ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 3. APPROACH ============ -->
+<section id="approach">
+<div class="wrap">
+  <div class="kicker">3 · How we study it</div>
+  <h2>Start from Sudoku, <em>then widen the circle</em></h2>
+  <p class="lede">Sudoku is a natural starting point: it is a standard test for small reasoning models. From there, we explore the worlds around it, observe how knowledge transfers, and progressively cover more families of worlds.</p>
+  <div class="tabs" id="ap-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Its neighbours</button><button class="tab" data-s="3">3 · Further out</button></div>
+  <div class="play">
+    <div><svg id="ap-svg" viewBox="0 0 520 360" width="100%" role="img" aria-label="A map of worlds, explored outward from Sudoku"></svg></div>
+    <div class="stepbody">
+      <div id="ap-step1">
+        <p class="big-p">Each dot is a world. <b>Sudoku</b> is one of them.</p>
+        <p class="note">Small reasoning models are trained and tested on Sudoku, so it is a well-understood place to start.</p>
+        <button class="btn primary" data-ago="2">Next: its neighbours →</button>
+      </div>
+      <div id="ap-step2" hidden>
+        <p class="big-p">This work explores the worlds <b>around Sudoku</b>: 6×6 grids whose extra rules come from a pool of 49, plus larger grids. We look for phenomena, such as when describing the rules helps or hurts.</p>
+        <p class="note">The rest of this page is about this region.</p>
+        <button class="btn primary" data-ago="3">Next: further out →</button>
+      </div>
+      <div id="ap-step3" hidden>
+        <p class="big-p">Next come wider regions: other kinds of rules, other geometries. The aim is to study <b>more and more families of worlds</b>, systematically.</p>
         <a class="btn primary" href="#play">Try one yourself ↓</a>
       </div>
     </div>
@@ -1158,7 +1158,7 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
 (function spy(){const links=[...document.querySelectorAll('#sidenav [data-sec]')];
   const set=id=>links.forEach(a=>a.classList.toggle('active',a.dataset.sec===id));
   const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
-  ['top','transfer','approach','sudoku','play','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
+  ['top','transfer','sudoku','approach','play','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
 $('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
 </script>
 </body>
