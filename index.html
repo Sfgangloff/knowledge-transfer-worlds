@@ -195,6 +195,26 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 
 /* ===== design layer ===== */
 [hidden]{display:none!important}
+#kt-svg .panel{fill:var(--surface);stroke:var(--line)}
+#kt-svg .lab,#ap-svg .lab{font:600 14px Inter;fill:var(--text)}
+#kt-svg .sm,#ap-svg .sm{font:500 12px Inter;fill:var(--muted)}
+#kt-svg .ico rect,#kt-svg .ico path,#kt-svg .ico circle{fill:none;stroke:var(--text-2);stroke-width:1.5}
+#kt-svg .ico .f{fill:var(--text-2);stroke:none}
+#kt-svg .w{fill:color-mix(in srgb,var(--accent) 22%,var(--surface));stroke:color-mix(in srgb,var(--accent) 55%,var(--surface));stroke-width:1.2}
+#kt-svg .w.hl{fill:var(--accent);stroke:var(--accent)}
+#kt-svg .mg rect:first-child{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.2}
+#kt-svg .mg .fill{fill:color-mix(in srgb,var(--f-region) 55%,var(--surface));stroke:none}
+#kt-svg .arr{fill:none;stroke:var(--text-2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#kt-svg .lnk{fill:none;stroke:var(--accent);stroke-width:1.2;opacity:.45}
+#kt-svg .kt-in{animation:chipin .45s ease-out both}
+#ap-svg .d{fill:var(--side-line);transition:fill .5s}
+#ap-svg .d.in2{fill:var(--accent)}
+#ap-svg .d.in3{fill:color-mix(in srgb,var(--accent) 40%,var(--surface))}
+#ap-svg .ring{fill:none;stroke-dasharray:4 4;stroke-width:1.2;transition:r .8s ease}
+#ap-svg .ring.r2{stroke:var(--accent)}
+#ap-svg .ring.r3{stroke:var(--muted)}
+#ap-svg text{paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
+#ap-svg .sud{fill:var(--text);stroke:var(--surface);stroke-width:2.5}
 .hero-viz canvas{width:440px;height:440px;max-width:100%;aspect-ratio:1;display:block}
 .hs-cap{min-height:56px;font-size:16.5px;line-height:1.45;text-align:center;max-width:440px;color:var(--text)}
 .hs-cap .pat{display:inline-flex;flex-direction:column;vertical-align:middle;margin:0 3px;border:1px solid var(--line-strong);border-radius:3px;overflow:hidden}
@@ -258,7 +278,7 @@ section{background:var(--bg)}
 /* vertical side menu, centred in the left band */
 .sidenav{position:fixed;z-index:19;top:calc(50% + 21px);left:calc((100vw - 1240px) / 4);transform:translate(-50%,-50%);display:flex;flex-direction:column;gap:clamp(10px,2.3vh,24px)}
 .sidenav .sn-gap{width:40px;align-self:center;border-top:1px solid var(--side-line);height:0;margin:clamp(10px,2.4vh,24px) 0}
-.nb{display:flex;align-items:center;justify-content:center;gap:8px;min-width:176px;padding:15px 26px;border-radius:999px;font:500 17px Inter,sans-serif;color:var(--text-2);text-decoration:none;
+.nb{display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;min-width:176px;padding:15px 26px;border-radius:999px;font:500 17px Inter,sans-serif;color:var(--text-2);text-decoration:none;
   border:1px solid var(--side-line);background:color-mix(in srgb,var(--surface) 75%,transparent);transition:all .18s}
 .nb:hover{color:var(--text);border-color:var(--text-2);background:var(--surface)}
 .nb.active{color:var(--text);background:var(--surface);border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
@@ -292,6 +312,10 @@ footer{background:var(--bg);border-top:none}
 </header>
 <nav class="sidenav" id="sidenav" aria-label="Sections">
   <a class="nb" href="#top" data-sec="top">Intro</a>
+  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <a class="nb" href="#transfer" data-sec="transfer">Transfer</a>
+  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <a class="nb" href="#approach" data-sec="approach">Approach</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#sudoku" data-sec="sudoku">Small worlds</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -331,10 +355,69 @@ footer{background:var(--bg);border-top:none}
 </div>
 </section>
 
-<!-- ============ 1. FROM SUDOKU TO A FAMILY OF WORLDS ============ -->
+<!-- ============ 1. KNOWLEDGE TRANSFER ============ -->
+<section id="transfer">
+<div class="wrap">
+  <div class="kicker">1 · What we study</div>
+  <h2>Knowledge transfer: <em>learning in some worlds, acting in others</em></h2>
+  <p class="lede">We rarely face exactly the situations we learned from.</p>
+  <div class="tabs" id="kt-steps"><button class="tab" data-s="1">1 · From class to research</button><button class="tab" data-s="2">2 · Robots</button><button class="tab" data-s="3">3 · Our simplified setting</button></div>
+  <div class="play">
+    <div><svg id="kt-svg" viewBox="0 0 520 330" width="100%" role="img" aria-label="Two sets of worlds and the transfer of knowledge between them"></svg></div>
+    <div class="stepbody">
+      <div id="kt-step1">
+        <p class="big-p">In class, we learn by solving exercises. In research, we face problems nobody has solved yet. Both are <b>sets of worlds</b>, and what we learned in the first must carry over to the second.</p>
+        <p class="note">Which knowledge carries over, and why, is the question of knowledge transfer.</p>
+        <button class="btn primary" data-kgo="2">Next: robots →</button>
+      </div>
+      <div id="kt-step2" hidden>
+        <p class="big-p">A robot meets environments that keep changing: new rooms, new objects, new rules. It cannot be trained on all of them, so we would like to <b>choose the training environments whose lessons transfer best</b> to the others.</p>
+        <p class="note">The highlighted worlds on the left are a training set; the lines show where what they teach is useful.</p>
+        <button class="btn primary" data-kgo="3">Next: our setting →</button>
+      </div>
+      <div id="kt-step3" hidden>
+        <p class="big-p">We study this question in a <b>simplified setting</b>: worlds are sets of grids defined by rules. A model learns to solve puzzles in some worlds, and we test it on puzzles of worlds it has never seen.</p>
+        <p class="note">Because worlds are built from explicit rules, we control exactly what the new worlds share with the training ones.</p>
+        <a class="btn primary" href="#approach">How we explore it ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 2. APPROACH ============ -->
+<section id="approach">
+<div class="wrap">
+  <div class="kicker">2 · How we study it</div>
+  <h2>Start from Sudoku, <em>then widen the circle</em></h2>
+  <p class="lede">Sudoku is a natural starting point: it is a standard test for small reasoning models. From there, we explore the worlds around it, observe how knowledge transfers, and progressively cover more families of worlds.</p>
+  <div class="tabs" id="ap-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Its neighbours</button><button class="tab" data-s="3">3 · Further out</button></div>
+  <div class="play">
+    <div><svg id="ap-svg" viewBox="0 0 520 360" width="100%" role="img" aria-label="A map of worlds, explored outward from Sudoku"></svg></div>
+    <div class="stepbody">
+      <div id="ap-step1">
+        <p class="big-p">Each dot is a world. <b>Sudoku</b> is one of them.</p>
+        <p class="note">Small reasoning models are trained and tested on Sudoku, so it is a well-understood place to start.</p>
+        <button class="btn primary" data-ago="2">Next: its neighbours →</button>
+      </div>
+      <div id="ap-step2" hidden>
+        <p class="big-p">This work explores the worlds <b>around Sudoku</b>: 6×6 grids whose extra rules come from a pool of 49, plus larger grids. We look for phenomena, such as when describing the rules helps or hurts.</p>
+        <p class="note">The rest of this page is about this region.</p>
+        <button class="btn primary" data-ago="3">Next: further out →</button>
+      </div>
+      <div id="ap-step3" hidden>
+        <p class="big-p">Next come wider regions: other kinds of rules, other geometries. The aim is to study <b>more and more families of worlds</b>, systematically.</p>
+        <a class="btn primary" href="#sudoku">Start around Sudoku ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 3. FROM SUDOKU TO A FAMILY OF WORLDS ============ -->
 <section id="sudoku">
 <div class="wrap">
-  <div class="kicker">1 · From Sudoku to a family of worlds</div>
+  <div class="kicker">3 · From Sudoku to a family of worlds</div>
   <h2>Reasoning benchmarks are small worlds <em>with simple rules</em></h2>
   <p class="lede">Sudoku grids, for instance.</p>
   <div class="tabs" id="sd-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Other rules</button><button class="tab" data-s="3">3 · A family of worlds</button></div>
@@ -372,7 +455,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 2. PLAYGROUND ============ -->
 <section id="play">
 <div class="wrap">
-  <div class="kicker">2 · Your own world</div>
+  <div class="kicker">4 · Your own world</div>
   <h2>Build your own world, <em>then solve a puzzle in it</em></h2>
   <p class="lede">Start from Sudoku, then swap or add rules. Each change gives a new world and a new puzzle with exactly one solution.</p>
   <div class="play">
@@ -403,7 +486,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 2. THREE SETUPS ============ -->
 <section id="setups">
 <div class="wrap">
-  <div class="kicker">3 · How does the model know which world it is in?</div>
+  <div class="kicker">5 · How does the model know which world it is in?</div>
   <h2>Three ways to tell the model the rules</h2>
   <p class="lede">The model gets a puzzle, with something placed before it in its input, a bit like a prompt. We compare three kinds of prompt.</p>
   <div class="setups">
@@ -445,7 +528,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 3. NOVELTY ============ -->
 <section id="novelty">
 <div class="wrap">
-  <div class="kicker">4 · How new is the test?</div>
+  <div class="kicker">6 · How new is the test?</div>
   <h2>Four levels of novelty</h2>
   <p class="lede">Since every world is built from known pieces, we can control exactly what is new at test time: from a fresh puzzle to a rule the model has never met.</p>
   <div class="tabs" id="nv-tabs"></div>
@@ -461,7 +544,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 4. RESULTS ============ -->
 <section id="results">
 <div class="wrap">
-  <div class="kicker">5 · What we found</div>
+  <div class="kicker">7 · What we found</div>
   <h2>Being told the rules helps, <em>until a rule is truly new</em></h2>
   <p class="lede">We trained one small reasoning model (about 1M parameters, a recurrent design similar to HRM) on puzzles from 500 worlds, then tested it level by level. Step through:</p>
 
@@ -791,6 +874,51 @@ $('#pg-solve').onclick=()=>{if(!PG.sol)return;PG.cur=PG.sol.slice();pgDraw()};
 $('#pg-random').onclick=()=>{const pool=RULES.filter(r=>r.fam!=='base').map(r=>r.id);for(let t=0;t<30;t++){const ids=shuffle(pool.slice()).slice(0,2+Math.floor(rng()*2));if(randomSolution(ids)){PG.ids=ids;break}}pgRenderPool();pgNewWorld()};
 PG.step=3;PG.ids=['BoxesRect2x3'];pgRenderPool();pgNewWorld();
 
+/* ======================= KNOWLEDGE TRANSFER (two sets of worlds) ======================= */
+(function transfer(){
+  const svg=$('#kt-svg');let seed=5;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+  const L=[],Rr=[];for(let i=0;i<9;i++)L.push([40+(i%3)*58+rnd()*14,105+Math.floor(i/3)*62+rnd()*12]);
+  for(let i=0;i<12;i++)Rr.push([318+(i%4)*48+rnd()*12,100+Math.floor(i/4)*64+rnd()*14]);
+  const PAT=[...L,...Rr].map(()=>{const m=[];for(let k=0;k<9;k++)if(rnd()<0.4)m.push(k);return m.length?m:[4]});
+  const chosen=[1,4,6];const link={1:[0,1,4,5],4:[2,5,6,9],6:[7,8,10,11]};
+  const ICON={book:'<rect x="-11" y="-8" width="10" height="16" rx="1.5"/><rect x="1" y="-8" width="10" height="16" rx="1.5"/>',
+    flask:'<path d="M-4,-10 h8 M-2.5,-10 v7 l-7,13 h19 l-7,-13 v-7" fill="none"/>',
+    robot:'<rect x="-9" y="-7" width="18" height="14" rx="3"/><circle cx="-4" cy="0" r="1.8" class="f"/><circle cx="4" cy="0" r="1.8" class="f"/><path d="M0,-7 v-5" fill="none"/><circle cx="0" cy="-13" r="1.6" class="f"/>',
+    grid:'<rect x="-10" y="-10" width="20" height="20" rx="2"/><path d="M-3.3,-10 v20 M3.3,-10 v20 M-10,-3.3 h20 M-10,3.3 h20" fill="none"/>'};
+  const TXT={1:['In class: exercises','Research: open problems','book','flask'],2:['Training environments','Environments met later','robot','robot'],3:['Training worlds','Worlds never seen','grid','grid']};
+  function world(x,y,step,hl,idx){if(step<3)return `<circle cx="${x}" cy="${y}" r="${hl?9:7.5}" class="${hl?'w hl':'w'}"/>`;
+    let g=`<g transform="translate(${x-11},${y-11})" class="${hl?'mg hl':'mg'}"><rect width="22" height="22" rx="2.5"/>`;
+    for(const k of PAT[idx])g+=`<rect x="${2+(k%3)*6.3}" y="${2+Math.floor(k/3)*6.3}" width="5.3" height="5.3" rx="1" class="fill"/>`;return g+'</g>'}
+  function draw(step){const [lt,rt,li,ri]=TXT[step];let h=`<g class="kt-in">`;
+    h+=`<rect x="14" y="44" width="200" height="260" rx="16" class="panel"/><rect x="300" y="44" width="206" height="260" rx="16" class="panel"/>`;
+    h+=`<g transform="translate(36,26)" class="ico">${ICON[li]}</g><text x="54" y="31" class="lab">${lt}</text>`;
+    h+=`<g transform="translate(322,26)" class="ico">${ICON[ri]}</g><text x="340" y="31" class="lab">${rt}</text>`;
+    if(step===2){for(const c of chosen)for(const j of link[c]){const[a,b]=L[c],[x,y]=Rr[j];h+=`<path d="M${a+9},${b} C${a+90},${b} ${x-90},${y} ${x-9},${y}" class="lnk"/>`}}
+    else h+=`<path d="M228,174 H286" class="arr"/><path d="M280,168 L288,174 L280,180" class="arr"/><text x="257" y="160" class="sm" text-anchor="middle">transfer</text>`;
+    L.forEach(([x,y],i)=>h+=world(x,y,step,step===2&&chosen.includes(i),i));Rr.forEach(([x,y],j)=>h+=world(x,y,step,false,L.length+j));
+    svg.innerHTML=h+'</g>'}
+  function go(n){document.querySelectorAll('#kt-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));[1,2,3].forEach(k=>$('#kt-step'+k).hidden=k!==n);draw(n)}
+  document.querySelectorAll('#kt-steps .tab').forEach(t=>t.onclick=()=>go(+t.dataset.s));document.querySelectorAll('[data-kgo]').forEach(b=>b.onclick=()=>go(+b.dataset.kgo));go(1);
+})();
+
+/* ======================= APPROACH: explore outward from Sudoku ======================= */
+(function approach(){
+  const svg=$('#ap-svg');let seed=21;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+  const cx=260,cy=180,P=[];for(let i=0;i<190;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*170;P.push([cx+r*Math.cos(a)*1.35,cy+r*Math.sin(a),r])}
+  const R2=70,R3=135;
+  function draw(step){let h='';
+    const r2=step>=2?R2:0,r3=step>=3?R3:0;
+    h+=`<circle cx="${cx}" cy="${cy}" r="${r3}" class="ring r3" style="transform-origin:${cx}px ${cy}px;transform:scaleX(1.35)"/>`;
+    h+=`<circle cx="${cx}" cy="${cy}" r="${r2}" class="ring r2" style="transform-origin:${cx}px ${cy}px;transform:scaleX(1.35)"/>`;
+    P.forEach(([x,y,r])=>{const cls=r<=r2?'d in2':(r<=r3?'d in3':'d');h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" class="${cls}"/>`});
+    h+=`<circle cx="${cx}" cy="${cy}" r="7" class="sud"/><text x="${cx}" y="${cy-14}" text-anchor="middle" class="lab">Sudoku</text>`;
+    if(step>=2)h+=`<text x="${cx}" y="${cy+R2+16}" text-anchor="middle" class="sm">this work</text>`;
+    if(step>=3)h+=`<text x="${cx}" y="${cy+R3+16}" text-anchor="middle" class="sm">next</text>`;
+    svg.innerHTML=h}
+  function go(n){document.querySelectorAll('#ap-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));[1,2,3].forEach(k=>$('#ap-step'+k).hidden=k!==n);draw(n)}
+  document.querySelectorAll('#ap-steps .tab').forEach(t=>t.onclick=()=>go(+t.dataset.s));document.querySelectorAll('[data-ago]').forEach(b=>b.onclick=()=>go(+b.dataset.ago));go(1);
+})();
+
 /* ======================= SUDOKU -> FAMILY OF WORLDS ======================= */
 (function sudoku(){
   const cells=buildGrid($('#sd-grid'));let timer=null,step=1;
@@ -1030,7 +1158,7 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
 (function spy(){const links=[...document.querySelectorAll('#sidenav [data-sec]')];
   const set=id=>links.forEach(a=>a.classList.toggle('active',a.dataset.sec===id));
   const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
-  ['top','sudoku','play','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
+  ['top','transfer','approach','sudoku','play','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
 $('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
 </script>
 </body>
