@@ -1180,7 +1180,8 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
 // highlight the side-menu entry of the section in view
 (function spy(){const links=[...document.querySelectorAll('#sidenav [data-sec]')];
   const set=id=>links.forEach(a=>a.classList.toggle('active',a.dataset.sec===id));
-  const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
+  const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.tagName==='FOOTER'?'results':e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
+  sio.observe(document.querySelector('footer'));
   ['top','transfer','sudoku','play','approach','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
 $('#copy-bib').onclick=async()=>{try{await navigator.clipboard.writeText($('#bibtex').textContent);$('#copy-bib').textContent='Copied'}catch(e){$('#copy-bib').textContent='Select the text above to copy'}};
 </script>
