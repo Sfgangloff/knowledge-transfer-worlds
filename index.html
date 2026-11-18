@@ -223,6 +223,14 @@ footer{padding:48px 0 80px;border-top:1px solid var(--line);color:var(--text-2);
 #ap-svg .ring.r2{stroke:var(--accent)}
 #ap-svg .ring.r3{stroke:var(--muted)}
 #ap-svg text{paint-order:stroke;stroke:var(--bg);stroke-width:5px;stroke-linejoin:round}
+#ap-svg .out{stroke:var(--accent);stroke-width:1.8;fill:none;animation:chipin .6s ease-out both}
+#ap-svg .out.far{stroke:var(--muted);stroke-dasharray:3 3;opacity:.7}
+#ap-svg .ah{fill:var(--accent)}
+#ap-svg .ah2{fill:var(--muted)}
+.cycle{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 18px}
+.cycle span{padding:5px 11px;border:1px solid var(--line);border-radius:999px;background:var(--surface);font-size:13.5px}
+.cycle i{font-style:normal;color:var(--accent)}
+.cycle i.loop{font-size:18px}
 #ap-svg .sud{fill:var(--text);stroke:var(--surface);stroke-width:2.5}
 .hero-viz canvas{width:440px;height:440px;max-width:100%;aspect-ratio:1;display:block}
 .hs-cap{min-height:56px;font-size:16.5px;line-height:1.45;text-align:center;max-width:440px;color:var(--text)}
@@ -470,7 +478,7 @@ footer{background:var(--bg);border-top:none}
 <section id="approach">
 <div class="wrap">
   <div class="kicker">4 · How we study it</div>
-  <h2>Starting from reasoning benchmarks, <em>then widening the circle</em></h2>
+  <h2>Expanding progressively <em>from reasoning benchmarks</em></h2>
   <p class="lede">Sudoku is a natural starting point: it is a standard test for small reasoning models. From there, we explore the worlds around it, observe how knowledge transfers, and progressively cover more families of worlds.</p>
   <div class="tabs" id="ap-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Its neighbours</button><button class="tab" data-s="3">3 · Further out</button></div>
   <div class="play">
@@ -487,7 +495,8 @@ footer{background:var(--bg);border-top:none}
         <button class="btn primary" data-ago="3">Next: further out →</button>
       </div>
       <div id="ap-step3" hidden>
-        <p class="big-p">Next come wider regions: other kinds of rules, other geometries. The aim is to study <b>more and more families of worlds</b>, systematically.</p>
+        <p class="big-p">Each region prepares the next: we observe phenomena, turn them into hypotheses, and test these on <b>wider and wider families of worlds</b>, such as other kinds of rules or other geometries.</p>
+        <div class="cycle"><span>observe phenomena</span><i>→</i><span>formulate hypotheses</span><i>→</i><span>test on wider families</span><i class="loop">↺</i></div>
         <a class="btn primary" href="#setups">Read on ↓</a>
       </div>
     </div>
@@ -929,14 +938,18 @@ PG.step=3;PG.ids=['BoxesRect2x3'];pgRenderPool();pgNewWorld();
   const svg=$('#ap-svg');let seed=21;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
   const cx=260,cy=180,P=[];for(let i=0;i<190;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*170;P.push([cx+r*Math.cos(a)*1.35,cy+r*Math.sin(a),r])}
   const R2=70,R3=135;
-  function draw(step){let h='';
+  function draw(step){let h='<defs><marker id="aph" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah"/></marker><marker id="aph2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="ah2"/></marker></defs>';
     const r2=step>=2?R2:0,r3=step>=3?R3:0;
     h+=`<circle cx="${cx}" cy="${cy}" r="${r3}" class="ring r3" style="transform-origin:${cx}px ${cy}px;transform:scaleX(1.35)"/>`;
     h+=`<circle cx="${cx}" cy="${cy}" r="${r2}" class="ring r2" style="transform-origin:${cx}px ${cy}px;transform:scaleX(1.35)"/>`;
     P.forEach(([x,y,r])=>{const cls=r<=r2?'d in2':(r<=r3?'d in3':'d');h+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.2" class="${cls}"/>`});
     h+=`<circle cx="${cx}" cy="${cy}" r="7" class="sud"/><text x="${cx}" y="${cy-14}" text-anchor="middle" class="lab">Sudoku</text>`;
     if(step>=2)h+=`<text x="${cx}" y="${cy+R2+16}" text-anchor="middle" class="sm">this work</text>`;
-    if(step>=3)h+=`<text x="${cx}" y="${cy+R3+16}" text-anchor="middle" class="sm">next</text>`;
+    if(step>=3){h+=`<text x="${cx}" y="${cy+R3+16}" text-anchor="middle" class="sm">next</text>`;
+      const pt=(r,a)=>[cx+1.35*r*Math.cos(a),cy+r*Math.sin(a)];
+      [-0.5,0.55,2.45,3.6].forEach(a=>{const[x1,y1]=pt(R2+6,a),[x2,y2]=pt(R3-8,a),[x3,y3]=pt(R3+8,a),[x4,y4]=pt(R3+40,a);
+        h+=`<path d="M${x1.toFixed(1)},${y1.toFixed(1)} L${x2.toFixed(1)},${y2.toFixed(1)}" class="out" marker-end="url(#aph)"/>`;
+        h+=`<path d="M${x3.toFixed(1)},${y3.toFixed(1)} L${x4.toFixed(1)},${y4.toFixed(1)}" class="out far" marker-end="url(#aph2)"/>`})}
     svg.innerHTML=h}
   function go(n){document.querySelectorAll('#ap-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));[1,2,3].forEach(k=>$('#ap-step'+k).hidden=k!==n);draw(n)}
   document.querySelectorAll('#ap-steps .tab').forEach(t=>t.onclick=()=>go(+t.dataset.s));document.querySelectorAll('[data-ago]').forEach(b=>b.onclick=()=>go(+b.dataset.ago));go(1);
