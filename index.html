@@ -106,7 +106,15 @@ p{max-width:720px}
 .ruleinfo{font-size:13px;color:var(--text);background:var(--surface-2);border-radius:8px;padding:8px 10px;min-height:54px;margin-top:4px}
 .sd-rules .ri.hl{background:var(--surface-2)}
 .sd-rules .ri.hl b{color:var(--accent)}
-.sd-gallery{display:grid;grid-template-columns:repeat(3,132px);gap:18px 16px;margin-top:4px}
+.sd-gallery{display:grid;grid-template-columns:repeat(3,160px);gap:16px 20px;margin-top:4px}
+.sd-stack{position:relative;width:132px;height:132px;margin-top:24px}
+.sd-stack .grid{position:absolute;left:0;top:0}
+.sd-stack .grid.back{pointer-events:none;box-shadow:none}
+.sd-stack .grid.back .cell{color:transparent}
+.sd-stack .grid.b3{transform:translate(21px,-21px);opacity:.4}
+.sd-stack .grid.b2{transform:translate(14px,-14px);opacity:.6}
+.sd-stack .grid.b1{transform:translate(7px,-7px);opacity:.85}
+.sd-stack .grid.top{position:relative}
 .sd-gallery figure{margin:0}
 .sd-gallery figcaption{font-size:11.5px;color:var(--text-2);margin-top:6px;line-height:1.35}
 .big-p{font-size:19px;line-height:1.5;margin:0 0 12px}
@@ -352,6 +360,7 @@ footer{background:var(--bg);border-top:none}
       </div>
       <div id="sd-step3" hidden>
         <p class="big-p">Mixing rules from a common pool gives a whole <b>family of small worlds</b> that share the same base.</p>
+        <p class="note">Each stack on the left is one world: all the grids that obey its rules. Only one of them is shown.</p>
         <p class="note">In the paper, every world keeps the rows-and-columns rule and adds 2–4 rules from a pool of 49. That makes thousands of related worlds, on which a model can be trained and then tested on worlds it has never seen.</p>
         <a class="btn primary" href="#play">Try one yourself ↓</a>
       </div>
@@ -800,7 +809,9 @@ PG.step=3;PG.ids=['BoxesRect2x3'];pgRenderPool();pgNewWorld();
     $('#sd-info').innerHTML=`<b>${R[id].label}${id==='BoxesRect2x3'?' (Sudoku)':''}.</b> ${R[id].tip}`}
   const FAMILY=[['BoxesRect2x3','AntiKing'],['MainDiagonal','AntiDiagonal'],['AntiKnight','Corners'],['BoxesRect3x2','RowLink16k3'],['OddMain','EvenAnti','CenterWindow'],['ScatteredRect2x3','ColLink16k2']];
   function gallery(){const g=$('#sd-gallery');if(g.childElementCount)return;FAMILY.forEach(ids=>{const sol=randomSolution(ids);if(!sol)return;
-    const f=el('figure');const gr=el('div','grid xs');f.appendChild(gr);const cs=buildGrid(gr);paint(cs,sol);boxLines(cs,ids);
+    const f=el('figure'),st=el('div','sd-stack');f.appendChild(st);
+    ['b3','b2','b1'].forEach(k=>{const b=el('div','grid xs back '+k);st.appendChild(b);buildGrid(b)});   // other grids of the same world, symbols hidden
+    const gr=el('div','grid xs top');st.appendChild(gr);const cs=buildGrid(gr);paint(cs,sol);boxLines(cs,ids);
     f.appendChild(el('figcaption',null,ids.map(id=>R[id].label).join(' + ')));g.appendChild(f)})}
   function go(n){step=n;clearInterval(timer);
     document.querySelectorAll('#sd-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));
