@@ -379,6 +379,20 @@ footer{background:var(--bg);border-top:none}
   .lb[data-tip]:hover::after,.lb[data-tip]:focus-visible::after{transform:translate(50%,0)}
   .lb[data-tip="Project philosophy"]::after{right:0;transform:translate(0,6px)}
   .lb[data-tip="Project philosophy"]:hover::after{transform:none}}
+/* puzzle construction */
+.pz-count{margin-top:12px;font-size:14px;color:var(--text-2);min-height:22px}
+.pz-count b{color:var(--text)}.pz-count .bad{color:var(--bad);font-weight:600}
+.cell.pz-try{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+.cell.pz-gone{background:var(--surface-2)}
+.cell.pz-rej{background:var(--bad-bg);box-shadow:inset 0 0 0 2px var(--bad)}
+.cell.pz-rej span{color:var(--text)}
+.cell.pz-alt span{color:var(--bad);font-style:italic}
+.cell.pz-alt{background:color-mix(in srgb,var(--bad-bg) 60%,transparent)}
+.pz-steps{margin:0 0 14px;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+.pz-steps li{color:var(--muted);transition:color .25s;line-height:1.45;font-size:16px}
+.pz-steps li b{font-weight:600}
+.pz-steps li.on{color:var(--text)}
+.pz-steps li::marker{font-weight:600}
 </style>
 </head>
 <body>
@@ -390,6 +404,8 @@ footer{background:var(--bg);border-top:none}
   <a class="nb" href="#top" data-sec="top">Intro</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#sudoku" data-sec="sudoku">Small worlds</a>
+  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <a class="nb" href="#puzzle" data-sec="puzzle">Puzzles</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#play" data-sec="play">Your world</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -563,8 +579,37 @@ footer{background:var(--bg);border-top:none}
         <p class="big-p">Mixing rules from a common pool gives a whole <b>family of small worlds</b> that share the same base.</p>
         <p class="note">Each stack on the left is one world: all the grids that obey its rules. Only one of them is shown.</p>
         <p class="note">In the paper, every world keeps the rows-and-columns rule and adds 2–4 rules from a pool of 49. That makes thousands of related worlds, on which a model can be trained and then tested on worlds it has never seen.</p>
-        <a class="btn primary" href="#play">Try one yourself ↓</a>
+        <a class="btn primary" href="#puzzle">Next: puzzles ↓</a>
       </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ============ 2. PUZZLES ============ -->
+<section id="puzzle">
+<div class="wrap">
+  <div class="kicker">2 · Puzzles</div>
+  <h2>A puzzle is a partial grid <em>with exactly one completion</em></h2>
+  <p class="lede">To make one, we start from a full grid of the world and blank cells one at a time, as long as the solution stays unique.</p>
+  <div class="play">
+    <div>
+      <div class="grid" id="pz-grid"></div>
+      <div class="pz-count" id="pz-count"></div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn small" id="pz-pause">Pause</button>
+        <button class="btn small" id="pz-new">Another grid</button>
+      </div>
+    </div>
+    <div class="stepbody">
+      <ol class="pz-steps" id="pz-steps">
+        <li data-ph="full"><b>Start from a full grid</b> of the world, here Sudoku (rows, columns and 2×3 boxes), sampled by a solver.</li>
+        <li data-ph="blank"><b>Blank a random cell.</b> The solver checks that the remaining cells still have only one completion.</li>
+        <li data-ph="back"><b>If a second completion appears, put the cell back.</b> The other completion is shown in red.</li>
+        <li data-ph="done"><b>Stop</b> when every cell has been tried. What is left is the puzzle.</li>
+      </ol>
+      <p class="note">Uniqueness makes the answer checkable: a model's output is right only if it matches the solution exactly. In our datasets we stop earlier, at a calibrated number of blank cells (at least 14 of the 36), so that puzzles are about as hard as a 9×9 Sudoku.</p>
+      <a class="btn primary" href="#play">Build your own world ↓</a>
     </div>
   </div>
 </div>
@@ -573,7 +618,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 3. PLAYGROUND ============ -->
 <section id="play">
 <div class="wrap">
-  <div class="kicker">2 · Your own world</div>
+  <div class="kicker">3 · Your own world</div>
   <h2>Build your own world, <em>then solve a puzzle in it</em></h2>
   <p class="lede">Start from Sudoku, then swap or add rules. Each change gives a new world and a new puzzle with exactly one solution.</p>
   <div class="play">
@@ -604,7 +649,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 4. APPROACH ============ -->
 <section id="approach">
 <div class="wrap">
-  <div class="kicker">3 · How we study it</div>
+  <div class="kicker">4 · How we study it</div>
   <h2>Expanding progressively <em>from reasoning benchmarks</em></h2>
   <p class="lede">Sudoku is a natural starting point: it is a standard test for small reasoning models. From there, we explore the worlds around it, observe how knowledge transfers, and progressively cover more families of worlds.</p>
   <div class="tabs" id="ap-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Its neighbours</button><button class="tab" data-s="3">3 · Further out</button></div>
@@ -634,7 +679,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 2. THREE SETUPS ============ -->
 <section id="setups">
 <div class="wrap">
-  <div class="kicker">4 · How does the model know which world it is in?</div>
+  <div class="kicker">5 · How does the model know which world it is in?</div>
   <h2>Three ways to tell the model the rules</h2>
   <p class="lede">The model gets a puzzle, with something placed before it in its input, a bit like a prompt. We compare three kinds of prompt.</p>
   <div class="setups">
@@ -676,7 +721,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 3. NOVELTY ============ -->
 <section id="novelty">
 <div class="wrap">
-  <div class="kicker">5 · How new is the test?</div>
+  <div class="kicker">6 · How new is the test?</div>
   <h2>Four levels of novelty</h2>
   <p class="lede">Since every world is built from known pieces, we can control exactly what is new at test time: from a fresh puzzle to a rule the model has never met.</p>
   <div class="tabs" id="nv-tabs"></div>
@@ -692,7 +737,7 @@ footer{background:var(--bg);border-top:none}
 <!-- ============ 4. RESULTS ============ -->
 <section id="results">
 <div class="wrap">
-  <div class="kicker">6 · What we found</div>
+  <div class="kicker">7 · What we found</div>
   <h2>Being told the rules helps, <em>until a rule is truly new</em></h2>
   <p class="lede">We trained one small reasoning model (about 1M parameters, a recurrent design similar to HRM) on puzzles from 500 worlds, then tested it level by level. Step through:</p>
 
@@ -966,6 +1011,37 @@ window.heroRenderAt=renderAt;window.heroDuration=DURATION;
 })();
 
 /* ======================= PLAYGROUND ======================= */
+// ---------- puzzle construction animation ----------
+(function puzzleAnim(){
+  const IDS=['BoxesRect2x3'],C=compile(IDS),cells=buildGrid($('#pz-grid'));shadeRule(cells,'BoxesRect2x3');
+  const steps=[...document.querySelectorAll('#pz-steps li')],cnt=$('#pz-count'),pb=$('#pz-pause');
+  let sol,events,k,timer=null,playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,visible=false,started=false,cur,phase;
+  const ph=x=>{phase=x;steps.forEach(li=>li.classList.toggle('on',li.dataset.ph===x))};
+  const count=(b,extra='')=>{cnt.innerHTML=`Blank cells: <b>${b}</b>${extra}`};
+  function prepare(){for(let a=0;a<6;a++){if(build()<=16)break}k=0;cur=sol.slice();cells.forEach(c=>c.classList.remove('pz-gone','pz-try','pz-rej','pz-alt'));paint(cells,cur,cur);ph('full');count(0)}
+  function build(){sol=randomSolution(IDS);const p=sol.slice();events=[];let blanks=0,first=99;
+    for(const i of shuffle(range(36))){const t=p[i];p[i]=0;const r=solve(C,p,{maxSol:2,nodeLimit:40000});
+      if(r.sols.length===1&&!r.aborted){blanks++;events.push({i,ok:true})}else{p[i]=t;first=Math.min(first,blanks);const alt=r.sols.find(s=>s.some((v,j)=>v!==sol[j]));events.push({i,ok:false,alt})}}
+    return first}
+  function clearMarks(){cells.forEach((c,j)=>{c.classList.remove('pz-try','pz-rej','pz-alt');c.querySelector('span').textContent=cur[j]||''})}
+  function tick(){timer=null;if(!playing||!visible)return;
+    if(phase==='full'){ph('blank');return sched(500)}
+    if(k>=events.length){if(phase!=='done'){clearMarks();ph('done');count(cur.filter(v=>!v).length);return sched(4200)}prepare();return sched(1800)}
+    const e=events[k];
+    if(e.stage===undefined){clearMarks();e.stage=1;cells[e.i].classList.add('pz-try');ph('blank');return sched(e.ok?380:520)}
+    if(e.ok){cur[e.i]=0;cells[e.i].classList.remove('pz-try');cells[e.i].classList.add('pz-gone');cells[e.i].querySelector('span').textContent='';count(cur.filter(v=>!v).length);delete e.stage;k++;return sched(300)}
+    if(e.stage===1){e.stage=2;ph('back');cells[e.i].classList.remove('pz-try');cells[e.i].classList.add('pz-rej');
+      if(e.alt)e.alt.forEach((v,j)=>{if(v!==sol[j]){cells[j].classList.add('pz-alt');cells[j].querySelector('span').textContent=v}});
+      count(cur.filter(v=>!v).length,' · <span class="bad">two completions: the cell goes back</span>');return sched(1900)}
+    clearMarks();count(cur.filter(v=>!v).length);delete e.stage;k++;return sched(250)}
+  const sched=ms=>{timer=setTimeout(tick,ms)};
+  const kick=()=>{if(!timer&&playing&&visible)sched(phase==='full'?1400:200)};
+  pb.onclick=()=>{playing=!playing;pb.textContent=playing?'Pause':'Play';if(playing)kick();else{clearTimeout(timer);timer=null}};
+  if(!playing)pb.textContent='Play';
+  $('#pz-new').onclick=()=>{clearTimeout(timer);timer=null;prepare();kick()};
+  prepare();
+  new IntersectionObserver(es=>es.forEach(e=>{visible=e.isIntersecting;if(visible)kick();else{clearTimeout(timer);timer=null}}),{threshold:.35}).observe($('#pz-grid'));
+})();
 const PG={ids:[],sol:null,puzzle:null,cur:null,sel:-1,step:3};
 const pgCells=buildGrid($('#pg-grid'));
 function pgRenderPool(){
@@ -1320,7 +1396,7 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
   const set=id=>links.forEach(a=>a.classList.toggle('active',a.dataset.sec===id));
   const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.tagName==='FOOTER'?'results':e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
   sio.observe(document.querySelector('footer'));
-  ['top','sudoku','play','approach','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
+  ['top','sudoku','puzzle','play','approach','setups','novelty','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
 // philosophy frame 4: rules combined in training or not
 (function choose(){const svg=$('#ch-svg');
   const chip=(x,y,k,lab,dash)=>`<g transform="translate(${x},${y})"><rect width="30" height="20" rx="6" class="ch ch${k}${dash?' new':''}"/><text x="15" y="14" class="cl">${lab}</text></g>`;
