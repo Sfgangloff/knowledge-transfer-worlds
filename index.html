@@ -421,9 +421,9 @@ footer{background:var(--bg);border-top:none}
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#novelty" data-sec="novelty">Novelty</a>
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-  <a class="nb" href="#approach" data-sec="approach">Approach</a>
-  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#results" data-sec="results">Results</a>
+  <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <a class="nb" href="#approach" data-sec="approach">Expand</a>
 </nav>
 <div class="sidelinks" aria-label="Paper and code">
     <a class="lb" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener" data-tip="Paper" aria-label="Paper on arXiv"><svg class="ax-big" viewBox="84 -4 82 112" aria-hidden="true"><path d="M127.98,55.61l-32.74,38.85c-1.29,1.37-2.08,3.78-1.36,5.5.75,1.8,2.46,2.91,4.4,2.91,1.09,0,1.99-.38,3.16-1.56l40.19-42.71c1.6-1.69,1.62-4.33.04-6.04l-13.68,3.05Z" style="fill:var(--ax-red)"/><path d="M127.98,55.61l31.19-38.27c1.49-1.99,2.2-3.03,1.49-4.72-.74-1.77-2.59-3.16-4.48-3.16h0c-1.06,0-1.72.09-3.01,1.11l-38.63,41.76c-1.72,1.84-1.71,4.7.02,6.53l47.79,51.07c1.02,1.05,2.05,1.19,3.14,1.19,1.93,0,3.19-1.14,4.03-2.82.72-1.73-.08-3.44-1.4-5.23l-40.12-47.46" style="fill:var(--ax-grey)"/><path d="M141.67,52.56L95,2.13S93.29.04,91.48,0s-3.6,1.02-4.34,2.79c-.7,1.69-.2,2.88,1.35,5.1l40.09,48.42" style="fill:var(--ax-red)"/></svg></a>
@@ -714,40 +714,10 @@ footer{background:var(--bg);border-top:none}
 </div>
 </section>
 
-<!-- ============ 6. APPROACH ============ -->
-<section id="approach">
-<div class="wrap">
-  <div class="kicker">6 · Approach</div>
-  <h2>Expanding progressively <em>from reasoning benchmarks</em></h2>
-  <p class="lede">Sudoku is a natural starting point: it is a standard test for small reasoning models. From there, we explore the worlds around it, observe how knowledge transfers, and progressively cover more families of worlds.</p>
-  <div class="tabs" id="ap-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Its neighbours</button><button class="tab" data-s="3">3 · Further out</button></div>
-  <div class="play">
-    <div><svg id="ap-svg" viewBox="0 0 520 360" width="100%" role="img" aria-label="A map of worlds, explored outward from Sudoku"></svg></div>
-    <div class="stepbody">
-      <div id="ap-step1">
-        <p class="big-p">Each dot is a world. <b>Sudoku</b> is one of them.</p>
-        <p class="note">Small reasoning models are trained and tested on Sudoku, so it is a well-understood place to start.</p>
-        <button class="btn primary" data-ago="2">Next: its neighbours →</button>
-      </div>
-      <div id="ap-step2" hidden>
-        <p class="big-p">This work explores the worlds <b>around Sudoku</b>: 6×6 grids whose extra rules come from a pool of 49, plus larger grids. We look for phenomena, such as when describing the rules helps or hurts.</p>
-        <p class="note">The rest of this page is about this region.</p>
-        <button class="btn primary" data-ago="3">Next: further out →</button>
-      </div>
-      <div id="ap-step3" hidden>
-        <p class="big-p">Each region prepares the next: we observe phenomena, turn them into hypotheses, and test these on <b>wider and wider families of worlds</b>, such as other kinds of rules or other geometries.</p>
-        <div class="cycle"><span>observe phenomena</span><i>→</i><span>formulate hypotheses</span><i>→</i><span>test on wider families</span><i class="loop">↺</i></div>
-        <a class="btn primary" href="#results">Read on ↓</a>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- ============ 7. RESULTS ============ -->
+<!-- ============ 6. RESULTS ============ -->
 <section id="results">
 <div class="wrap">
-  <div class="kicker">7 · Results</div>
+  <div class="kicker">6 · Results</div>
   <h2>Being told the rules helps, <em>until a rule is truly new</em></h2>
   <p class="lede">We trained one small reasoning model (about 1M parameters, a recurrent design similar to HRM) on puzzles from 500 worlds, then tested it level by level. Step through:</p>
 
@@ -786,7 +756,37 @@ footer{background:var(--bg);border-top:none}
 </div>
 </section>
 
-<footer>
+<!-- ============ 7. APPROACH ============ -->
+<section id="approach">
+<div class="wrap">
+  <div class="kicker">7 · Expand</div>
+  <h2>Expanding progressively <em>from reasoning benchmarks</em></h2>
+  <p class="lede">Sudoku is a natural starting point: it is a standard test for small reasoning models. From there, we explore the worlds around it, observe how knowledge transfers, and progressively cover more families of worlds.</p>
+  <div class="tabs" id="ap-steps"><button class="tab" data-s="1">1 · Sudoku</button><button class="tab" data-s="2">2 · Its neighbours</button><button class="tab" data-s="3">3 · Further out</button></div>
+  <div class="play">
+    <div><svg id="ap-svg" viewBox="0 0 520 360" width="100%" role="img" aria-label="A map of worlds, explored outward from Sudoku"></svg></div>
+    <div class="stepbody">
+      <div id="ap-step1">
+        <p class="big-p">Each dot is a world. <b>Sudoku</b> is one of them.</p>
+        <p class="note">Small reasoning models are trained and tested on Sudoku, so it is a well-understood place to start.</p>
+        <button class="btn primary" data-ago="2">Next: its neighbours →</button>
+      </div>
+      <div id="ap-step2" hidden>
+        <p class="big-p">This work explores the worlds <b>around Sudoku</b>: 6×6 grids whose extra rules come from a pool of 49, plus larger grids. We look for phenomena, such as when describing the rules helps or hurts.</p>
+        <p class="note">The rest of this page is about this region.</p>
+        <button class="btn primary" data-ago="3">Next: further out →</button>
+      </div>
+      <div id="ap-step3" hidden>
+        <p class="big-p">Each region prepares the next: we observe phenomena, turn them into hypotheses, and test these on <b>wider and wider families of worlds</b>, such as other kinds of rules or other geometries.</p>
+        <div class="cycle"><span>observe phenomena</span><i>→</i><span>formulate hypotheses</span><i>→</i><span>test on wider families</span><i class="loop">↺</i></div>
+        <a class="btn primary" href="#footer">Read on ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer id="footer">
 <div class="wrap">
   <h3 style="color:var(--text)">Why this setup</h3>
   <p>It lets us study knowledge transfer <b>systematically</b>. Every world is built from explicit rules, so we control exactly what is new at test time (a new puzzle, a new mix of known rules, a rule never seen) and how much related structure the training data contains, without relying on human visual conventions as benchmarks such as ARC-AGI do. It also lets us <b>compare reasoning architectures across environments</b>: published models already behave differently, some reading rule descriptions well but hardly using examples.</p>
@@ -1404,9 +1404,9 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
 // highlight the side-menu entry of the section in view
 (function spy(){const links=[...document.querySelectorAll('#sidenav [data-sec]')];
   const set=id=>links.forEach(a=>a.classList.toggle('active',a.dataset.sec===id));
-  const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.tagName==='FOOTER'?'results':e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
+  const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.tagName==='FOOTER'?'approach':e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
   sio.observe(document.querySelector('footer'));
-  ['top','sudoku','puzzle','play','setups','novelty','approach','results'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
+  ['top','sudoku','puzzle','play','setups','novelty','results','approach'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
 // philosophy frame 4: rules combined in training or not
 (function choose(){const svg=$('#ch-svg');
   const chip=(x,y,k,lab,dash)=>`<g transform="translate(${x},${y})"><rect width="30" height="20" rx="6" class="ch ch${k}${dash?' new':''}"/><text x="15" y="14" class="cl">${lab}</text></g>`;
