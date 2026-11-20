@@ -70,20 +70,6 @@
   "page": "https://commons.wikimedia.org/wiki/File:Maagdenhuis_keuken_kookles_PK-F-A.01283.jpg"
  },
  {
-  "file": "forecast.jpg",
-  "title": "NOAA Weather Forecast Map noaa 20011121.gif",
-  "license": "Public domain",
-  "author": "Weather Prediction Center of National Oceanic and Atmospheric Administration",
-  "page": "https://commons.wikimedia.org/wiki/File:NOAA_Weather_Forecast_Map_noaa_20011121.gif"
- },
- {
-  "file": "papyrus.jpg",
-  "title": "P. Oxy. I 29.jpg",
-  "license": "Public domain",
-  "author": "Euclid",
-  "page": "https://commons.wikimedia.org/wiki/File:P._Oxy._I_29.jpg"
- },
- {
   "file": "mars1.jpg",
   "title": "Curiosity Sends a Postcard From Mount Sharp’s Boxwork Region (PIA26680).jpg",
   "license": "Public domain",
@@ -124,5 +110,47 @@
   "license": "Public domain",
   "author": "NASA/Dave Scott/Jim Irwin",
   "page": "https://commons.wikimedia.org/wiki/File:High_Resolution_Mt._Hadley_Composite.jpg"
+ },
+ {
+  "file": "fids.jpg",
+  "title": "Prague Airport Flight Information Display (2018-06-03 14.48.52 Piqsels.com).jpg",
+  "license": "CC0",
+  "author": "Unknown authorUnknown author",
+  "page": "https://commons.wikimedia.org/wiki/File:Prague_Airport_Flight_Information_Display_(2018-06-03_14.48.52_Piqsels.com).jpg"
+ },
+ {
+  "file": "nv0.jpg",
+  "title": "Intersection Almost Jammed Up.jpg",
+  "license": "Public domain",
+  "author": "Ingolfson",
+  "page": "https://commons.wikimedia.org/wiki/File:Intersection_Almost_Jammed_Up.jpg"
+ },
+ {
+  "file": "nv1.jpg",
+  "title": "Roundabout with surrounding buildings.jpg",
+  "license": "Public domain",
+  "author": "Nathan Palmer",
+  "page": "https://commons.wikimedia.org/wiki/File:Roundabout_with_surrounding_buildings.jpg"
+ },
+ {
+  "file": "nv2.jpg",
+  "title": "Verkeer op de Lenbachplatz in de sneeuw, Bestanddeelnr 254-3711.jpg",
+  "license": "CC0",
+  "author": "Willem van de Poll",
+  "page": "https://commons.wikimedia.org/wiki/File:Verkeer_op_de_Lenbachplatz_in_de_sneeuw,_Bestanddeelnr_254-3711.jpg"
+ },
+ {
+  "file": "nv3.jpg",
+  "title": "Taylor-Aerocar-III.jpg",
+  "license": "Public domain",
+  "author": "Original uploader was JimCollaborator at en.wikipedia",
+  "page": "https://commons.wikimedia.org/wiki/File:Taylor-Aerocar-III.jpg"
+ },
+ {
+  "file": "qr_damaged.png",
+  "title": "Generated for this page",
+  "license": "CC0",
+  "author": "the authors",
+  "page": ""
  }
 ]
