@@ -410,7 +410,8 @@ footer{background:var(--bg);border-top:none}
 .phn p{font-size:14.5px;color:var(--text-2);margin:0 0 10px}
 .contact-pop{position:fixed;z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px -20px rgba(20,30,50,.35);padding:16px 18px;width:max-content;max-width:calc(100vw - 16px)}
 .cp-t{font:600 12px Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--text-2);margin-bottom:6px}
-.cp-mail{font:500 18px Inter,sans-serif;color:var(--text);user-select:all;margin-bottom:12px}
+.cp-mail{font:400 14px Inter,sans-serif;color:var(--text-2);margin-bottom:12px;display:flex;flex-direction:column;gap:4px}
+.cp-mail span{font:500 16px Inter,sans-serif;color:var(--text);user-select:all}
 .cp-row{display:flex;gap:8px;flex-wrap:wrap}
 .lb.open::after{display:none}
 .philo-intro{max-width:760px;margin:18px 0 0 64px;padding-right:64px;font-size:17px;line-height:1.55;color:var(--text-2)}
@@ -443,12 +444,12 @@ footer{background:var(--bg);border-top:none}
     <a class="lb" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener" data-tip="Paper" aria-label="Paper on arXiv"><svg class="ax-big" viewBox="84 -4 82 112" aria-hidden="true"><path d="M127.98,55.61l-32.74,38.85c-1.29,1.37-2.08,3.78-1.36,5.5.75,1.8,2.46,2.91,4.4,2.91,1.09,0,1.99-.38,3.16-1.56l40.19-42.71c1.6-1.69,1.62-4.33.04-6.04l-13.68,3.05Z" style="fill:var(--ax-red)"/><path d="M127.98,55.61l31.19-38.27c1.49-1.99,2.2-3.03,1.49-4.72-.74-1.77-2.59-3.16-4.48-3.16h0c-1.06,0-1.72.09-3.01,1.11l-38.63,41.76c-1.72,1.84-1.71,4.7.02,6.53l47.79,51.07c1.02,1.05,2.05,1.19,3.14,1.19,1.93,0,3.19-1.14,4.03-2.82.72-1.73-.08-3.44-1.4-5.23l-40.12-47.46" style="fill:var(--ax-grey)"/><path d="M141.67,52.56L95,2.13S93.29.04,91.48,0s-3.6,1.02-4.34,2.79c-.7,1.69-.2,2.88,1.35,5.1l40.09,48.42" style="fill:var(--ax-red)"/></svg></a>
     <a class="lb" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener" data-tip="Code" aria-label="Code on GitHub"><svg class="gh-big" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
     <a class="lb" href="#philosophy" data-philo data-tip="Project philosophy" aria-label="Project philosophy"><svg class="ph-big" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5 L12 2 L21 5.5 Z" fill="currentColor" stroke-width="1.2"/><path d="M4 7.5 H20"/><path d="M6.5 9.5 V18 M10 9.5 V18 M14 9.5 V18 M17.5 9.5 V18"/><path d="M4.5 20 H19.5 M3 22 H21"/></svg></a>
-    <a class="lb" href="mailto:sfgangloff@gmail.com?subject=Knowledge%20transfer%20between%20simple%20discrete%20worlds" id="contact-btn" data-tip="Contact us" aria-label="Contact us by email" aria-haspopup="dialog"><svg class="ph-big" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3.5 6.5 L12 13 L20.5 6.5"/></svg></a>
+    <a class="lb" href="mailto:sfgangloff@gmail.com,jan.hula@osu.cz?subject=Knowledge%20transfer%20between%20simple%20discrete%20worlds" id="contact-btn" data-tip="Contact us" aria-label="Contact us by email" aria-haspopup="dialog"><svg class="ph-big" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3.5 6.5 L12 13 L20.5 6.5"/></svg></a>
 </div>
 <div class="contact-pop" id="contact-pop" role="dialog" aria-label="Contact us" hidden>
   <div class="cp-t">Contact us</div>
-  <div class="cp-mail" id="cp-mail">sfgangloff@gmail.com</div>
-  <div class="cp-row"><button class="btn small primary" id="cp-copy">Copy address</button><a class="btn small" href="mailto:sfgangloff@gmail.com?subject=Knowledge%20transfer%20between%20simple%20discrete%20worlds">Open in mail app</a></div>
+  <div class="cp-mail" id="cp-mail"><div>Silvère Gangloff · <span>sfgangloff@gmail.com</span></div><div>Jan Hůla · <span>jan.hula@osu.cz</span></div></div>
+  <div class="cp-row"><button class="btn small primary" id="cp-copy">Copy both addresses</button><a class="btn small" href="mailto:sfgangloff@gmail.com,jan.hula@osu.cz?subject=Knowledge%20transfer%20between%20simple%20discrete%20worlds">Open in mail app</a></div>
 </div>
 <!-- ============ PROJECT PHILOSOPHY (outside the main stream) ============ -->
 <div class="philo" id="philosophy" role="dialog" aria-modal="true" aria-label="Project philosophy" hidden>
@@ -1482,8 +1483,8 @@ document.querySelectorAll('[data-ph-go]').forEach(a=>a.addEventListener('click',
     let x=r.left-w-14,y=r.top+r.height/2-h/2;if(innerWidth<=1680||x<8){x=Math.max(8,r.right-w);y=r.top-h-12}
     pop.style.left=x+'px';pop.style.top=Math.max(50,Math.min(y,innerHeight-h-8))+'px'};
   const close=()=>{pop.hidden=true;b.classList.remove('open')};
-  b.addEventListener('click',e=>{e.preventDefault();pop.hidden=!pop.hidden;b.classList.toggle('open',!pop.hidden);cp.textContent='Copy address';if(!pop.hidden)place()});
-  cp.onclick=async()=>{try{await navigator.clipboard.writeText('sfgangloff@gmail.com');cp.textContent='Copied'}catch(e){const r=document.createRange();r.selectNodeContents($('#cp-mail'));const sl=getSelection();sl.removeAllRanges();sl.addRange(r);cp.textContent='Press ⌘C / Ctrl+C'}};
+  b.addEventListener('click',e=>{e.preventDefault();pop.hidden=!pop.hidden;b.classList.toggle('open',!pop.hidden);cp.textContent='Copy both addresses';if(!pop.hidden)place()});
+  cp.onclick=async()=>{try{await navigator.clipboard.writeText('sfgangloff@gmail.com; jan.hula@osu.cz');cp.textContent='Copied'}catch(e){const r=document.createRange();r.selectNodeContents($('#cp-mail'));const sl=getSelection();sl.removeAllRanges();sl.addRange(r);cp.textContent='Press ⌘C / Ctrl+C'}};
   document.addEventListener('click',e=>{if(!pop.hidden&&!pop.contains(e.target)&&!b.contains(e.target))close()});
   addEventListener('keydown',e=>{if(e.key==='Escape')close()});addEventListener('resize',()=>{if(!pop.hidden)place()});addEventListener('scroll',()=>{if(!pop.hidden)place()},{passive:true})})();
 // project philosophy: an overlay outside the main stream, opened by #philosophy
