@@ -377,8 +377,8 @@ footer{background:var(--bg);border-top:none}
 @media(max-width:1680px){.ph-big{width:22px;height:22px}
   .lb[data-tip]::after{right:50%;top:auto;bottom:calc(100% + 10px);transform:translate(50%,6px)}
   .lb[data-tip]:hover::after,.lb[data-tip]:focus-visible::after{transform:translate(50%,0)}
-  .lb[data-tip="Project philosophy"]::after{right:0;transform:translate(0,6px)}
-  .lb[data-tip="Project philosophy"]:hover::after{transform:none}}
+  .lb[data-tip="Project philosophy"]::after,.lb[data-tip="Contact"]::after{right:0;transform:translate(0,6px)}
+  .lb[data-tip="Project philosophy"]:hover::after,.lb[data-tip="Contact"]:hover::after{transform:none}}
 /* puzzle construction */
 .pz-count{margin-top:12px;font-size:14px;color:var(--text-2);min-height:22px}
 .pz-count b{color:var(--text)}.pz-count .bad{color:var(--bad);font-weight:600}
@@ -401,6 +401,13 @@ footer{background:var(--bg);border-top:none}
 .pg-build .ruleinfo{min-height:0}
 .pg-h{font:600 13px Inter,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--text-2);margin-bottom:12px}
 .pg-solvecol .pg-h{margin-bottom:14px}
+.ktrow.top{align-items:start}
+.phnov{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:28px}
+@media(max-width:900px){.phnov{grid-template-columns:1fr 1fr}}
+.phn{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 16px 6px;box-shadow:var(--shadow)}
+.phn-l{font:600 11.5px Inter,sans-serif;letter-spacing:.03em;color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+.phn-h{font-family:'Instrument Serif',Georgia,serif;font-size:24px;line-height:1.1;color:var(--text);margin-bottom:6px}
+.phn p{font-size:14.5px;color:var(--text-2);margin:0 0 10px}
 </style>
 </head>
 <body>
@@ -425,43 +432,20 @@ footer{background:var(--bg);border-top:none}
   <span class="chev" aria-hidden="true"><svg viewBox="0 0 16 10"><path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <a class="nb" href="#approach" data-sec="approach">Expand</a>
 </nav>
-<div class="sidelinks" aria-label="Paper and code">
+<div class="sidelinks" aria-label="Paper, code, philosophy and contact">
     <a class="lb" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener" data-tip="Paper" aria-label="Paper on arXiv"><svg class="ax-big" viewBox="84 -4 82 112" aria-hidden="true"><path d="M127.98,55.61l-32.74,38.85c-1.29,1.37-2.08,3.78-1.36,5.5.75,1.8,2.46,2.91,4.4,2.91,1.09,0,1.99-.38,3.16-1.56l40.19-42.71c1.6-1.69,1.62-4.33.04-6.04l-13.68,3.05Z" style="fill:var(--ax-red)"/><path d="M127.98,55.61l31.19-38.27c1.49-1.99,2.2-3.03,1.49-4.72-.74-1.77-2.59-3.16-4.48-3.16h0c-1.06,0-1.72.09-3.01,1.11l-38.63,41.76c-1.72,1.84-1.71,4.7.02,6.53l47.79,51.07c1.02,1.05,2.05,1.19,3.14,1.19,1.93,0,3.19-1.14,4.03-2.82.72-1.73-.08-3.44-1.4-5.23l-40.12-47.46" style="fill:var(--ax-grey)"/><path d="M141.67,52.56L95,2.13S93.29.04,91.48,0s-3.6,1.02-4.34,2.79c-.7,1.69-.2,2.88,1.35,5.1l40.09,48.42" style="fill:var(--ax-red)"/></svg></a>
     <a class="lb" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener" data-tip="Code" aria-label="Code on GitHub"><svg class="gh-big" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
     <a class="lb" href="#philosophy" data-philo data-tip="Project philosophy" aria-label="Project philosophy"><svg class="ph-big" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5.5 L12 2 L21 5.5 Z" fill="currentColor" stroke-width="1.2"/><path d="M4 7.5 H20"/><path d="M6.5 9.5 V18 M10 9.5 V18 M14 9.5 V18 M17.5 9.5 V18"/><path d="M4.5 20 H19.5 M3 22 H21"/></svg></a>
+    <a class="lb" href="mailto:sfgangloff@gmail.com?subject=Knowledge%20transfer%20between%20simple%20discrete%20worlds" data-tip="Contact" aria-label="Contact the authors by email"><svg class="ph-big" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M3.5 6.5 L12 13 L20.5 6.5"/></svg></a>
 </div>
 <!-- ============ PROJECT PHILOSOPHY (outside the main stream) ============ -->
 <div class="philo" id="philosophy" role="dialog" aria-modal="true" aria-label="Project philosophy" hidden>
 <div class="philo-box">
 <button class="philo-x" data-philo-close aria-label="Close">×</button>
-<div class="philo-head"><span class="philo-title">Project philosophy</span><nav class="philo-nav"><a href="#transfer" data-ph-go>Knowledge transfer</a><a href="#ph-simple" data-ph-go>Simple worlds</a><a href="#ph-tell" data-ph-go>Telling or showing</a><a href="#ph-choose" data-ph-go>What to learn from</a></nav></div>
-<section id="transfer" class="philo-sec">
-<div class="wrap">
-  <div class="kicker">1 · Knowledge transfer</div>
-  <h2>Knowledge transfer: <em>learning in some worlds, acting in others</em></h2>
-  <p class="lede">We rarely face exactly the situations we learned from.</p>
-  <div class="tabs" id="kt-steps"><button class="tab" data-s="1">1 · From class to research</button><button class="tab" data-s="2">2 · Robots</button></div>
-  <div class="play">
-    <div><div class="ktp" id="kt-photos"></div></div>
-    <div class="stepbody">
-      <div id="kt-step1">
-        <p class="big-p">In class, we learn by solving exercises. In research, we face problems nobody has solved yet. Both are <b>sets of worlds</b>, and what we learned in the first must carry over to the second.</p>
-        <p class="note">Which knowledge carries over, and why, is the question of knowledge transfer.</p>
-        <button class="btn primary" data-kgo="2">Next: robots →</button>
-      </div>
-      <div id="kt-step2" hidden>
-        <p class="big-p">A robot's environments keep changing with technology and society: factories yesterday, space stations and hospitals today, settings that do not exist yet tomorrow. It cannot be trained on every one of them, so we would like to <b>choose the training environments whose lessons transfer best</b>, again and again.</p>
-        <p class="note">An industrial robot in 1982, Robonaut on the International Space Station, and a concept of a lunar base.</p>
-        <a class="btn primary" href="#ph-simple" data-ph-go>Next: why simple worlds ↓</a>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
+<div class="philo-head"><span class="philo-title">Project philosophy</span><nav class="philo-nav"><a href="#ph-simple" data-ph-go>Simple worlds</a><a href="#ph-puzzle" data-ph-go>Puzzles</a><a href="#ph-tell" data-ph-go>Telling or showing</a><a href="#ph-novelty" data-ph-go>Novelty</a><a href="#transfer" data-ph-go>Knowledge transfer</a><a href="#ph-choose" data-ph-go>What to learn from</a></nav></div>
 <section id="ph-simple" class="philo-sec">
 <div class="wrap">
-  <div class="kicker">2 · Why simple worlds</div>
+  <div class="kicker">1 · Simple worlds</div>
   <h2>Simple worlds, <em>like the idealized models of physics</em></h2>
   <p class="lede">Physics learns a lot from situations that do not exist.</p>
   <div class="tabs" id="ps-steps"><button class="tab on" data-s="1">1 · Idealized models</button><button class="tab" data-s="2">2 · Our simplified setting</button></div>
@@ -487,6 +471,24 @@ footer{background:var(--bg);border-top:none}
       <div id="ps-step2" hidden>
         <p class="big-p">We do the same for knowledge transfer: worlds are <b>sets of grids defined by rules</b>. A model learns to solve puzzles in some worlds, and we test it on puzzles of worlds it has never seen.</p>
         <p class="note">Because worlds are built from explicit rules, we control exactly what the new worlds share with the training ones. What we observe here is not guaranteed to hold in richer settings: it gives hypotheses to test there, and a lens to look at them.</p>
+        <a class="btn primary" href="#ph-puzzle" data-ph-go>Next: puzzles ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="ph-puzzle" class="philo-sec">
+<div class="wrap">
+  <div class="kicker">2 · Puzzles</div>
+  <h2>Puzzles, like real problems: <em>filling in what we do not see</em></h2>
+  <p class="lede">Many real problems give part of a picture and ask for the rest.</p>
+  <div class="play">
+    <div><div class="ktrow top"><div class="ktcol"><div class="ktlab">Predicting: a weather forecast</div><figure><img src="img/kt/forecast.jpg" alt="A weather forecast map" loading="lazy"><figcaption>A forecast map, November 2001 (NOAA)</figcaption></figure></div><div class="ktarr"></div><div class="ktcol"><div class="ktlab">Restoring: a damaged papyrus</div><figure><img src="img/kt/papyrus.jpg" alt="A papyrus fragment of Euclid's Elements" loading="lazy"><figcaption>A fragment of Euclid's Elements, around 100 AD</figcaption></figure></div></div></div>
+    <div class="stepbody">
+      <div>
+        <p class="big-p">A forecaster starts from today's measurements and fills in tomorrow. A historian restoring a damaged papyrus fills in its missing letters. In both cases, <b>what is known and the rules of the world</b> (physics, or the language and the text) constrain what the missing part can be.</p>
+        <p class="note">Our puzzles are a clean version of this: part of a grid is given, and the rules allow exactly one completion. Real problems often allow several plausible answers, which our setting leaves aside.</p>
         <a class="btn primary" href="#ph-tell" data-ph-go>Next: telling or showing ↓</a>
       </div>
     </div>
@@ -505,6 +507,46 @@ footer{background:var(--bg);border-top:none}
       <div>
         <p class="big-p">We can <b>describe the rules</b>, as a recipe does, or <b>show how it is done</b>, as a cook does in front of apprentices. People use both, and neither is always better: a recipe is short and exact, while a demonstration conveys what is hard to put into words.</p>
         <p class="note">In our worlds, the model learns which world it is in either from a description of its rules or from two solved puzzles, and we compare the two.</p>
+        <a class="btn primary" href="#ph-novelty" data-ph-go>Next: novelty ↓</a>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<section id="ph-novelty" class="philo-sec">
+<div class="wrap">
+  <div class="kicker">4 · Novelty</div>
+  <h2>Degrees of novelty, <em>for a driver</em></h2>
+  <p class="lede">How new a situation is can be graded, much like our four levels.</p>
+  <div class="phnov">
+    <div class="phn"><div class="phn-l">L0 · New puzzle</div><div class="phn-h">A new route in your town</div><p>Same streets, same rules: only the trip is new.</p></div>
+    <div class="phn"><div class="phn-l">L1 · New mix of known rules</div><div class="phn-h">A new town</div><p>Roundabouts, tram lanes, one-way streets: each is familiar, but never in this exact mix.</p></div>
+    <div class="phn"><div class="phn-l">L2 · Rules never seen together</div><div class="phn-h">Snow among trams</div><p>You learned to drive on snow in the mountains and among trams in the city, but never both at once.</p></div>
+    <div class="phn"><div class="phn-l">L3 · A brand-new rule</div><div class="phn-h">Driving on the left</div><p>A rule you have never followed, though it is made of familiar pieces: lanes, sides, priorities.</p></div>
+  </div>
+  <p class="note" style="margin-top:16px">The analogy is loose, but it carries the idea: the further a situation is from what we learned, the less obvious it is what carries over.</p>
+  <a class="btn primary" href="#transfer" data-ph-go style="margin-top:8px">Next: knowledge transfer ↓</a>
+</div>
+</section>
+
+<section id="transfer" class="philo-sec">
+<div class="wrap">
+  <div class="kicker">5 · Knowledge transfer</div>
+  <h2>Knowledge transfer: <em>learning in some worlds, acting in others</em></h2>
+  <p class="lede">We rarely face exactly the situations we learned from.</p>
+  <div class="tabs" id="kt-steps"><button class="tab" data-s="1">1 · From class to research</button><button class="tab" data-s="2">2 · Robots</button></div>
+  <div class="play">
+    <div><div class="ktp" id="kt-photos"></div></div>
+    <div class="stepbody">
+      <div id="kt-step1">
+        <p class="big-p">In class, we learn by solving exercises. In research, we face problems nobody has solved yet. Both are <b>sets of worlds</b>, and what we learned in the first must carry over to the second.</p>
+        <p class="note">Which knowledge carries over, and why, is the question of knowledge transfer.</p>
+        <button class="btn primary" data-kgo="2">Next: robots →</button>
+      </div>
+      <div id="kt-step2" hidden>
+        <p class="big-p">A robot's environments keep changing with technology and society: factories yesterday, space stations and hospitals today, settings that do not exist yet tomorrow. It cannot be trained on every one of them, so we would like to <b>choose the training environments whose lessons transfer best</b>, again and again.</p>
+        <p class="note">An industrial robot in 1982, Robonaut on the International Space Station, and a concept of a lunar base.</p>
         <a class="btn primary" href="#ph-choose" data-ph-go>Next: what to learn from ↓</a>
       </div>
     </div>
@@ -514,7 +556,7 @@ footer{background:var(--bg);border-top:none}
 
 <section id="ph-choose" class="philo-sec">
 <div class="wrap">
-  <div class="kicker">4 · Choosing what to learn from</div>
+  <div class="kicker">6 · Choosing what to learn from</div>
   <h2>Choosing <em>what to learn from</em></h2>
   <p class="lede">If transfer depends on what the training worlds contain, choosing them is part of the problem.</p>
   <div class="play">
@@ -529,6 +571,9 @@ footer{background:var(--bg);border-top:none}
   </div>
 </div>
 </section>
+
+
+
 </div>
 </div>
 <div class="page">
@@ -794,7 +839,7 @@ footer{background:var(--bg);border-top:none}
     <a class="btn" id="arxiv-link-2" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener"><svg class="ico ax" viewBox="84 -4 82 112" aria-hidden="true"><path d="M127.98,55.61l-32.74,38.85c-1.29,1.37-2.08,3.78-1.36,5.5.75,1.8,2.46,2.91,4.4,2.91,1.09,0,1.99-.38,3.16-1.56l40.19-42.71c1.6-1.69,1.62-4.33.04-6.04l-13.68,3.05Z" style="fill:var(--ax-red)"/><path d="M127.98,55.61l31.19-38.27c1.49-1.99,2.2-3.03,1.49-4.72-.74-1.77-2.59-3.16-4.48-3.16h0c-1.06,0-1.72.09-3.01,1.11l-38.63,41.76c-1.72,1.84-1.71,4.7.02,6.53l47.79,51.07c1.02,1.05,2.05,1.19,3.14,1.19,1.93,0,3.19-1.14,4.03-2.82.72-1.73-.08-3.44-1.4-5.23l-40.12-47.46" style="fill:var(--ax-grey)"/><path d="M141.67,52.56L95,2.13S93.29.04,91.48,0s-3.6,1.02-4.34,2.79c-.7,1.69-.2,2.88,1.35,5.1l40.09,48.42" style="fill:var(--ax-red)"/></svg>Read the paper</a>
     <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Code &amp; data</a>
   </div>
-  <p class="note" style="max-width:none;margin:0 0 18px">Landscape photos (Wikimedia Commons): <a href="https://commons.wikimedia.org/wiki/File:Landscape-mountains-nature-meadow_(24300479706).jpg" target="_blank" rel="noopener">Pixel.la</a> (CC0), <a href="https://commons.wikimedia.org/wiki/File:Fall_colors_in_Paradise_meadow._Clouds_around_Mt_Rainier._(c61e11b8a0fb48abb16d88bf0c7c52ec).JPG" target="_blank" rel="noopener">Steve Redman, NPS</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Meadow_trees_mountains_and_clouds_in_Alsaka.jpg" target="_blank" rel="noopener">unknown author</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Rocky_hill_with_greenery_and_blue_sky.jpg" target="_blank" rel="noopener">Salma A. L. Suhuyini</a> (CC0). Other photos (Wikimedia Commons, public domain): <a href="https://commons.wikimedia.org/wiki/File:Slide_Rule_Mathematics_-_DPLA_-_afb7ca99683dc5a3f82ec3981f6eb04e.jpg" target="_blank" rel="noopener">mathematics lesson</a> (DPLA), <a href="https://commons.wikimedia.org/wiki/File:Mathematics_lecture_at_the_Helsinki_University_of_Technology.jpg" target="_blank" rel="noopener">mathematics lecture</a>, <a href="https://commons.wikimedia.org/wiki/File:Natalia_Krizhanovskaya_writes_mathematical_formulas_on_the_blackboard_2021.jpg" target="_blank" rel="noopener">formulas on a blackboard</a>, <a href="https://commons.wikimedia.org/wiki/File:Army_scientist_finds_research_illuminating_(27290265015).jpg" target="_blank" rel="noopener">laser laboratory</a> (U.S. Army), <a href="https://commons.wikimedia.org/wiki/File:Technobeurs_82_in_Utrechtse_Jaarbeurs._Een_industriele_robot_op_de_beurs_die_doz,_Bestanddeelnr_932-1416.jpg" target="_blank" rel="noopener">industrial robot, 1982</a> (Rob Bogaerts / Anefo, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:ISS-31_Andr%C3%A9_Kuipers_with_Robonaut_2.jpg" target="_blank" rel="noopener">Robonaut 2</a> (NASA), <a href="https://commons.wikimedia.org/wiki/File:Mooncolony.jpg" target="_blank" rel="noopener">lunar base concept</a> (NASA/SAIC/Pat Rawlings), <a href="https://commons.wikimedia.org/wiki/File:Een_zoontje_van_de_familie_Crena_Uiterwijk_in_een_schommel_in_Suriname,_Bestanddeelnr_252-6886.jpg" target="_blank" rel="noopener">swing</a> (Willem van de Poll, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:Page_from_19th_century_family_cookbook.jpg" target="_blank" rel="noopener">family cookbook</a> (Fanny P. Bates, Mary B. Little), <a href="https://commons.wikimedia.org/wiki/File:Maagdenhuis_keuken_kookles_PK-F-A.01283.jpg" target="_blank" rel="noopener">cooking lesson</a> (Emmy Andriesse for Anefo).</p>
+  <p class="note" style="max-width:none;margin:0 0 18px">Landscape photos (Wikimedia Commons): <a href="https://commons.wikimedia.org/wiki/File:Landscape-mountains-nature-meadow_(24300479706).jpg" target="_blank" rel="noopener">Pixel.la</a> (CC0), <a href="https://commons.wikimedia.org/wiki/File:Fall_colors_in_Paradise_meadow._Clouds_around_Mt_Rainier._(c61e11b8a0fb48abb16d88bf0c7c52ec).JPG" target="_blank" rel="noopener">Steve Redman, NPS</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Meadow_trees_mountains_and_clouds_in_Alsaka.jpg" target="_blank" rel="noopener">unknown author</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Rocky_hill_with_greenery_and_blue_sky.jpg" target="_blank" rel="noopener">Salma A. L. Suhuyini</a> (CC0). Other photos (Wikimedia Commons, public domain): <a href="https://commons.wikimedia.org/wiki/File:Slide_Rule_Mathematics_-_DPLA_-_afb7ca99683dc5a3f82ec3981f6eb04e.jpg" target="_blank" rel="noopener">mathematics lesson</a> (DPLA), <a href="https://commons.wikimedia.org/wiki/File:Mathematics_lecture_at_the_Helsinki_University_of_Technology.jpg" target="_blank" rel="noopener">mathematics lecture</a>, <a href="https://commons.wikimedia.org/wiki/File:Natalia_Krizhanovskaya_writes_mathematical_formulas_on_the_blackboard_2021.jpg" target="_blank" rel="noopener">formulas on a blackboard</a>, <a href="https://commons.wikimedia.org/wiki/File:Army_scientist_finds_research_illuminating_(27290265015).jpg" target="_blank" rel="noopener">laser laboratory</a> (U.S. Army), <a href="https://commons.wikimedia.org/wiki/File:Technobeurs_82_in_Utrechtse_Jaarbeurs._Een_industriele_robot_op_de_beurs_die_doz,_Bestanddeelnr_932-1416.jpg" target="_blank" rel="noopener">industrial robot, 1982</a> (Rob Bogaerts / Anefo, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:ISS-31_Andr%C3%A9_Kuipers_with_Robonaut_2.jpg" target="_blank" rel="noopener">Robonaut 2</a> (NASA), <a href="https://commons.wikimedia.org/wiki/File:Mooncolony.jpg" target="_blank" rel="noopener">lunar base concept</a> (NASA/SAIC/Pat Rawlings), <a href="https://commons.wikimedia.org/wiki/File:Een_zoontje_van_de_familie_Crena_Uiterwijk_in_een_schommel_in_Suriname,_Bestanddeelnr_252-6886.jpg" target="_blank" rel="noopener">swing</a> (Willem van de Poll, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:Page_from_19th_century_family_cookbook.jpg" target="_blank" rel="noopener">family cookbook</a> (Fanny P. Bates, Mary B. Little), <a href="https://commons.wikimedia.org/wiki/File:Maagdenhuis_keuken_kookles_PK-F-A.01283.jpg" target="_blank" rel="noopener">cooking lesson</a> (Emmy Andriesse for Anefo), <a href="https://commons.wikimedia.org/wiki/File:NOAA_Weather_Forecast_Map_noaa_20011121.gif" target="_blank" rel="noopener">forecast map</a> (NOAA Weather Prediction Center), <a href="https://commons.wikimedia.org/wiki/File:P._Oxy._I_29.jpg" target="_blank" rel="noopener">Euclid papyrus</a> (P. Oxy. I 29).</p>
   <div class="cite" id="bibtex">@article{gangloff2026knowledge,
   title  = {Knowledge transfer between simple discrete worlds},
   author = {Gangloff, Silv{\`e}re and H{\r{u}}la, Jan},
