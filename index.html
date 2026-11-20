@@ -1170,8 +1170,8 @@ PG.step=3;PG.ids=['BoxesRect2x3'];pgRenderPool();pgNewWorld();
 /* ======================= KNOWLEDGE TRANSFER (two sets of worlds) ======================= */
 (function transfer(){
   const svg=$('#kt-svg');let seed=5;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
-  const L=[],Rr=[];for(let i=0;i<9;i++)L.push([40+(i%3)*58+rnd()*14,105+Math.floor(i/3)*62+rnd()*12]);
-  for(let i=0;i<12;i++)Rr.push([318+(i%4)*48+rnd()*12,100+Math.floor(i/4)*64+rnd()*14]);
+  const L=[],Rr=[];for(let i=0;i<9;i++)L.push([54+(i%3)*60,108+Math.floor(i/3)*66]);
+  for(let i=0;i<12;i++)Rr.push([333+(i%4)*47,108+Math.floor(i/4)*66]);
   const PAT=[...L,...Rr].map(()=>{const m=[];for(let k=0;k<9;k++)if(rnd()<0.4)m.push(k);return m.length?m:[4]});
   const chosen=[1,4,6];const link={1:[0,1,4,5],4:[2,5,6,9],6:[7,8,10,11]};
   const ICON={book:'<rect x="-11" y="-8" width="10" height="16" rx="1.5"/><rect x="1" y="-8" width="10" height="16" rx="1.5"/>',
@@ -1180,7 +1180,7 @@ PG.step=3;PG.ids=['BoxesRect2x3'];pgRenderPool();pgNewWorld();
     grid:'<rect x="-10" y="-10" width="20" height="20" rx="2"/><path d="M-3.3,-10 v20 M3.3,-10 v20 M-10,-3.3 h20 M-10,3.3 h20" fill="none"/>'};
   const TXT={1:['In class: exercises','Research: open problems','book','flask'],2:['Training environments','Environments met later','robot','robot'],3:['Training worlds','Worlds never seen','grid','grid']};
   function world(x,y,step,hl,idx){if(step<3)return `<circle cx="${x}" cy="${y}" r="${hl?9:7.5}" class="${hl?'w hl':'w'}"/>`;
-    let g=`<g transform="translate(${x-11},${y-11})" class="${hl?'mg hl':'mg'}"><rect width="22" height="22" rx="2.5"/>`;
+    let g=`<g transform="translate(${x-16},${y-16}) scale(1.4545)" class="${hl?'mg hl':'mg'}"><rect width="22" height="22" rx="2.5"/>`;
     for(const k of PAT[idx])g+=`<rect x="${2+(k%3)*6.3}" y="${2+Math.floor(k/3)*6.3}" width="5.3" height="5.3" rx="1" class="fill"/>`;return g+'</g>'}
   function draw(step){const [lt,rt,li,ri]=TXT[step];let h=`<g class="kt-in">`;
     h+=`<rect x="14" y="44" width="200" height="260" rx="16" class="panel"/><rect x="300" y="44" width="206" height="260" rx="16" class="panel"/>`;
