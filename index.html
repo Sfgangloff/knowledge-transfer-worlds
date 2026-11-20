@@ -416,6 +416,17 @@ footer{background:var(--bg);border-top:none}
 .lb.open::after{display:none}
 .philo-intro{max-width:none;margin:18px 64px 0;font-size:17px;line-height:1.55;color:var(--text-2)}
 .philo-intro+.philo-sec{padding-top:36px}
+.planets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;padding-top:6px}
+.pl{display:flex;flex-direction:column;align-items:center}
+.pl-name{font:600 14px Inter,sans-serif;color:var(--text);margin-bottom:14px}
+.pl-stack{position:relative;width:100%;max-width:170px;aspect-ratio:1;margin:6px 0 18px}
+.pl-card{position:absolute;inset:0;background:#fff;padding:5px;border-radius:4px;box-shadow:0 6px 18px -6px rgba(20,30,50,.35);transform:translate(var(--dx),var(--dy)) rotate(var(--r))}
+.pl-card img,.pl-card canvas{position:absolute;inset:5px;width:calc(100% - 10px);height:calc(100% - 10px);object-fit:cover;transition:opacity .8s ease}
+.pl-card canvas{image-rendering:pixelated;opacity:0}
+.planets.as-grid .pl-card canvas{opacity:1}.planets.as-grid .pl-card img{opacity:0}
+.pl-card::after{content:'';position:absolute;inset:5px;opacity:0;transition:opacity .8s;background-image:linear-gradient(rgba(255,255,255,.75) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.75) 1px,transparent 1px);background-size:calc(100% / 6) calc(100% / 6)}
+.planets.as-grid .pl-card::after{opacity:1}
+.pl-mode{text-align:center;margin-top:14px;font-size:14px;color:var(--text-2);min-height:20px}
 </style>
 </head>
 <body>
@@ -462,7 +473,7 @@ footer{background:var(--bg);border-top:none}
   <div class="kicker">1 · Modelling varieties of worlds</div>
   <h2>Modelling <em>varieties of worlds</em></h2>
   <p class="lede">Physics models a phenomenon by simplifying it. We do the same at the level of sets of worlds.</p>
-  <div class="tabs" id="ps-steps"><button class="tab on" data-s="1">1 · Modelling in physics</button><button class="tab" data-s="2">2 · Modelling sets of worlds</button></div>
+  <div class="tabs" id="ps-steps"><button class="tab on" data-s="1">1 · Modelling in physics</button><button class="tab" data-s="2">2 · Many worlds</button></div>
   <div class="play">
     <div>
       <div id="ps-vis1"><div class="ktrow sq"><div class="ktcol"><div class="ktlab">A real swing</div><figure><img src="img/kt/swing.jpg" alt="A child on a swing" loading="lazy"><figcaption>A child on a swing, Suriname</figcaption></figure></div><div class="ktarr"><span>idealize</span><svg viewBox="0 0 60 16"><path d="M2 8 H54 M48 3 L56 8 L48 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ktcol"><div class="ktlab">An ideal pendulum</div><figure><svg class="pend" viewBox="0 0 300 300" role="img" aria-label="An ideal pendulum: a point mass on a weightless string">
@@ -474,17 +485,17 @@ footer{background:var(--bg);border-top:none}
   <circle cx="226" cy="226" r="9" class="mass"/><text x="243" y="231" class="sym">m</text>
   <path d="M226 240 v32" class="force"/><path d="M220 265 l6 9 l6 -9" class="force"/><text x="236" y="272" class="sym">g</text>
 </svg><figcaption>A point mass on a weightless string</figcaption></figure></div></div></div>
-      <div id="ps-vis2" hidden><svg id="kt-svg" viewBox="0 0 520 330" width="100%" role="img" aria-label="Training worlds and worlds never seen"></svg></div>
+      <div id="ps-vis2" hidden><div class="planets" id="planets"></div><div class="pl-mode" id="pl-mode"></div></div>
     </div>
     <div class="stepbody">
       <div id="ps-step1">
         <p class="big-p">A real swing is pushed, rubs at its hinges, meets the air, and carries a child who moves. Physicists first study an <b>ideal pendulum</b>: a point mass on a weightless string, without friction. It does not exist, but it isolates one phenomenon so that it can be understood and measured cleanly.</p>
         <p class="note">What holds for the ideal pendulum is not guaranteed to hold for the swing, but it tells us what to look for there.</p>
-        <button class="btn primary" data-psgo="2">Next: sets of worlds →</button>
+        <button class="btn primary" data-psgo="2">Next: many worlds →</button>
       </div>
       <div id="ps-step2" hidden>
-        <p class="big-p">We simplify not one phenomenon but a <b>whole set of environments</b>: each world becomes a set of grids defined by rules, and worlds share some rules while differing in others. We then study how they relate in terms of learning: what a model learns in some worlds, and how it acts in the others.</p>
-        <p class="note">Because worlds are built from explicit rules, we control exactly what the new worlds share with the training ones. What we observe here is not guaranteed to hold in richer settings: it gives hypotheses to test there, and a lens to look at them.</p>
+        <p class="big-p">Different worlds can coexist, like the planets of one universe. Earth, Mars and the Moon each have their own landscapes, and so their own experiences. Approximated by grids, as on the main page, each becomes <b>its own set of grids, with its own rules</b>.</p>
+        <p class="note">Some worlds share rules and others differ. These relations between worlds are what we study.</p>
         <a class="btn primary" href="#ph-puzzle" data-ph-go>Next: puzzles ↓</a>
       </div>
     </div>
@@ -495,14 +506,14 @@ footer{background:var(--bg);border-top:none}
 <section id="ph-puzzle" class="philo-sec">
 <div class="wrap">
   <div class="kicker">2 · Puzzles</div>
-  <h2>Puzzles, like real problems: <em>filling in what we do not see</em></h2>
-  <p class="lede">Many real problems give part of a picture and ask for the rest.</p>
+  <h2>Real <em>puzzles</em></h2>
+  <p class="lede">Puzzles are one kind of problem, but many real problems can be modelled the same way: part of a world is given, and the rest must be found.</p>
   <div class="play">
     <div><div class="ktrow top"><div class="ktcol"><div class="ktlab">Predicting: a weather forecast</div><figure><img src="img/kt/forecast.jpg" alt="A weather forecast map" loading="lazy"><figcaption>A forecast map, November 2001 (NOAA)</figcaption></figure></div><div class="ktarr"></div><div class="ktcol"><div class="ktlab">Restoring: a damaged papyrus</div><figure><img src="img/kt/papyrus.jpg" alt="A papyrus fragment of Euclid's Elements" loading="lazy"><figcaption>A fragment of Euclid's Elements, around 100 AD</figcaption></figure></div></div></div>
     <div class="stepbody">
       <div>
         <p class="big-p">A forecaster starts from today's measurements and fills in tomorrow. A historian restoring a damaged papyrus fills in its missing letters. In both cases, <b>what is known and the rules of the world</b> (physics, or the language and the text) constrain what the missing part can be.</p>
-        <p class="note">Our puzzles are a clean version of this: part of a grid is given, and the rules allow exactly one completion. Real problems often allow several plausible answers, which our setting leaves aside.</p>
+        <p class="note">Our puzzles are a clean version of this: part of a grid is given, and the rules allow exactly one completion. Real problems often allow several plausible answers, which our setting leaves aside for now.</p>
         <a class="btn primary" href="#ph-tell" data-ph-go>Next: telling or showing ↓</a>
       </div>
     </div>
@@ -549,9 +560,9 @@ footer{background:var(--bg);border-top:none}
   <div class="kicker">5 · Knowledge transfer</div>
   <h2>Knowledge transfer: <em>learning in some worlds, acting in others</em></h2>
   <p class="lede">We rarely face exactly the situations we learned from.</p>
-  <div class="tabs" id="kt-steps"><button class="tab" data-s="1">1 · From class to research</button><button class="tab" data-s="2">2 · Robots</button></div>
+  <div class="tabs" id="kt-steps"><button class="tab" data-s="1">1 · From class to research</button><button class="tab" data-s="2">2 · Robots</button><button class="tab" data-s="3">3 · Our simplified setting</button></div>
   <div class="play">
-    <div><div class="ktp" id="kt-photos"></div></div>
+    <div><div class="ktp" id="kt-photos"></div><svg id="kt-svg" viewBox="0 0 520 330" width="100%" role="img" aria-label="Training worlds and worlds never seen" style="display:none"></svg></div>
     <div class="stepbody">
       <div id="kt-step1">
         <p class="big-p">In class, we learn by solving exercises. In research, we face problems nobody has solved yet. Both are <b>sets of worlds</b>, and what we learned in the first must carry over to the second.</p>
@@ -561,6 +572,11 @@ footer{background:var(--bg);border-top:none}
       <div id="kt-step2" hidden>
         <p class="big-p">A robot's environments keep changing with technology and society: factories yesterday, space stations and hospitals today, settings that do not exist yet tomorrow. It cannot be trained on every one of them, so we would like to <b>choose the training environments whose lessons transfer best</b>, again and again.</p>
         <p class="note">An industrial robot in 1982, Robonaut on the International Space Station, and a concept of a lunar base.</p>
+        <button class="btn primary" data-kgo="3">Next: our setting →</button>
+      </div>
+      <div id="kt-step3" hidden>
+        <p class="big-p">We study this question in a <b>simplified setting</b>: a model learns to solve puzzles in some worlds, and we test it on puzzles of worlds it has never seen.</p>
+        <p class="note">Because worlds are built from explicit rules, we control exactly what the new worlds share with the training ones. What we observe here is not guaranteed to hold in richer settings: it gives hypotheses to test there, and a lens to look at them.</p>
         <a class="btn primary" href="#ph-choose" data-ph-go>Next: what to learn from ↓</a>
       </div>
     </div>
@@ -853,7 +869,7 @@ footer{background:var(--bg);border-top:none}
     <a class="btn" id="arxiv-link-2" href="https://arxiv.org/abs/2610.15081" target="_blank" rel="noopener"><svg class="ico ax" viewBox="84 -4 82 112" aria-hidden="true"><path d="M127.98,55.61l-32.74,38.85c-1.29,1.37-2.08,3.78-1.36,5.5.75,1.8,2.46,2.91,4.4,2.91,1.09,0,1.99-.38,3.16-1.56l40.19-42.71c1.6-1.69,1.62-4.33.04-6.04l-13.68,3.05Z" style="fill:var(--ax-red)"/><path d="M127.98,55.61l31.19-38.27c1.49-1.99,2.2-3.03,1.49-4.72-.74-1.77-2.59-3.16-4.48-3.16h0c-1.06,0-1.72.09-3.01,1.11l-38.63,41.76c-1.72,1.84-1.71,4.7.02,6.53l47.79,51.07c1.02,1.05,2.05,1.19,3.14,1.19,1.93,0,3.19-1.14,4.03-2.82.72-1.73-.08-3.44-1.4-5.23l-40.12-47.46" style="fill:var(--ax-grey)"/><path d="M141.67,52.56L95,2.13S93.29.04,91.48,0s-3.6,1.02-4.34,2.79c-.7,1.69-.2,2.88,1.35,5.1l40.09,48.42" style="fill:var(--ax-red)"/></svg>Read the paper</a>
     <a class="btn" href="https://github.com/Sfgangloff/GridWorldHyperNetworks" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>Code &amp; data</a>
   </div>
-  <p class="note" style="max-width:none;margin:0 0 18px">Landscape photos (Wikimedia Commons): <a href="https://commons.wikimedia.org/wiki/File:Landscape-mountains-nature-meadow_(24300479706).jpg" target="_blank" rel="noopener">Pixel.la</a> (CC0), <a href="https://commons.wikimedia.org/wiki/File:Fall_colors_in_Paradise_meadow._Clouds_around_Mt_Rainier._(c61e11b8a0fb48abb16d88bf0c7c52ec).JPG" target="_blank" rel="noopener">Steve Redman, NPS</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Meadow_trees_mountains_and_clouds_in_Alsaka.jpg" target="_blank" rel="noopener">unknown author</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Rocky_hill_with_greenery_and_blue_sky.jpg" target="_blank" rel="noopener">Salma A. L. Suhuyini</a> (CC0). Other photos (Wikimedia Commons, public domain): <a href="https://commons.wikimedia.org/wiki/File:Slide_Rule_Mathematics_-_DPLA_-_afb7ca99683dc5a3f82ec3981f6eb04e.jpg" target="_blank" rel="noopener">mathematics lesson</a> (DPLA), <a href="https://commons.wikimedia.org/wiki/File:Mathematics_lecture_at_the_Helsinki_University_of_Technology.jpg" target="_blank" rel="noopener">mathematics lecture</a>, <a href="https://commons.wikimedia.org/wiki/File:Natalia_Krizhanovskaya_writes_mathematical_formulas_on_the_blackboard_2021.jpg" target="_blank" rel="noopener">formulas on a blackboard</a>, <a href="https://commons.wikimedia.org/wiki/File:Army_scientist_finds_research_illuminating_(27290265015).jpg" target="_blank" rel="noopener">laser laboratory</a> (U.S. Army), <a href="https://commons.wikimedia.org/wiki/File:Technobeurs_82_in_Utrechtse_Jaarbeurs._Een_industriele_robot_op_de_beurs_die_doz,_Bestanddeelnr_932-1416.jpg" target="_blank" rel="noopener">industrial robot, 1982</a> (Rob Bogaerts / Anefo, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:ISS-31_Andr%C3%A9_Kuipers_with_Robonaut_2.jpg" target="_blank" rel="noopener">Robonaut 2</a> (NASA), <a href="https://commons.wikimedia.org/wiki/File:Mooncolony.jpg" target="_blank" rel="noopener">lunar base concept</a> (NASA/SAIC/Pat Rawlings), <a href="https://commons.wikimedia.org/wiki/File:Een_zoontje_van_de_familie_Crena_Uiterwijk_in_een_schommel_in_Suriname,_Bestanddeelnr_252-6886.jpg" target="_blank" rel="noopener">swing</a> (Willem van de Poll, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:Page_from_19th_century_family_cookbook.jpg" target="_blank" rel="noopener">family cookbook</a> (Fanny P. Bates, Mary B. Little), <a href="https://commons.wikimedia.org/wiki/File:Maagdenhuis_keuken_kookles_PK-F-A.01283.jpg" target="_blank" rel="noopener">cooking lesson</a> (Emmy Andriesse for Anefo), <a href="https://commons.wikimedia.org/wiki/File:NOAA_Weather_Forecast_Map_noaa_20011121.gif" target="_blank" rel="noopener">forecast map</a> (NOAA Weather Prediction Center), <a href="https://commons.wikimedia.org/wiki/File:P._Oxy._I_29.jpg" target="_blank" rel="noopener">Euclid papyrus</a> (P. Oxy. I 29).</p>
+  <p class="note" style="max-width:none;margin:0 0 18px">Landscape photos (Wikimedia Commons): <a href="https://commons.wikimedia.org/wiki/File:Landscape-mountains-nature-meadow_(24300479706).jpg" target="_blank" rel="noopener">Pixel.la</a> (CC0), <a href="https://commons.wikimedia.org/wiki/File:Fall_colors_in_Paradise_meadow._Clouds_around_Mt_Rainier._(c61e11b8a0fb48abb16d88bf0c7c52ec).JPG" target="_blank" rel="noopener">Steve Redman, NPS</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Meadow_trees_mountains_and_clouds_in_Alsaka.jpg" target="_blank" rel="noopener">unknown author</a> (public domain), <a href="https://commons.wikimedia.org/wiki/File:Rocky_hill_with_greenery_and_blue_sky.jpg" target="_blank" rel="noopener">Salma A. L. Suhuyini</a> (CC0). Other photos (Wikimedia Commons, public domain): <a href="https://commons.wikimedia.org/wiki/File:Slide_Rule_Mathematics_-_DPLA_-_afb7ca99683dc5a3f82ec3981f6eb04e.jpg" target="_blank" rel="noopener">mathematics lesson</a> (DPLA), <a href="https://commons.wikimedia.org/wiki/File:Mathematics_lecture_at_the_Helsinki_University_of_Technology.jpg" target="_blank" rel="noopener">mathematics lecture</a>, <a href="https://commons.wikimedia.org/wiki/File:Natalia_Krizhanovskaya_writes_mathematical_formulas_on_the_blackboard_2021.jpg" target="_blank" rel="noopener">formulas on a blackboard</a>, <a href="https://commons.wikimedia.org/wiki/File:Army_scientist_finds_research_illuminating_(27290265015).jpg" target="_blank" rel="noopener">laser laboratory</a> (U.S. Army), <a href="https://commons.wikimedia.org/wiki/File:Technobeurs_82_in_Utrechtse_Jaarbeurs._Een_industriele_robot_op_de_beurs_die_doz,_Bestanddeelnr_932-1416.jpg" target="_blank" rel="noopener">industrial robot, 1982</a> (Rob Bogaerts / Anefo, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:ISS-31_Andr%C3%A9_Kuipers_with_Robonaut_2.jpg" target="_blank" rel="noopener">Robonaut 2</a> (NASA), <a href="https://commons.wikimedia.org/wiki/File:Mooncolony.jpg" target="_blank" rel="noopener">lunar base concept</a> (NASA/SAIC/Pat Rawlings), <a href="https://commons.wikimedia.org/wiki/File:Een_zoontje_van_de_familie_Crena_Uiterwijk_in_een_schommel_in_Suriname,_Bestanddeelnr_252-6886.jpg" target="_blank" rel="noopener">swing</a> (Willem van de Poll, Nationaal Archief, CC0), <a href="https://commons.wikimedia.org/wiki/File:Page_from_19th_century_family_cookbook.jpg" target="_blank" rel="noopener">family cookbook</a> (Fanny P. Bates, Mary B. Little), <a href="https://commons.wikimedia.org/wiki/File:Maagdenhuis_keuken_kookles_PK-F-A.01283.jpg" target="_blank" rel="noopener">cooking lesson</a> (Emmy Andriesse for Anefo), <a href="https://commons.wikimedia.org/wiki/File:NOAA_Weather_Forecast_Map_noaa_20011121.gif" target="_blank" rel="noopener">forecast map</a> (NOAA Weather Prediction Center), <a href="https://commons.wikimedia.org/wiki/File:P._Oxy._I_29.jpg" target="_blank" rel="noopener">Euclid papyrus</a> (P. Oxy. I 29); Mars: <a href="https://commons.wikimedia.org/wiki/File:Curiosity_Sends_a_Postcard_From_Mount_Sharp%E2%80%99s_Boxwork_Region_(PIA26680).jpg" target="_blank" rel="noopener">Curiosity</a>, <a href="https://commons.wikimedia.org/wiki/File:Jezero_crater_on_Mars,_sol_20_of_Perseverance_mission.png" target="_blank" rel="noopener">Perseverance</a>, <a href="https://commons.wikimedia.org/wiki/File:Mars_Stereo_View_from_%27John_Klein%27_to_Mount_Sharp-left.jpg" target="_blank" rel="noopener">Mount Sharp</a> (NASA/JPL-Caltech); Moon: <a href="https://commons.wikimedia.org/wiki/File:NASA_Apollo_17_Lunar_Roving_Vehicle.jpg" target="_blank" rel="noopener">Apollo 17 rover</a>, <a href="https://commons.wikimedia.org/wiki/File:Taurus-Littrow_valley_AS17-P-3026.jpg" target="_blank" rel="noopener">Taurus-Littrow valley</a>, <a href="https://commons.wikimedia.org/wiki/File:High_Resolution_Mt._Hadley_Composite.jpg" target="_blank" rel="noopener">Mount Hadley</a> (NASA).</p>
   <div class="cite" id="bibtex">@article{gangloff2026knowledge,
   title  = {Knowledge transfer between simple discrete worlds},
   author = {Gangloff, Silv{\`e}re and H{\r{u}}la, Jan},
@@ -1197,7 +1213,7 @@ PG.step=3;PG.ids=['BoxesRect2x3'];pgRenderPool();pgNewWorld();
   function photos(n){const box=$('#kt-photos');
     if(n===2){box.innerHTML='<div class="kttl kt-in2">'+TL.map(([lab,f,c])=>`<div class="ktcol"><div class="ktlab">${lab}</div><figure><img src="img/kt/${f}.jpg" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure></div>`).join(tarr)+'</div>';return}const col=([lab,ims])=>`<div class="ktcol"><div class="ktlab">${lab}</div>${ims.map(([f,c])=>`<figure><img src="img/kt/${f}.jpg" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join('')}</div>`;
     box.innerHTML=`<div class="ktrow kt-in2">${col(PH[n][0])}<div class="ktarr"><span>transfer</span><svg viewBox="0 0 60 16"><path d="M2 8 H54 M48 3 L56 8 L48 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>${col(PH[n][1])}</div>`}
-  function go(n){document.querySelectorAll('#kt-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));[1,2].forEach(k=>$('#kt-step'+k).hidden=k!==n);photos(n)}
+  function go(n){document.querySelectorAll('#kt-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));[1,2,3].forEach(k=>$('#kt-step'+k).hidden=k!==n);const ph=n<3;$('#kt-photos').hidden=!ph;svg.style.display=ph?'none':'';if(ph)photos(n)}
   document.querySelectorAll('#kt-steps .tab').forEach(t=>t.onclick=()=>go(+t.dataset.s));document.querySelectorAll('[data-kgo]').forEach(b=>b.onclick=()=>go(+b.dataset.kgo));go(1);draw(3);
   function ps(n){document.querySelectorAll('#ps-steps .tab').forEach(t=>t.classList.toggle('on',+t.dataset.s===n));[1,2].forEach(k=>{$('#ps-step'+k).hidden=k!==n;$('#ps-vis'+k).hidden=k!==n})}
   document.querySelectorAll('#ps-steps .tab').forEach(t=>t.onclick=()=>ps(+t.dataset.s));document.querySelectorAll('[data-psgo]').forEach(b=>b.onclick=()=>ps(+b.dataset.psgo));
@@ -1466,6 +1482,24 @@ addEventListener('scroll',()=>{const h=document.documentElement;$('#progress').s
   const sio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)set(e.target.tagName==='FOOTER'?'approach':e.target.id)}),{rootMargin:'-45% 0px -50% 0px'});
   sio.observe(document.querySelector('footer'));
   ['top','sudoku','puzzle','play','setups','novelty','results','approach'].forEach(id=>sio.observe(document.getElementById(id)));set('top')})();
+// philosophy: several worlds as planets, photos turning into colour grids
+(function planets(){const host=$('#planets');if(!host)return;
+  const PL=[['Earth',['img/landscape1.jpg','img/landscape2.jpg','img/landscape3.jpg']],['Mars',['img/kt/mars3.jpg','img/kt/mars1.jpg','img/kt/mars2.jpg']],['The Moon',['img/kt/moon2.jpg','img/kt/moon3.jpg','img/kt/moon1.jpg']]];
+  const ROT=[[-7,-3],[4,1],[-2,4]];
+  host.innerHTML=PL.map(([n,ims],p)=>`<div class="pl"><div class="pl-name">${n}</div><div class="pl-stack">${ims.map((src,k)=>`<div class="pl-card" style="--r:${ROT[k][p%2]+p*2-2}deg;--dx:${(k-1)*16}px;--dy:${(1-k)*8}px;z-index:${k}"><img src="${src}" alt="" loading="lazy"><canvas width="6" height="6"></canvas></div>`).join('')}</div></div>`).join('');
+  host.querySelectorAll('.pl-card').forEach(c=>{const im=c.querySelector('img'),cv=c.querySelector('canvas');
+    const go=()=>{const s=Math.min(im.naturalWidth,im.naturalHeight),g=cv.getContext('2d');g.imageSmoothingQuality='high';
+      // average each cell: draw at 36x36 then average 6x6 blocks
+      const t=document.createElement('canvas');t.width=t.height=36;const tg=t.getContext('2d');tg.imageSmoothingQuality='high';
+      tg.drawImage(im,(im.naturalWidth-s)/2,(im.naturalHeight-s)/2,s,s,0,0,36,36);const d=tg.getImageData(0,0,36,36).data;
+      for(let r=0;r<6;r++)for(let q=0;q<6;q++){let a=[0,0,0];for(let y=0;y<6;y++)for(let x=0;x<6;x++){const o=((r*6+y)*36+q*6+x)*4;a[0]+=d[o];a[1]+=d[o+1];a[2]+=d[o+2]}
+        g.fillStyle=`rgb(${a.map(v=>v/36|0).join(',')})`;g.fillRect(q,r,1,1)}};
+    if(im.complete&&im.naturalWidth)go();else im.addEventListener('load',go)});
+  const mode=$('#pl-mode');let grid=false,timer=null;
+  const set=g=>{grid=g;host.classList.toggle('as-grid',g);mode.innerHTML=g?'Each world as <b>grids</b> of colours':'Each world as <b>experiences</b>'};set(false);
+  const vis=()=>!$('#ps-vis2').hidden&&!$('#philosophy').hidden;
+  setInterval(()=>{if(vis())set(!grid)},3200);
+})();
 // philosophy frame 4: rules combined in training or not
 (function choose(){const svg=$('#ch-svg');
   const chip=(x,y,k,lab,dash)=>`<g transform="translate(${x},${y})"><rect width="30" height="20" rx="6" class="ch ch${k}${dash?' new':''}"/><text x="15" y="14" class="cl">${lab}</text></g>`;
